@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleDEM", "SimpleDEM\SimpleDEM.csproj", "{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{3AB742FD-1731-45CB-8295-94E17E974BA2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB742FD-1731-45CB-8295-94E17E974BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB742FD-1731-45CB-8295-94E17E974BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB742FD-1731-45CB-8295-94E17E974BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB742FD-1731-45CB-8295-94E17E974BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2496CF15-57E0-4409-AD08-7A98882B0088}
+	EndGlobalSection
+EndGlobal
