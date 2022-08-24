@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using SimpleDEM.DataCells;
 
 namespace SimpleDEM.Databases
@@ -34,14 +35,22 @@ namespace SimpleDEM.Databases
                     Metadata.End.Longitude >= coordinates.Longitude;
         }
 
+        internal bool Overlaps(GeodeticCoordinates start, GeodeticCoordinates end)
+        {
+            return Metadata.Start.Latitude <= end.Latitude &&
+                    Metadata.Start.Longitude <= end.Longitude &&
+                    Metadata.End.Latitude >= start.Latitude &&
+                    Metadata.End.Longitude >= start.Longitude;
+        }
+
         private void SetLastAccess()
         {
             LastAccess = DateTime.UtcNow.Ticks;
         }
 
-        public IDemDataCell Load(IDemStorage storage)
+        public async Task<IDemDataCell> Load(IDemStorage storage)
         {
-            var data = storage.Load(this);
+            var data = await storage.Load(Path);
             SetLastAccess();
             Data = data;
             return data;

@@ -33,16 +33,16 @@ namespace SimpleDEM.DataCells
             throw new IOException($"Extension '{ext}' is not supported.");
         }
 
-        public static IDemDataCellMetadata LoadMetadata(string file)
+        public static DemDataCellMetadata LoadMetadata(string file)
         {
             var ext = CompressionHelper.GetExtension(file);
             if (ext == SRTMHelper.Extension)
             {
-                return new DemDataCellMetadata(SRTMHelper.LoadDataCell(file));
+                return SRTMHelper.LoadDataCellMetadata(file);
             }
             if (ext == GeoTiffHelper.Extension)
             {
-                return new DemDataCellMetadata(GeoTiffHelper.LoadDataCell(file));
+                return GeoTiffHelper.LoadDataCellMetadata(file);
             }
             if (ext == Extension)
             {
@@ -59,7 +59,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        public static IDemDataCellMetadata LoadMetadata(Stream stream)
+        public static DemDataCellMetadata LoadMetadata(Stream stream)
         {
             using (var reader = new BinaryReader(stream))
             {
@@ -71,6 +71,7 @@ namespace SimpleDEM.DataCells
         {
             ReadPrelude(reader);
             reader.ReadByte(); // dataType
+            reader.ReadByte(); // unused
             return new DemDataCellMetadata(reader);
         }
 

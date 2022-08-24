@@ -89,8 +89,8 @@ namespace SimpleDEM.DataCells
             target.Write(DemDataCell.MagicNumber);
             target.Write((byte)0x01);
             target.Write(DemDataCell.GetDataTypeCode(typeof(T)));
-            target.Write((byte)RasterType);
             target.Write((byte)0x00);
+            target.Write((byte)RasterType);
             target.Write(Start.Latitude);
             target.Write(Start.Longitude);
             target.Write(End.Latitude);

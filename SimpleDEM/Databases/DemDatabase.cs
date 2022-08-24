@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SimpleDEM.DataCells;
 
 namespace SimpleDEM.Databases
@@ -9,56 +11,134 @@ namespace SimpleDEM.Databases
     public class DemDatabase
     {
         private readonly IDemStorage storage;
-        private readonly List<DemDatabaseEntry> entries = new List<DemDatabaseEntry>();
+        private readonly List<DemDatabaseEntry> entries = new List<DemDatabaseEntry>(); // TODO: Use a spacial index
 
         private readonly long maxBytes;
-        private readonly object cacheLocker = new object();
+        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private long loadedBytes = 0;
 
-        public DemDatabase(string basePath, long maxBytes = 8_000_000_000)
+        public DemDatabase(IDemStorage storage, long maxBytes = 8_000_000_000)
         {
-            this.storage = new FileSystemStorage(basePath);
+            this.storage = storage;
             this.maxBytes = maxBytes;
         }
 
-        public void BuildIndex()
+        public async Task LoadIndexAsync()
+        {
+            await semaphoreSlim.WaitAsync();
+            try
+            {
+                await LoadIndexInternal();
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+        }
+
+        private async Task LoadIndexInternal()
         {
             entries.Clear();
-            entries.AddRange(storage.ReadIndex());
+            loadedBytes = 0;
+            entries.AddRange((await storage.ReadIndex()).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata)));
+        }
+
+        private async Task EnsureIndexIsLoadedAsync()
+        {
+            if (entries.Count == 0)
+            {
+                await semaphoreSlim.WaitAsync();
+                try
+                {
+                    if (entries.Count == 0)
+                    {
+                        await LoadIndexInternal();
+                    }
+                }
+                finally
+                {
+                    semaphoreSlim.Release();
+                }
+            }
+        }
+
+        public async Task<List<IDemDataCell>> GetDataCellsAsync(GeodeticCoordinates start, GeodeticCoordinates end)
+        {
+            await EnsureIndexIsLoadedAsync();
+
+            var datas = new List<IDemDataCell>();
+            foreach(var cell in entries.Where(e => e.Overlaps(start, end)))
+            {
+                datas.Add(await GetDataAsync(cell));
+            }
+            return datas;
         }
 
         public double GetElevation(GeodeticCoordinates coordinates, IInterpolation interpolation)
         {
+            if (entries.Count == 0)
+            {
+                EnsureIndexIsLoadedAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+
             var cells = entries.Where(e => e.Contains(coordinates)).ToList();
             if (cells.Count == 0)
             {
                 return double.NaN;
             }
-
             if (cells[0].Metadata.RasterType == DemRasterType.PixelIsPoint || cells.Count == 1)
             {
                 return GetData(cells[0]).GetLocalElevation(coordinates, interpolation);
             }
+            return GetElevationWithMultipleCells(coordinates, interpolation, cells.Select(GetData).ToList());
+        }
 
-            var datas = cells.Select(GetData).ToList();
+        public async Task<double> GetElevationAsync(GeodeticCoordinates coordinates, IInterpolation interpolation)
+        {
+            await EnsureIndexIsLoadedAsync();
+
+            var cells = entries.Where(e => e.Contains(coordinates)).ToList();
+            if (cells.Count == 0)
+            {
+                return double.NaN;
+            }
+            if (cells[0].Metadata.RasterType == DemRasterType.PixelIsPoint || cells.Count == 1)
+            {
+                return (await GetDataAsync(cells[0])).GetLocalElevation(coordinates, interpolation);
+            }
+            var datas = new List<IDemDataCell>();
+            foreach (var cell in cells)
+            {
+                datas.Add(await GetDataAsync(cell));
+            }
+            return GetElevationWithMultipleCells(coordinates, interpolation, datas);
+        }
+
+        private static double GetElevationWithMultipleCells(GeodeticCoordinates coordinates, IInterpolation interpolation, List<IDemDataCell> datas)
+        {
             var local = datas.FirstOrDefault(d => d.IsLocal(coordinates));
             if (local != null)
             {
                 return local.GetLocalElevation(coordinates, interpolation);
             }
-
             var points = datas.SelectMany(d => d.GetNearbyElevation(coordinates)).Distinct().ToList();
             return interpolation.Interpolate(coordinates, points);
         }
 
         private IDemDataCell GetData(DemDatabaseEntry demDatabaseEntry)
         {
+            return GetDataAsync(demDatabaseEntry).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        private async Task<IDemDataCell> GetDataAsync(DemDatabaseEntry demDatabaseEntry)
+        {
             var data = demDatabaseEntry.PickData();
             if (data == null)
             {
-                lock (cacheLocker)
+                await semaphoreSlim.WaitAsync();
+                try
                 {
-                    data = demDatabaseEntry.Load(storage);
+                    data = await demDatabaseEntry.Load(storage);
                     loadedBytes += data.SizeInBytes;
 
                     while (loadedBytes >= maxBytes)
@@ -71,13 +151,18 @@ namespace SimpleDEM.Databases
                         loadedBytes -= older.UnLoad();
                     }
                 }
+                finally
+                {
+                    semaphoreSlim.Release();
+                }
             }
             return data;
         }
 
-        public void ReleaseOlderData(TimeSpan timeSpan)
+        public async Task ReleaseOlderDataAsync(TimeSpan timeSpan)
         {
-            lock (cacheLocker)
+            await semaphoreSlim.WaitAsync();
+            try
             {
                 var old = DateTime.UtcNow.Add(timeSpan).Ticks;
                 foreach (var entry in entries)
@@ -87,6 +172,10 @@ namespace SimpleDEM.Databases
                         loadedBytes -= entry.UnLoad();
                     }
                 }
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
     }

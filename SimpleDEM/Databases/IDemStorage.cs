@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SimpleDEM.DataCells;
 
 namespace SimpleDEM.Databases
 {
-    internal interface IDemStorage
+    public interface IDemStorage
     {
-        List<DemDatabaseEntry> ReadIndex();
+        Task<DemDatabaseIndex> ReadIndex();
 
-        IDemDataCell Load(DemDatabaseEntry entry);
+        Task<IDemDataCell> Load(string path);
     }
 }

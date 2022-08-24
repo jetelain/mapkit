@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleDEM
 {
-    public class StandardInterpolation : IInterpolation
+    public class DefaultInterpolation : IInterpolation
     {
         public double Interpolate(double f00, double f10, double f01, double f11, double x, double y)
         {

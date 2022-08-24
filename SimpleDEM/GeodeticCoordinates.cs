@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace SimpleDEM
 {
     public class GeodeticCoordinates : IEquatable<GeodeticCoordinates>
     {
+        [JsonConstructor]
         public GeodeticCoordinates(double latitude, double longitude)
         {
             Latitude = latitude;

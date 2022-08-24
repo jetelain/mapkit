@@ -22,7 +22,20 @@ namespace SimpleDEM.DataCells.Formats
             }
         }
 
-        private static IDemDataCell LoadDataCell(Tiff tiff)
+        public static DemDataCellMetadata LoadDataCellMetadata(string filepath)
+        {
+            return CompressionHelper.ReadSeekable(filepath, stream => LoadDataCellMetadata(filepath, stream));
+        }
+
+        public static DemDataCellMetadata LoadDataCellMetadata(string filepath, Stream stream)
+        {
+            using (var tiff = Tiff.ClientOpen(filepath, "r", stream, new TiffStream()))
+            {
+                return LoadDataCellMetadata(tiff);
+            }
+        }
+
+        internal static DemDataCellMetadata LoadDataCellMetadata(Tiff tiff)
         {
             var height = tiff.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
             var width = tiff.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
@@ -45,6 +58,42 @@ namespace SimpleDEM.DataCells.Formats
             var start = new GeodeticCoordinates(dataEndLat, dataStartLon); // Intentional swap on Latitude
             var end = new GeodeticCoordinates(dataStartLat, dataEndLon);
 
+            var raster = GetRasterType(tiff);
+
+            return new DemDataCellMetadata(raster, start, end, height, width);
+        }
+
+        private static IDemDataCell LoadDataCell(Tiff tiff)
+        {
+            var metadata = LoadDataCellMetadata(tiff);
+
+            var height = metadata.PointsPerCellLat;
+            var width = metadata.PointsPerCellLon;
+
+            var bitsPerSample = tiff.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
+            var sampleFormat = tiff.GetField(TiffTag.SAMPLEFORMAT).FirstOrDefault().ToString();
+
+            if (sampleFormat == "INT" && bitsPerSample == 16)
+            {
+                return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, ReadData(tiff, width, height, (reader) => reader.ReadInt16()));
+            }
+            if (sampleFormat == "UINT" && bitsPerSample == 16)
+            {
+                return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, ReadData(tiff, width, height, (reader) => reader.ReadUInt16()));
+            }
+            if (sampleFormat == "IEEEFP" && bitsPerSample == 32)
+            {
+                return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, ReadData(tiff, width, height, (reader) => reader.ReadSingle()));
+            }
+            if (sampleFormat == "IEEEFP" && bitsPerSample == 64)
+            {
+                return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, ReadData(tiff, width, height, (reader) => reader.ReadDouble()));
+            }
+            throw new IOException($"GeoTIFF Sample format '{sampleFormat}' with {bitsPerSample} bits per sample is not supported.");
+        }
+
+        private static DemRasterType GetRasterType(Tiff tiff)
+        {
             var geoKey = new BinaryReader(new MemoryStream(tiff.GetField(TiffTag.GEOTIFF_GEOKEYDIRECTORYTAG)[1].ToByteArray())); // Data is LittleEndian
             geoKey.ReadUInt16(); // keyDirectoryVersion 
             geoKey.ReadUInt16(); // keyRevision 
@@ -70,26 +119,7 @@ namespace SimpleDEM.DataCells.Formats
                 }
             }
 
-            var bitsPerSample = tiff.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
-            var sampleFormat = tiff.GetField(TiffTag.SAMPLEFORMAT).FirstOrDefault().ToString();
-
-            if (sampleFormat == "INT" && bitsPerSample == 16)
-            {
-                return DemDataCell.Create(start, end, raster, ReadData(tiff, width, height, (reader) => reader.ReadInt16()));
-            }
-            if (sampleFormat == "UINT" && bitsPerSample == 16)
-            {
-                return DemDataCell.Create(start, end, raster, ReadData(tiff, width, height, (reader) => reader.ReadUInt16()));
-            }
-            if (sampleFormat == "IEEEFP" && bitsPerSample == 32)
-            {
-                return DemDataCell.Create(start, end, raster, ReadData(tiff, width, height, (reader) => reader.ReadSingle()));
-            }
-            if (sampleFormat == "IEEEFP" && bitsPerSample == 64)
-            {
-                return DemDataCell.Create(start, end, raster, ReadData(tiff, width, height, (reader) => reader.ReadDouble()));
-            }
-            throw new IOException($"GeoTIFF Sample format '{sampleFormat}' with {bitsPerSample} bits per sample is not supported.");
+            return raster;
         }
 
         private static T[,] ReadData<T>(Tiff tiff, int width, int height, Func<BinaryReader, T> read)

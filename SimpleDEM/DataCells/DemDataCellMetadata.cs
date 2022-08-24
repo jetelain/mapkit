@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.Json.Serialization;
 
 namespace SimpleDEM.DataCells
 {
@@ -7,7 +8,6 @@ namespace SimpleDEM.DataCells
         internal DemDataCellMetadata(BinaryReader reader)
         {
             RasterType = (DemRasterType)reader.ReadByte();
-            reader.ReadByte(); // unused
             Start = new GeodeticCoordinates(reader.ReadDouble(), reader.ReadDouble());
             End = new GeodeticCoordinates(reader.ReadDouble(), reader.ReadDouble());
             PointsPerCellLat = reader.ReadInt32();
@@ -21,6 +21,16 @@ namespace SimpleDEM.DataCells
             End = other.End;
             PointsPerCellLat = other.PointsPerCellLat;
             PointsPerCellLon = other.PointsPerCellLon;
+        }
+
+        [JsonConstructor]
+        public DemDataCellMetadata(DemRasterType rasterType, GeodeticCoordinates start, GeodeticCoordinates end, int pointsPerCellLat, int pointsPerCellLon)
+        {
+            RasterType = rasterType;
+            Start = start;
+            End = end;
+            PointsPerCellLat = pointsPerCellLat;
+            PointsPerCellLon = pointsPerCellLon;
         }
 
         public DemRasterType RasterType { get; }

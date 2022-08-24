@@ -20,6 +20,17 @@ namespace SimpleDEM.DataCells.Formats
             return CompressionHelper.Read(filepath, stream => LoadDataCell(filepath, stream));
         }
 
+        internal static DemDataCellMetadata LoadDataCellMetadata(string filepath)
+        {
+            var pos = GetCoordinatesFromFileName(filepath);
+
+            var length = (int)CompressionHelper.GetSize(filepath);
+
+            var pointsPerCell = DetectResolution(length);
+
+            return new DemDataCellMetadata(DemRasterType.PixelIsPoint, pos, new GeodeticCoordinates(pos.Latitude + 1, pos.Longitude + 1), pointsPerCell, pointsPerCell);
+        }
+
         public static DemDataCellPixelIsPoint<ushort> LoadDataCell(string filepath, Stream stream)
         {
             var pos = GetCoordinatesFromFileName(filepath);
