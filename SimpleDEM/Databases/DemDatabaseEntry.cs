@@ -27,7 +27,7 @@ namespace SimpleDEM.Databases
             private set { Interlocked.Exchange(ref lastAccess, lastAccess = value); }
         }
 
-        public bool Contains(GeodeticCoordinates coordinates)
+        public bool Contains(Coordinates coordinates)
         {
             return Metadata.Start.Latitude <= coordinates.Latitude &&
                     Metadata.End.Latitude >= coordinates.Latitude &&
@@ -35,7 +35,7 @@ namespace SimpleDEM.Databases
                     Metadata.End.Longitude >= coordinates.Longitude;
         }
 
-        internal bool Overlaps(GeodeticCoordinates start, GeodeticCoordinates end)
+        internal bool Overlaps(Coordinates start, Coordinates end)
         {
             return Metadata.Start.Latitude <= end.Latitude &&
                     Metadata.Start.Longitude <= end.Longitude &&

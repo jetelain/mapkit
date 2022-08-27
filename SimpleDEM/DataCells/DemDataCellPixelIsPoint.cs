@@ -4,38 +4,38 @@ using System.Linq;
 
 namespace SimpleDEM.DataCells
 {
-    public class DemDataCellPixelIsPoint<T>
+    public sealed class DemDataCellPixelIsPoint<T>
         : DemDataCellBase<T> where T : unmanaged
     {
-        public DemDataCellPixelIsPoint(GeodeticCoordinates start, GeodeticCoordinates end, T[,] data)
+        public DemDataCellPixelIsPoint(Coordinates start, Coordinates end, T[,] data)
             : base(start, end, data)
         {
-            PixelSizeLat = SizeLat / (PointsPerCellLat - 1);
-            PixelSizeLon = SizeLon / (PointsPerCellLon - 1);
+            PixelSizeLat = SizeLat / (PointsLat - 1);
+            PixelSizeLon = SizeLon / (PointsLon - 1);
         }
 
         public override DemRasterType RasterType => DemRasterType.PixelIsPoint;
         public override double PixelSizeLat { get; }
         public override double PixelSizeLon { get; }
 
-        public override T GetRawElevation(GeodeticCoordinates coordinates)
+        public override T GetRawElevation(Coordinates coordinates)
         {
-            var relLat = (int)Math.Round((coordinates.Latitude - Start.Latitude) / SizeLat * (PointsPerCellLat - 1));
-            var relLon = (int)Math.Round((coordinates.Longitude - Start.Longitude) / SizeLon * (PointsPerCellLon - 1));
+            var relLat = (int)Math.Round((coordinates.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
+            var relLon = (int)Math.Round((coordinates.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
             return Data[relLat, relLon];
         }
 
-        public override double GetLocalElevation(GeodeticCoordinates coordinates, IInterpolation interpolation)
+        public override double GetLocalElevation(Coordinates coordinates, IInterpolation interpolation)
         {
-            var relLat = (coordinates.Latitude - Start.Latitude) / SizeLat * (PointsPerCellLat - 1);
-            var relLon = (coordinates.Longitude - Start.Longitude) / SizeLon * (PointsPerCellLon - 1);
+            var relLat = (coordinates.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1);
+            var relLon = (coordinates.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1);
 
             var relLat0 = (int)Math.Floor(relLat);
             var relLon0 = (int)Math.Floor(relLon);
             var relLat1 = (int)Math.Ceiling(relLat);
             var relLon1 = (int)Math.Ceiling(relLon);
 
-            if (relLat0 < 0 || relLon0 < 0 || relLat1 >= PointsPerCellLat || relLon1 >= PointsPerCellLon)
+            if (relLat0 < 0 || relLon0 < 0 || relLat1 >= PointsLat || relLon1 >= PointsLon)
             {
                 return interpolation.Interpolate(coordinates, GetNearbyElevation(coordinates).ToList());
             }
@@ -53,10 +53,10 @@ namespace SimpleDEM.DataCells
             return interpolation.Interpolate(f00, f10, f01, f11, relLat - relLat0, relLon - relLon0);
         }
 
-        public override IEnumerable<DemDataPoint> GetNearbyElevation(GeodeticCoordinates coordinates)
+        public override IEnumerable<DemDataPoint> GetNearbyElevation(Coordinates coordinates)
         {
-            var relLat = (coordinates.Latitude - Start.Latitude) / SizeLat * (PointsPerCellLat - 1);
-            var relLon = (coordinates.Longitude - Start.Longitude) / SizeLon * (PointsPerCellLon - 1);
+            var relLat = (coordinates.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1);
+            var relLon = (coordinates.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1);
 
             var relLat0 = (int)Math.Floor(relLat);
             var relLon0 = (int)Math.Floor(relLon);
@@ -68,34 +68,34 @@ namespace SimpleDEM.DataCells
                 var f00 = ToDouble(Data[relLat0, relLon0]);
                 if (!double.IsNaN(f00))
                 {
-                    yield return new DemDataPoint(new GeodeticCoordinates(Start.Latitude + relLat0 * (PointsPerCellLat - 1), Start.Longitude + relLon0 * (PointsPerCellLon - 1)), f00);
+                    yield return new DemDataPoint(new Coordinates(Start.Latitude + relLat0 * (PointsLat - 1), Start.Longitude + relLon0 * (PointsLon - 1)), f00);
                 }
             }
 
-            if (relLat1 < PointsPerCellLat && relLon0 >= 0)
+            if (relLat1 < PointsLat && relLon0 >= 0)
             {
                 var f10 = ToDouble(Data[relLat1, relLon0]);
                 if (!double.IsNaN(f10))
                 {
-                    yield return new DemDataPoint(new GeodeticCoordinates(Start.Latitude + relLat1 * (PointsPerCellLat - 1), Start.Longitude + relLon0 * (PointsPerCellLon - 1)), f10);
+                    yield return new DemDataPoint(new Coordinates(Start.Latitude + relLat1 * (PointsLat - 1), Start.Longitude + relLon0 * (PointsLon - 1)), f10);
                 }
             }
 
-            if (relLat0 >= 0 && relLon1 < PointsPerCellLon)
+            if (relLat0 >= 0 && relLon1 < PointsLon)
             {
                 var f01 = ToDouble(Data[relLat0, relLon1]);
                 if (!double.IsNaN(f01))
                 {
-                    yield return new DemDataPoint(new GeodeticCoordinates(Start.Latitude + relLat0 * (PointsPerCellLat - 1), Start.Longitude + relLon1 * (PointsPerCellLon - 1)), f01);
+                    yield return new DemDataPoint(new Coordinates(Start.Latitude + relLat0 * (PointsLat - 1), Start.Longitude + relLon1 * (PointsLon - 1)), f01);
                 }
             }
 
-            if (relLat1 < PointsPerCellLat && relLon1 < PointsPerCellLon)
+            if (relLat1 < PointsLat && relLon1 < PointsLon)
             {
                 var f11 = ToDouble(Data[relLat1, relLon1]);
                 if (!double.IsNaN(f11))
                 {
-                    yield return new DemDataPoint(new GeodeticCoordinates(Start.Latitude + relLat1 * (PointsPerCellLat - 1), Start.Longitude + relLon1 * (PointsPerCellLon - 1)), f11);
+                    yield return new DemDataPoint(new Coordinates(Start.Latitude + relLat1 * (PointsLat - 1), Start.Longitude + relLon1 * (PointsLon - 1)), f11);
                 }
             }
         }
@@ -105,17 +105,145 @@ namespace SimpleDEM.DataCells
             return new DemDataCellPixelIsPoint<U>(Start, End, ConvertData<U>());
         }
 
-        public DemDataCellPixelIsArea<T> ToPixelIsArea()
+        public override DemDataCellPixelIsArea<T> AsPixelIsArea()
         {
             return new DemDataCellPixelIsArea<T>(
-                new GeodeticCoordinates(Start.Latitude - PixelSizeLat / 2, Start.Longitude - PixelSizeLon / 2),
-                new GeodeticCoordinates(End.Latitude + PixelSizeLat / 2, End.Longitude + PixelSizeLon / 2),
+                new Coordinates(Start.Latitude - PixelSizeLat / 2, Start.Longitude - PixelSizeLon / 2),
+                new Coordinates(End.Latitude + PixelSizeLat / 2, End.Longitude + PixelSizeLon / 2),
                 Data);
         }
 
-        public override bool IsLocal(GeodeticCoordinates coordinates)
+        public override DemDataCellPixelIsPoint<T> AsPixelIsPoint()
+        {
+            return this;
+        }
+
+
+        protected override DemDataCellBase<T> CropExact(Coordinates realStart, Coordinates realEnd)
+        {
+            var startRelLat = (int)Math.Round((realStart.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
+            var startRelLon = (int)Math.Round((realStart.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
+            var endRelLat = (int)Math.Round((realEnd.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
+            var endRelLon = (int)Math.Round((realEnd.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
+
+            return new DemDataCellPixelIsPoint<T>(realStart, realEnd, CropData(startRelLat, startRelLon, endRelLat - startRelLat + 1, endRelLon - startRelLon + 1));
+        }
+
+
+
+        public override bool IsLocal(Coordinates coordinates)
         {
             return coordinates.IsInSquare(Start, End);
+        }
+
+
+        public DemDataCellPixelIsPoint<T> Downsample(int factor, DemDataCellPixelIsPoint<T> north, DemDataCellPixelIsPoint<T> northEast, DemDataCellPixelIsPoint<T> east)
+        {
+            var newPointsLat = ((PointsLat - 1) / factor) + 1;
+            var newPointsLon = ((PointsLon - 1) / factor) + 1;
+
+            var newData = new T[newPointsLat, newPointsLon];
+            var samples = new T[factor * factor];
+            var northLat = newPointsLat - 1;
+            var eastLon = newPointsLon - 1;
+
+            DownsampleCore(factor, northLat, eastLon, newData, samples);
+
+            DownsampleNorthEdge(factor, north, newData, samples, northLat, eastLon);
+
+            DownsampleEastEdge(factor, east, newData, samples, northLat, eastLon);
+
+            DownsampleNorthEastPoint(factor, northEast, newData, samples, northLat, eastLon);
+
+            return new DemDataCellPixelIsPoint<T>(Start, End, newData);
+        }
+
+        private void DownsampleNorthEastPoint(int factor, DemDataCellPixelIsPoint<T> northEast, T[,] newData, T[] samples, int northLat, int eastLon)
+        {
+            if (northEast != null)
+            {
+                if (northEast.Start.Longitude != End.Longitude || northEast.Start.Latitude != End.Latitude || northEast.SizeLon != SizeLon || northEast.SizeLat != SizeLat)
+                {
+                    throw new ArgumentException();
+                }
+                northEast.FillSquareSamples(factor, samples, 0, 0);
+                newData[northLat, eastLon] = PixelFormat.Average(samples);
+            }
+            else
+            {
+                newData[northLat, eastLon] = Data[PointsLat - 1, PointsLon - 1];
+            }
+        }
+
+        private void DownsampleEastEdge(int factor, DemDataCellPixelIsPoint<T> east, T[,] newData, T[] samples, int northLat, int eastLon)
+        {
+            if (east != null)
+            {
+                if (east.Start.Longitude != End.Longitude || east.Start.Latitude != Start.Latitude || east.PointsLat != PointsLat || east.SizeLon != SizeLon || east.SizeLat != SizeLat)
+                {
+                    throw new ArgumentException();
+                }
+                for (var newLat = 0; newLat < northLat; newLat++)
+                {
+                    east.FillSquareSamples(factor, samples, 0, newLat * factor);
+                    newData[newLat, eastLon] = PixelFormat.Average(samples);
+                }
+            }
+            else
+            {
+                var samplesLine = new T[factor];
+                for (var newLat = 0; newLat < northLat; newLat++)
+                {
+                    FillSamplesLat(samplesLine, newLat * 3, eastLon);
+                    newData[newLat, eastLon] = PixelFormat.Average(samplesLine);
+                }
+            }
+        }
+
+        private void DownsampleNorthEdge(int factor, DemDataCellPixelIsPoint<T> north, T[,] newData, T[] samples, int northLat, int eastLon)
+        {
+            if (north != null)
+            {
+                if (north.Start.Longitude != Start.Longitude || north.Start.Latitude != End.Latitude || north.PointsLon != PointsLon || north.SizeLon != SizeLon || north.SizeLat != SizeLat)
+                {
+                    throw new ArgumentException();
+                }
+                for (var newLon = 0; newLon < eastLon; newLon++)
+                {
+                    north.FillSquareSamples(factor, samples, 0, newLon * factor);
+                    newData[northLat, newLon] = PixelFormat.Average(samples);
+                }
+            }
+            else
+            {
+                var samplesLine = new T[factor];
+                for (var newLon = 0; newLon < eastLon; newLon++)
+                {
+                    FillSamplesLon(samplesLine, northLat, newLon * 3);
+                    newData[northLat, newLon] = PixelFormat.Average(samplesLine);
+                }
+            }
+        }
+
+        private void FillSamplesLat(T[] samples, int startLat, int lon)
+        {
+            for (var i = 0; i < samples.Length; ++i)
+            {
+                samples[i] = Data[i + startLat, lon];
+            }
+        }
+
+        private void FillSamplesLon(T[] samples, int lat, int startLon)
+        {
+            for (var i = 0; i < samples.Length; ++i)
+            {
+                samples[i] = Data[lat, startLon + 1];
+            }
+        }
+
+        internal override U Accept<U>(IDemDataCellVisitor<U> visitor)
+        {
+            return PixelFormat.Accept(visitor, this);
         }
     }
 }

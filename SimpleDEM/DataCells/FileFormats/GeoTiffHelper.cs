@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
 
-namespace SimpleDEM.DataCells.Formats
+namespace SimpleDEM.DataCells.FileFormats
 {
     internal class GeoTiffHelper
     {
@@ -55,8 +55,8 @@ namespace SimpleDEM.DataCells.Formats
             var dataEndLon = dataStartLon + width * pixelSizeX;
             var dataEndLat = dataStartLat + height * pixelSizeY;
 
-            var start = new GeodeticCoordinates(dataEndLat, dataStartLon); // Intentional swap on Latitude
-            var end = new GeodeticCoordinates(dataStartLat, dataEndLon);
+            var start = new Coordinates(dataEndLat, dataStartLon); // Intentional swap on Latitude
+            var end = new Coordinates(dataStartLat, dataEndLon);
 
             var raster = GetRasterType(tiff);
 
@@ -67,8 +67,8 @@ namespace SimpleDEM.DataCells.Formats
         {
             var metadata = LoadDataCellMetadata(tiff);
 
-            var height = metadata.PointsPerCellLat;
-            var width = metadata.PointsPerCellLon;
+            var height = metadata.PointsLat;
+            var width = metadata.PointsLon;
 
             var bitsPerSample = tiff.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
             var sampleFormat = tiff.GetField(TiffTag.SAMPLEFORMAT).FirstOrDefault().ToString();

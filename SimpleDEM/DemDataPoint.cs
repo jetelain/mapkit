@@ -2,15 +2,15 @@
 
 namespace SimpleDEM
 {
-    public class DemDataPoint : IEquatable<DemDataPoint>
+    public sealed class DemDataPoint : IEquatable<DemDataPoint>
     {
-        public DemDataPoint(GeodeticCoordinates coordinates, double elevation)
+        public DemDataPoint(Coordinates coordinates, double elevation)
         {
-            Coordinates = coordinates;
+            Coordinates = coordinates ?? throw new ArgumentNullException(nameof(coordinates));
             Elevation = elevation;
         }
 
-        public GeodeticCoordinates Coordinates { get; }
+        public Coordinates Coordinates { get; }
 
         public double Elevation { get; }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SimpleDEM.DataCells.Formats;
+using SimpleDEM.DataCells.FileFormats;
 
 namespace SimpleDEM.DataCells
 {
@@ -12,7 +12,7 @@ namespace SimpleDEM.DataCells
         {
             var ext = CompressionHelper.GetExtension(file);
 
-            return ext == Extension || ext == SRTMHelper.Extension || ext == GeoTiffHelper.Extension;
+            return ext == Extension || ext == SRTMHelper.Extension || ext == GeoTiffHelper.Extension || ext == EsriAsciiHelper.Extension;
         }
 
         public static IDemDataCell Load(string file)
@@ -25,6 +25,10 @@ namespace SimpleDEM.DataCells
             if (ext == GeoTiffHelper.Extension)
             {
                 return GeoTiffHelper.LoadDataCell(file);
+            }
+            if (ext == EsriAsciiHelper.Extension)
+            {
+                return EsriAsciiHelper.LoadDataCell(file);
             }
             if (ext == Extension)
             {
@@ -44,6 +48,10 @@ namespace SimpleDEM.DataCells
             {
                 return GeoTiffHelper.LoadDataCellMetadata(file);
             }
+            if (ext == EsriAsciiHelper.Extension)
+            {
+                return EsriAsciiHelper.LoadDataCellMetadata(file);
+            }
             if (ext == Extension)
             {
                 return CompressionHelper.Read(file, LoadMetadata);
@@ -55,7 +63,7 @@ namespace SimpleDEM.DataCells
         {
             using (var reader = new BinaryReader(stream))
             {
-                return Load(stream);
+                return Load(reader);
             }
         }
 
@@ -118,7 +126,7 @@ namespace SimpleDEM.DataCells
                 throw new IOException($"Premature end of file.");
             }
 
-            var data = new T[metadata.PointsPerCellLat, metadata.PointsPerCellLon];
+            var data = new T[metadata.PointsLat, metadata.PointsLon];
             if (BitConverter.IsLittleEndian)
             {
                 Buffer.BlockCopy(bytes, 0, data, 0, bytes.Length);
@@ -130,7 +138,7 @@ namespace SimpleDEM.DataCells
             return Create(metadata.Start, metadata.End, metadata.RasterType, data);
         }
 
-        internal static DemDataCellBase<T> Create<T>(GeodeticCoordinates start, GeodeticCoordinates end, DemRasterType type, T[,] data)
+        internal static DemDataCellBase<T> Create<T>(Coordinates start, Coordinates end, DemRasterType type, T[,] data)
             where T : unmanaged
         {
             switch (type)

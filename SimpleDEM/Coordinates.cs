@@ -3,10 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace SimpleDEM
 {
-    public class GeodeticCoordinates : IEquatable<GeodeticCoordinates>
+    public class Coordinates : IEquatable<Coordinates>
     {
         [JsonConstructor]
-        public GeodeticCoordinates(double latitude, double longitude)
+        public Coordinates(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
@@ -16,7 +16,7 @@ namespace SimpleDEM
 
         public double Longitude { get; }
 
-        public bool Equals(GeodeticCoordinates? other)
+        public bool Equals(Coordinates? other)
         {
             if (other != null)
             {
@@ -28,7 +28,7 @@ namespace SimpleDEM
 
         public override bool Equals(object? obj)
         {
-            return Equals(obj as GeodeticCoordinates);
+            return Equals(obj as Coordinates);
         }
 
         public override int GetHashCode()
@@ -41,18 +41,17 @@ namespace SimpleDEM
             return FormattableString.Invariant($"({Latitude};{Longitude})");
         }
 
-        internal double Distance(GeodeticCoordinates coordinates)
+        internal double Distance(Coordinates coordinates)
         {
             var dx = Latitude - coordinates.Latitude;
             var dy = Longitude - coordinates.Longitude;
             return Math.Sqrt((dx * dx) + (dy * dy));
         }
 
-        public bool IsInSquare(GeodeticCoordinates start, GeodeticCoordinates end)
+        public bool IsInSquare(Coordinates start, Coordinates end)
         {
             return start.Latitude <= Latitude && Latitude <= end.Latitude &&
                    start.Longitude <= Longitude && Longitude <= end.Longitude;
         }
-
     }
 }

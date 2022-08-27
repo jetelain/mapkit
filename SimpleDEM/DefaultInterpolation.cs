@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace SimpleDEM
 {
-    public class DefaultInterpolation : IInterpolation
+    public sealed class DefaultInterpolation : IInterpolation
     {
+        public static readonly DefaultInterpolation Instance = new DefaultInterpolation();
+
         public double Interpolate(double f00, double f10, double f01, double f11, double x, double y)
         {
 #if DEBUG
@@ -25,7 +27,7 @@ namespace SimpleDEM
                  + f11 * x * y;
         }
 
-        public double Interpolate(GeodeticCoordinates coordinates, List<DemDataPoint> points)
+        public double Interpolate(Coordinates coordinates, List<DemDataPoint> points)
         {
             if (points.Count == 0)
             {

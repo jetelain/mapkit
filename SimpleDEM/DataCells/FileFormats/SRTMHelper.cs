@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SimpleDEM.DataCells.Formats
+namespace SimpleDEM.DataCells.FileFormats
 {
     internal class SRTMHelper
     {
@@ -28,7 +28,7 @@ namespace SimpleDEM.DataCells.Formats
 
             var pointsPerCell = DetectResolution(length);
 
-            return new DemDataCellMetadata(DemRasterType.PixelIsPoint, pos, new GeodeticCoordinates(pos.Latitude + 1, pos.Longitude + 1), pointsPerCell, pointsPerCell);
+            return new DemDataCellMetadata(DemRasterType.PixelIsPoint, pos, new Coordinates(pos.Latitude + 1, pos.Longitude + 1), pointsPerCell, pointsPerCell);
         }
 
         public static DemDataCellPixelIsPoint<ushort> LoadDataCell(string filepath, Stream stream)
@@ -45,7 +45,7 @@ namespace SimpleDEM.DataCells.Formats
 
             var data = ConvertData(bytes, pointsPerCell);
 
-            return new DemDataCellPixelIsPoint<ushort>(pos, new GeodeticCoordinates(pos.Latitude + 1, pos.Longitude + 1), data);
+            return new DemDataCellPixelIsPoint<ushort>(pos, new Coordinates(pos.Latitude + 1, pos.Longitude + 1), data);
         }
 
         private static ushort[,] ConvertData(byte[] bytes, int pointsPerCell)
@@ -59,7 +59,7 @@ namespace SimpleDEM.DataCells.Formats
                     int bytesPos = (pointsPerCell - localLat - 1) * pointsPerCell * 2 + localLon * 2;
                     if (bytes[bytesPos] == 0x80 && bytes[bytesPos + 1] == 0x00)
                     {
-                        target[localLat, localLon] = ushort.MaxValue;
+                        target[localLat, localLon] = ushort.MaxValue; // NoData
                     }
                     else
                     {
@@ -84,7 +84,7 @@ namespace SimpleDEM.DataCells.Formats
             }
         }
 
-        private static GeodeticCoordinates GetCoordinatesFromFileName(string filepath)
+        private static Coordinates GetCoordinatesFromFileName(string filepath)
         {
             var matches = FileNameRegex.Match(Path.GetFileNameWithoutExtension(filepath));
             if (!matches.Success)
@@ -104,7 +104,7 @@ namespace SimpleDEM.DataCells.Formats
                 longitude *= -1;
             }
 
-            return new GeodeticCoordinates(latitude, longitude);
+            return new Coordinates(latitude, longitude);
         }
     }
 }

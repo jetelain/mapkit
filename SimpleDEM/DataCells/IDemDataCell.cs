@@ -7,11 +7,11 @@ namespace SimpleDEM.DataCells
     {
         void Save(Stream target);
 
-        double GetRawElevation(GeodeticCoordinates coordinates);
+        double GetRawElevation(Coordinates coordinates);
 
-        double GetLocalElevation(GeodeticCoordinates coordinates, IInterpolation interpolation);
+        double GetLocalElevation(Coordinates coordinates, IInterpolation interpolation);
 
-        IEnumerable<DemDataPoint> GetNearbyElevation(GeodeticCoordinates coordinates);
+        IEnumerable<DemDataPoint> GetNearbyElevation(Coordinates coordinates);
 
         /// <summary>
         /// Determines if cell has all data to compute elevation for specified coordinates.
@@ -22,7 +22,7 @@ namespace SimpleDEM.DataCells
         /// </summary>
         /// <param name="coordinates"></param>
         /// <returns></returns>
-        bool IsLocal(GeodeticCoordinates coordinates);
+        bool IsLocal(Coordinates coordinates);
 
         int SizeInBytes { get; }
     }

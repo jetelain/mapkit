@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SimpleDEM.GeodeticSystems
 {
@@ -26,14 +24,13 @@ namespace SimpleDEM.GeodeticSystems
         /// </summary>
         public const double B = 6_356_752.314_245_179; // == A - (A / InvF);
 
-        public static double EPow2 = 0.006_694_379_990_141_317; // == (Math.Pow(A, 2) - Math.Pow(B, 2)) / Math.Pow(A, 2);
+        public const double EPow2 = 0.006_694_379_990_141_317; // == (Math.Pow(A, 2) - Math.Pow(B, 2)) / Math.Pow(A, 2);
 
-        public static double E = 0.081_819_190_842_622; // == Math.Sqrt(EPow2);
+        public const double E = 0.081_819_190_842_622; // == Math.Sqrt(EPow2);
+
+        public const double R = 6_371_008.771_415_059; // == (2 * A + B) / 3
 
         private const double PIDiv180 = Math.PI / 180;
-
-        // A - (F * A) = B
-
 
         /// <summary>
         /// Length of a degree of longitude (east–west distance)
@@ -44,7 +41,6 @@ namespace SimpleDEM.GeodeticSystems
         {
             // https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude
             var ϕ = lat * PIDiv180;
-            // return (a * Math.Cos(ϕ)) / (Math.Sqrt(1 - e2 * Math.Pow(Math.Sin(ϕ), 2))) * PIDiv180;
             // Use alternative formula, because it's 20% faster
             return PIDiv180 * A * Math.Cos(Math.Atan(B / A * Math.Tan(ϕ)));
         }
@@ -59,6 +55,24 @@ namespace SimpleDEM.GeodeticSystems
             // https://en.wikipedia.org/wiki/Latitude#Meridian_distance_on_the_ellipsoid
             var ϕ = lat * PIDiv180;
             return 111132.954 - 559.822 * Math.Cos(2 * ϕ) + 1.175 * Math.Cos(4 * ϕ);
+        }
+
+        /// <summary>
+        /// Distance according to Haversine formula.
+        /// 
+        /// For long distances : precision is about 0.1%, but is 0.5% in the worst case
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static double ApproximateDistance(Coordinates a, Coordinates b)
+        {
+            var aLat = a.Latitude * PIDiv180;
+            var aLon = a.Longitude * PIDiv180;
+            var bLat = b.Latitude * PIDiv180;
+            var bLon = b.Longitude * PIDiv180;
+            var x = Math.Pow(Math.Sin((bLat - aLat) / 2.0), 2.0) + Math.Cos(aLat) * Math.Cos(bLat) * Math.Pow(Math.Sin((bLon - aLon) / 2.0), 2.0);
+            return R * (2.0 * Math.Atan2(Math.Sqrt(x), Math.Sqrt(1.0 - x)));
         }
     }
 }

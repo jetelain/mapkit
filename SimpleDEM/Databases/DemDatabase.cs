@@ -62,7 +62,7 @@ namespace SimpleDEM.Databases
             }
         }
 
-        public async Task<List<IDemDataCell>> GetDataCellsAsync(GeodeticCoordinates start, GeodeticCoordinates end)
+        public async Task<List<IDemDataCell>> GetDataCellsAsync(Coordinates start, Coordinates end)
         {
             await EnsureIndexIsLoadedAsync();
 
@@ -74,7 +74,7 @@ namespace SimpleDEM.Databases
             return datas;
         }
 
-        public double GetElevation(GeodeticCoordinates coordinates, IInterpolation interpolation)
+        public double GetElevation(Coordinates coordinates, IInterpolation interpolation)
         {
             if (entries.Count == 0)
             {
@@ -93,7 +93,7 @@ namespace SimpleDEM.Databases
             return GetElevationWithMultipleCells(coordinates, interpolation, cells.Select(GetData).ToList());
         }
 
-        public async Task<double> GetElevationAsync(GeodeticCoordinates coordinates, IInterpolation interpolation)
+        public async Task<double> GetElevationAsync(Coordinates coordinates, IInterpolation interpolation)
         {
             await EnsureIndexIsLoadedAsync();
 
@@ -114,7 +114,7 @@ namespace SimpleDEM.Databases
             return GetElevationWithMultipleCells(coordinates, interpolation, datas);
         }
 
-        private static double GetElevationWithMultipleCells(GeodeticCoordinates coordinates, IInterpolation interpolation, List<IDemDataCell> datas)
+        private static double GetElevationWithMultipleCells(Coordinates coordinates, IInterpolation interpolation, List<IDemDataCell> datas)
         {
             var local = datas.FirstOrDefault(d => d.IsLocal(coordinates));
             if (local != null)

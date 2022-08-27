@@ -2,14 +2,14 @@
 {
     public interface IDemDataCellMetadata
     {
-        GeodeticCoordinates Start { get; }
+        Coordinates Start { get; }
 
-        GeodeticCoordinates End { get; }
+        Coordinates End { get; }
 
         DemRasterType RasterType { get; }
 
-        int PointsPerCellLat { get; }
+        int PointsLat { get; }
 
-        int PointsPerCellLon { get; }
+        int PointsLon { get; }
     }
 }

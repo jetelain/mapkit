@@ -8,10 +8,10 @@ namespace SimpleDEM.DataCells
         internal DemDataCellMetadata(BinaryReader reader)
         {
             RasterType = (DemRasterType)reader.ReadByte();
-            Start = new GeodeticCoordinates(reader.ReadDouble(), reader.ReadDouble());
-            End = new GeodeticCoordinates(reader.ReadDouble(), reader.ReadDouble());
-            PointsPerCellLat = reader.ReadInt32();
-            PointsPerCellLon = reader.ReadInt32();
+            Start = new Coordinates(reader.ReadDouble(), reader.ReadDouble());
+            End = new Coordinates(reader.ReadDouble(), reader.ReadDouble());
+            PointsLat = reader.ReadInt32();
+            PointsLon = reader.ReadInt32();
         }
 
         public DemDataCellMetadata(IDemDataCellMetadata other)
@@ -19,28 +19,28 @@ namespace SimpleDEM.DataCells
             RasterType = other.RasterType;
             Start = other.Start;
             End = other.End;
-            PointsPerCellLat = other.PointsPerCellLat;
-            PointsPerCellLon = other.PointsPerCellLon;
+            PointsLat = other.PointsLat;
+            PointsLon = other.PointsLon;
         }
 
         [JsonConstructor]
-        public DemDataCellMetadata(DemRasterType rasterType, GeodeticCoordinates start, GeodeticCoordinates end, int pointsPerCellLat, int pointsPerCellLon)
+        public DemDataCellMetadata(DemRasterType rasterType, Coordinates start, Coordinates end, int pointsPerCellLat, int pointsPerCellLon)
         {
             RasterType = rasterType;
             Start = start;
             End = end;
-            PointsPerCellLat = pointsPerCellLat;
-            PointsPerCellLon = pointsPerCellLon;
+            PointsLat = pointsPerCellLat;
+            PointsLon = pointsPerCellLon;
         }
 
         public DemRasterType RasterType { get; }
 
-        public GeodeticCoordinates Start { get; }
+        public Coordinates Start { get; }
 
-        public GeodeticCoordinates End { get; }
+        public Coordinates End { get; }
 
-        public int PointsPerCellLat { get; }
+        public int PointsLat { get; }
 
-        public int PointsPerCellLon { get; }
+        public int PointsLon { get; }
     }
 }
