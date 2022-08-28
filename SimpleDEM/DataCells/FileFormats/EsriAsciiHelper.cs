@@ -113,14 +113,9 @@ namespace SimpleDEM.DataCells.FileFormats
                 throw new IOException("Missing xllcenter or xllcorner");
             }
 
-            return new DemDataCellMetadata(
-                type,
-                start,
-                new Coordinates(
-                    start.Latitude + cellsizeNum * nrowsNum,
-                    start.Longitude + cellsizeNum * ncolsNum),
-                nrowsNum,
-                ncolsNum);
+            var end = DemDataCellMetadata.EndFromResolution(start, type,  nrowsNum, ncolsNum, cellsizeNum, cellsizeNum);
+
+            return new DemDataCellMetadata(type, start, end, nrowsNum, ncolsNum);
         }
     }
 }

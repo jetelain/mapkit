@@ -6,6 +6,7 @@
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="BitMiracle.LibTiff.NET" Version="2.4.649" />
+		<PackageReference Include="GeoJSON.Text" Version="1.0.0" />
 		<PackageReference Include="System.Text.Json" Version="6.0.5" />
 		<PackageReference Include="ZstdSharp.Port" Version="0.6.3" />
 	</ItemGroup>

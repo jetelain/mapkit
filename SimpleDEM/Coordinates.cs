@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using GeoJSON.Text.Geometry;
 
 namespace SimpleDEM
 {
-    public class Coordinates : IEquatable<Coordinates>
+    public class Coordinates : IEquatable<Coordinates>, IPosition
     {
         [JsonConstructor]
         public Coordinates(double latitude, double longitude)
@@ -15,6 +16,8 @@ namespace SimpleDEM
         public double Latitude { get; }
 
         public double Longitude { get; }
+
+        public double? Altitude => null;
 
         public bool Equals(Coordinates? other)
         {
@@ -43,9 +46,33 @@ namespace SimpleDEM
 
         internal double Distance(Coordinates coordinates)
         {
+            return Math.Sqrt(DistanceSquared(coordinates));
+        }
+
+        internal double DistanceSquared(Coordinates coordinates)
+        {
             var dx = Latitude - coordinates.Latitude;
             var dy = Longitude - coordinates.Longitude;
-            return Math.Sqrt((dx * dx) + (dy * dy));
+            return (dx * dx) + (dy * dy);
+        }
+
+        internal const double DefaultThreshold = 0.000005; // Less than 1m at equator
+        internal const double DefaultThresholdSquared = DefaultThreshold * DefaultThreshold;
+
+        public bool AlmostEquals(Coordinates? other, double thresholdSqared = DefaultThresholdSquared)
+        {
+            if (other != null)
+            {
+                if (other.Latitude == Latitude && other.Longitude == Longitude)
+                {
+                    return true;
+                }
+                if (DistanceSquared(other) <= thresholdSqared)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool IsInSquare(Coordinates start, Coordinates end)

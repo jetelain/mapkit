@@ -89,5 +89,18 @@ namespace SimpleDEM.DataCells
         {
             return PixelFormat.Accept(visitor, this);
         }
+
+        public override IEnumerable<DemDataPoint> GetScanLine(int lat)
+        {
+            var realStartLat = Start.Latitude + (PixelSizeLat / 2);
+            var realStartLon = Start.Longitude + (PixelSizeLon / 2);
+            for (var lon = 0; lon < PointsLon; ++lon)
+            {
+                yield return new DemDataPoint(
+                    new Coordinates(realStartLat + (lat * PixelSizeLat),
+                    realStartLon + (lon * PixelSizeLon)),
+                    PixelFormat.ToDouble(Data[lat, lon]));
+            }
+        }
     }
 }

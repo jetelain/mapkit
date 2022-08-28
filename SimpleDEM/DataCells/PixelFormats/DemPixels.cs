@@ -9,7 +9,7 @@ namespace SimpleDEM.DataCells.PixelFormats
         {
             { typeof(float), new FloatPixel() },
             { typeof(short), new Int16Pixel() },
-            { typeof(short), new UInt16Pixel() },
+            { typeof(ushort), new UInt16Pixel() },
             { typeof(double), new DoublePixel() },
         };
 

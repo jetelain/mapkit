@@ -48,6 +48,8 @@ namespace SimpleDEM.DataCells
 
         internal abstract U Accept<U>(IDemDataCellVisitor<U> visitor);
 
+        public abstract IEnumerable<DemDataPoint> GetScanLine(int lat);
+
         double IDemDataCell.GetRawElevation(Coordinates coordinates)
         {
             return ToDouble(GetRawElevation(coordinates));
@@ -176,5 +178,9 @@ namespace SimpleDEM.DataCells
             }
         }
 
+        IDemDataCell IDemDataCell.Crop(Coordinates subStart, Coordinates subEnd)
+        {
+            return Crop(subStart, subEnd);
+        }
     }
 }

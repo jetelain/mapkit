@@ -25,5 +25,9 @@ namespace SimpleDEM.DataCells
         bool IsLocal(Coordinates coordinates);
 
         int SizeInBytes { get; }
+
+        IEnumerable<DemDataPoint> GetScanLine(int lat);
+
+        IDemDataCell Crop(Coordinates subStart, Coordinates subEnd);
     }
 }

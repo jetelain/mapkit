@@ -33,6 +33,15 @@ namespace SimpleDEM.DataCells
             PointsLon = pointsPerCellLon;
         }
 
+        internal static Coordinates EndFromResolution(Coordinates start, DemRasterType type, int height, int width, double latPx, double lonPx)
+        {
+            if (type == DemRasterType.PixelIsPoint)
+            {
+                return new Coordinates(start.Latitude + (latPx * (height - 1)), start.Longitude + (lonPx * (width - 1)));
+            }
+            return new Coordinates(start.Latitude + (latPx * height), start.Longitude + (lonPx * width));
+        }
+
         public DemRasterType RasterType { get; }
 
         public Coordinates Start { get; }

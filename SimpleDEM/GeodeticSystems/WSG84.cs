@@ -30,8 +30,6 @@ namespace SimpleDEM.GeodeticSystems
 
         public const double R = 6_371_008.771_415_059; // == (2 * A + B) / 3
 
-        private const double PIDiv180 = Math.PI / 180;
-
         /// <summary>
         /// Length of a degree of longitude (east–west distance)
         /// </summary>
@@ -40,9 +38,9 @@ namespace SimpleDEM.GeodeticSystems
         public static double Delta1Long(double lat)
         {
             // https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude
-            var ϕ = lat * PIDiv180;
+            var ϕ = lat * MathConstants.PIDiv180;
             // Use alternative formula, because it's 20% faster
-            return PIDiv180 * A * Math.Cos(Math.Atan(B / A * Math.Tan(ϕ)));
+            return MathConstants.PIDiv180 * A * Math.Cos(Math.Atan(B / A * Math.Tan(ϕ)));
         }
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace SimpleDEM.GeodeticSystems
         public static double Delta1Lat(double lat)
         {
             // https://en.wikipedia.org/wiki/Latitude#Meridian_distance_on_the_ellipsoid
-            var ϕ = lat * PIDiv180;
+            var ϕ = lat * MathConstants.PIDiv180;
             return 111132.954 - 559.822 * Math.Cos(2 * ϕ) + 1.175 * Math.Cos(4 * ϕ);
         }
 
@@ -67,10 +65,10 @@ namespace SimpleDEM.GeodeticSystems
         /// <returns></returns>
         public static double ApproximateDistance(Coordinates a, Coordinates b)
         {
-            var aLat = a.Latitude * PIDiv180;
-            var aLon = a.Longitude * PIDiv180;
-            var bLat = b.Latitude * PIDiv180;
-            var bLon = b.Longitude * PIDiv180;
+            var aLat = a.Latitude * MathConstants.PIDiv180;
+            var aLon = a.Longitude * MathConstants.PIDiv180;
+            var bLat = b.Latitude * MathConstants.PIDiv180;
+            var bLon = b.Longitude * MathConstants.PIDiv180;
             var x = Math.Pow(Math.Sin((bLat - aLat) / 2.0), 2.0) + Math.Cos(aLat) * Math.Cos(bLat) * Math.Pow(Math.Sin((bLon - aLon) / 2.0), 2.0);
             return R * (2.0 * Math.Atan2(Math.Sqrt(x), Math.Sqrt(1.0 - x)));
         }
