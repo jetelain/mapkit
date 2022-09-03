@@ -4,6 +4,8 @@ namespace SimpleDEM.GeodeticSystems
 {
     public class WSG84
     {
+        public const ushort EPSG = 4326;
+
         // https://fr.wikipedia.org/wiki/WGS_84
         // https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
 

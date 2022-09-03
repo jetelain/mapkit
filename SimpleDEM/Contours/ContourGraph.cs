@@ -99,7 +99,7 @@ namespace SimpleDEM.Contours
                 DemDataPoint? southWest = null;
                 DemDataPoint? northWest = null;
                 segments.Clear();
-                foreach (var point in cell.GetScanLine(lat).Zip(cell.GetScanLine(lat + 1), (south, north) => new { south, north }))
+                foreach (var point in cell.GetScanLine(lat, 0, cell.PointsLon).Zip(cell.GetScanLine(lat + 1, 0, cell.PointsLon), (south, north) => new { south, north }))
                 {
                     var southEast = point.south;
                     var northEast = point.north;

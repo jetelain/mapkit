@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es6",
+    "outFile": "../wwwroot/js/simpledem.js"
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ]
+}

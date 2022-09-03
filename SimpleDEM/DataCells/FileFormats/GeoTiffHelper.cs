@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
+using SimpleDEM.GeodeticSystems;
 
 namespace SimpleDEM.DataCells.FileFormats
 {
@@ -115,6 +116,13 @@ namespace SimpleDEM.DataCells.FileFormats
                     else if (valueOffset == 2)
                     {
                         raster = DemRasterType.PixelIsPoint;
+                    }
+                }
+                else if (keyID == 2048)
+                {
+                    if (valueOffset != WSG84.EPSG)
+                    {
+                        throw new IOException($"Only CRS/GCS EPSG:4326 (WSG84) is supported. File CRS/GCS is '{valueOffset}'");
                     }
                 }
             }

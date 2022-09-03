@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using SimpleDEM.DataCells.FileFormats;
 
@@ -79,7 +80,6 @@ namespace SimpleDEM.DataCells
         {
             ReadPrelude(reader);
             reader.ReadByte(); // dataType
-            reader.ReadByte(); // unused
             return new DemDataCellMetadata(reader);
         }
 
@@ -88,6 +88,9 @@ namespace SimpleDEM.DataCells
             ReadPrelude(reader);
             var dataType = reader.ReadByte();
             var metadata = new DemDataCellMetadata(reader);
+            reader.ReadInt32(); // Unused
+            reader.ReadInt32(); // Unused
+            Debug.Assert(reader.BaseStream.Position == 0x38);
             switch (dataType)
             {
                 case 0:
@@ -103,7 +106,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        private static void ReadPrelude(BinaryReader reader)
+        private static byte ReadPrelude(BinaryReader reader)
         {
             if (reader.ReadInt32() != MagicNumber)
             {
@@ -114,6 +117,8 @@ namespace SimpleDEM.DataCells
             {
                 throw new IOException($"Version {version} is not supported.");
             }
+            var subversion = reader.ReadByte();
+            return subversion;
         }
 
         private static DemDataCellBase<T> ReadData<T>(BinaryReader reader, DemDataCellMetadata metadata)

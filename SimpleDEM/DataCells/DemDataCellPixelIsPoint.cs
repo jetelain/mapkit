@@ -246,9 +246,10 @@ namespace SimpleDEM.DataCells
             return PixelFormat.Accept(visitor, this);
         }
 
-        public override IEnumerable<DemDataPoint> GetScanLine(int lat)
+        public override IEnumerable<DemDataPoint> GetScanLine(int lat, int lonSt, int count)
         {
-            for (var lon = 0; lon < PointsLon; ++lon)
+            var lonEnd = lonSt + count;
+            for (var lon = lonSt; lon < lonEnd; ++lon)
             {
                 yield return new DemDataPoint(
                     new Coordinates(Start.Latitude + (lat * PixelSizeLat),

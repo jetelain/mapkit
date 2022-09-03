@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text.Json.Serialization;
 
 namespace SimpleDEM.DataCells
@@ -7,6 +8,7 @@ namespace SimpleDEM.DataCells
     {
         internal DemDataCellMetadata(BinaryReader reader)
         {
+            Debug.Assert(reader.BaseStream.Position == 0x7);
             RasterType = (DemRasterType)reader.ReadByte();
             Start = new Coordinates(reader.ReadDouble(), reader.ReadDouble());
             End = new Coordinates(reader.ReadDouble(), reader.ReadDouble());

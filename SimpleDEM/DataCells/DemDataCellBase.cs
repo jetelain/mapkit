@@ -48,7 +48,7 @@ namespace SimpleDEM.DataCells
 
         internal abstract U Accept<U>(IDemDataCellVisitor<U> visitor);
 
-        public abstract IEnumerable<DemDataPoint> GetScanLine(int lat);
+        public abstract IEnumerable<DemDataPoint> GetScanLine(int lat, int lon, int count);
 
         double IDemDataCell.GetRawElevation(Coordinates coordinates)
         {
@@ -127,8 +127,8 @@ namespace SimpleDEM.DataCells
             target.Write(DemDataCell.MagicNumber);
 
             target.Write((byte)0x01);
-            target.Write(DemDataCell.GetDataTypeCode(typeof(T)));
             target.Write((byte)0x00);
+            target.Write(DemDataCell.GetDataTypeCode(typeof(T)));
             target.Write((byte)RasterType);
 
             target.Write(Start.Latitude);
@@ -138,6 +138,8 @@ namespace SimpleDEM.DataCells
 
             target.Write(PointsLat);
             target.Write(PointsLon);
+            target.Write(0);
+            target.Write(0);
 
             var bytes = new byte[Data.Length * Marshal.SizeOf<T>()];
             target.Write((uint)bytes.Length);

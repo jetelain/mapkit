@@ -26,7 +26,7 @@ namespace SimpleDEM.DataCells
 
         int SizeInBytes { get; }
 
-        IEnumerable<DemDataPoint> GetScanLine(int lat);
+        IEnumerable<DemDataPoint> GetScanLine(int lat, int lon, int count);
 
         IDemDataCell Crop(Coordinates subStart, Coordinates subEnd);
     }
