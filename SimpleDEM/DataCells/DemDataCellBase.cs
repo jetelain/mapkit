@@ -6,12 +6,12 @@ using SimpleDEM.DataCells.PixelFormats;
 
 namespace SimpleDEM.DataCells
 {
-    public abstract class DemDataCellBase<T> : IDemDataCell
-        where T : unmanaged
+    public abstract class DemDataCellBase<TPixel> : IDemDataCell
+        where TPixel : unmanaged
     {
-        internal static DemPixel<T> PixelFormat = DemPixels.Get<T>();
+        internal static DemPixel<TPixel> PixelFormat = DemPixels.Get<TPixel>();
 
-        public DemDataCellBase(Coordinates start, Coordinates end, T[,] data)
+        private protected DemDataCellBase(Coordinates start, Coordinates end, TPixel[,] data)
         {
             Start = start;
             End = end;
@@ -25,7 +25,7 @@ namespace SimpleDEM.DataCells
 
         public Coordinates End { get; }
 
-        public T[,] Data { get; }
+        public TPixel[,] Data { get; }
 
         public double SizeLat { get; }
         public double SizeLon { get; }
@@ -38,58 +38,69 @@ namespace SimpleDEM.DataCells
         public abstract double PixelSizeLat { get; }
         public abstract double PixelSizeLon { get; }
 
-        public int SizeInBytes => Data.Length * Marshal.SizeOf<T>();
+        public int SizeInBytes => Data.Length * Marshal.SizeOf<TPixel>();
 
-        public abstract T GetRawElevation(Coordinates coordinates);
+        public abstract TPixel GetRawElevation(Coordinates coordinates);
         public abstract IEnumerable<DemDataPoint> GetNearbyElevation(Coordinates coordinates);
         public abstract double GetLocalElevation(Coordinates coordinates, IInterpolation interpolation);
-        public abstract DemDataCellPixelIsPoint<T> AsPixelIsPoint();
-        public abstract DemDataCellPixelIsArea<T> AsPixelIsArea();
+        public abstract DemDataCellPixelIsPoint<TPixel> AsPixelIsPoint();
+        public abstract DemDataCellPixelIsArea<TPixel> AsPixelIsArea();
 
         internal abstract U Accept<U>(IDemDataCellVisitor<U> visitor);
 
-        public abstract IEnumerable<DemDataPoint> GetScanLine(int lat, int lon, int count);
+        public abstract IEnumerable<DemDataPoint> GetPointsOnParallel(int lat, int startLon, int count);
 
         double IDemDataCell.GetRawElevation(Coordinates coordinates)
         {
             return ToDouble(GetRawElevation(coordinates));
         }
 
-        public DemDataCellBase<T> Crop(Coordinates subStart, Coordinates subEnd)
+        public Coordinates PinToGridCeiling(Coordinates subStart)
         {
-            var realStart = new Coordinates(
+            return new Coordinates(
                 Start.Latitude + (Math.Ceiling((subStart.Latitude - Start.Latitude) / PixelSizeLat) * PixelSizeLat),
-                Start.Longitude + (Math.Ceiling((subStart.Longitude - Start.Longitude) / PixelSizeLon) * PixelSizeLon)
-                );
-
-            var realEnd = new Coordinates(
-                Start.Latitude + (Math.Floor((subEnd.Latitude - Start.Latitude) / PixelSizeLat) * PixelSizeLat),
-                Start.Longitude + (Math.Floor((subEnd.Longitude - Start.Longitude) / PixelSizeLon) * PixelSizeLon)
-                );
-
-            return CropExact(realStart, realEnd);
+                Start.Longitude + (Math.Ceiling((subStart.Longitude - Start.Longitude) / PixelSizeLon) * PixelSizeLon));
         }
 
-        protected abstract DemDataCellBase<T> CropExact(Coordinates realStart, Coordinates realEnd);
-
-        protected T[,] CropData(int startLat, int startLon, int countLat, int countLon)
+        public Coordinates PinToGridFloor(Coordinates subEnd)
         {
-            var subData = new T[countLat, countLon];
-            var sizeOfT = Marshal.SizeOf<T>();
-            var sizeOfCountLon = countLon * sizeOfT;
-            for (var latTarget = 0; latTarget < countLat; ++latTarget)
-            {
-                Buffer.BlockCopy(
-                    Data, 
-                    ((latTarget + startLat) * Data.GetLength(1) + startLon) * sizeOfT, 
-                    subData,
-                    latTarget * sizeOfCountLon,
-                    sizeOfCountLon);
-            }
+            return new Coordinates(
+                Start.Latitude + (Math.Floor((subEnd.Latitude - Start.Latitude) / PixelSizeLat) * PixelSizeLat),
+                Start.Longitude + (Math.Floor((subEnd.Longitude - Start.Longitude) / PixelSizeLon) * PixelSizeLon));
+        }
+
+        public DemDataCellBase<TPixel> Crop(Coordinates subStart, Coordinates subEnd)
+        {
+            return CropExact(PinToGridCeiling(subStart), PinToGridFloor(subEnd));
+        }
+
+        protected abstract DemDataCellBase<TPixel> CropExact(Coordinates realStart, Coordinates realEnd);
+
+        protected TPixel[,] CropData(int startLat, int startLon, int countLat, int countLon)
+        {
+            var subData = new TPixel[countLat, countLon];
+            CopyData(startLat, startLon, countLat, countLon, subData, 0, 0);
             return subData;
         }
 
-        protected double ToDouble(T t)
+        internal void CopyData(int startLat, int startLon, int countLat, int countLon, TPixel[,] target, int targetStartLat, int targetStartLon)
+        {
+            var sizeOfT = Marshal.SizeOf<TPixel>();
+            var lineSizeToCopy = countLon * sizeOfT;
+            var sourceOffset = (startLat * Data.GetLength(1) + startLon) * sizeOfT;
+            var sourceLineJump = Data.GetLength(1) * sizeOfT;
+            var targetOffset = (targetStartLat * target.GetLength(1) + targetStartLon) * sizeOfT;
+            var targetLineJump = target.GetLength(1) * sizeOfT;
+
+            for (var latOffset = 0; latOffset < countLat; ++latOffset)
+            {
+                Buffer.BlockCopy(Data, sourceOffset, target, targetOffset, lineSizeToCopy);
+                sourceOffset += sourceLineJump;
+                targetOffset += targetLineJump;
+            }
+        }
+
+        protected double ToDouble(TPixel t)
         {
             return PixelFormat.ToDouble(t);
         }
@@ -128,7 +139,7 @@ namespace SimpleDEM.DataCells
 
             target.Write((byte)0x01);
             target.Write((byte)0x00);
-            target.Write(DemDataCell.GetDataTypeCode(typeof(T)));
+            target.Write(DemDataCell.GetDataTypeCode(typeof(TPixel)));
             target.Write((byte)RasterType);
 
             target.Write(Start.Latitude);
@@ -141,7 +152,7 @@ namespace SimpleDEM.DataCells
             target.Write(0);
             target.Write(0);
 
-            var bytes = new byte[Data.Length * Marshal.SizeOf<T>()];
+            var bytes = new byte[Data.Length * Marshal.SizeOf<TPixel>()];
             target.Write((uint)bytes.Length);
             if (BitConverter.IsLittleEndian)
             {
@@ -156,7 +167,7 @@ namespace SimpleDEM.DataCells
 
         public abstract bool IsLocal(Coordinates coordinates);
 
-        internal void DownsampleCore(int factor, int maxLat, int maxLon, T[,] newData, T[] samples)
+        internal void DownsampleCore(int factor, int maxLat, int maxLon, TPixel[,] newData, TPixel[] samples)
         {
             for (var newLat = 0; newLat < maxLat; newLat++)
             {
@@ -169,7 +180,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        internal void FillSquareSamples(int factor, T[] samples, int startLat, int startLon)
+        internal void FillSquareSamples(int factor, TPixel[] samples, int startLat, int startLon)
         {
             for (var i = 0; i < factor; ++i)
             {
@@ -184,5 +195,17 @@ namespace SimpleDEM.DataCells
         {
             return Crop(subStart, subEnd);
         }
+
+        public DemDataView<TPixel> CreateView(Coordinates start, Coordinates end)
+        {
+            return new DemDataView<TPixel>(new[] { this }, start, end);
+        }
+
+        IDemDataView IDemDataView.CreateView(Coordinates start, Coordinates end)
+        {
+            return CreateView(start, end);
+        }
+
+        public abstract DemDataCellBase<TOtherPixel> ConvertToBase<TOtherPixel>() where TOtherPixel : unmanaged;
     }
 }

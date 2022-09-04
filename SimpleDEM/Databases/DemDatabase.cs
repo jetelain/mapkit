@@ -4,23 +4,29 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using SimpleDEM.DataCells;
 
 namespace SimpleDEM.Databases
 {
     public class DemDatabase
     {
+        private readonly IMemoryCache cache;
         private readonly IDemStorage storage;
-        private readonly List<DemDatabaseEntry> entries = new List<DemDatabaseEntry>(); // TODO: Use a spacial index
-
-        private readonly long maxBytes;
+        private readonly List<DemDatabaseEntry> entries = new List<DemDatabaseEntry>();
         private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
-        private long loadedBytes = 0;
 
-        public DemDatabase(IDemStorage storage, long maxBytes = 8_000_000_000)
+        public DemDatabase(IDemStorage storage, IMemoryCache cache)
         {
             this.storage = storage;
-            this.maxBytes = maxBytes;
+            this.cache = cache;
+            
+        }
+
+        public DemDatabase(IDemStorage storage)
+            : this(storage, new MemoryCache(new MemoryCacheOptions() { SizeLimit = 1_000_000_000, CompactionPercentage = 0.5 }))
+        {
+
         }
 
         public async Task LoadIndexAsync()
@@ -38,8 +44,11 @@ namespace SimpleDEM.Databases
 
         private async Task LoadIndexInternal()
         {
+            foreach(var entry in entries)
+            {
+                entry.UnLoad(cache);
+            }
             entries.Clear();
-            loadedBytes = 0;
             entries.AddRange((await storage.ReadIndex()).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata)));
         }
 
@@ -64,14 +73,22 @@ namespace SimpleDEM.Databases
 
         public async Task<List<IDemDataCell>> GetDataCellsAsync(Coordinates start, Coordinates end)
         {
-            await EnsureIndexIsLoadedAsync();
+            await EnsureIndexIsLoadedAsync().ConfigureAwait(false);
 
             var datas = new List<IDemDataCell>();
             foreach(var cell in entries.Where(e => e.Overlaps(start, end)))
             {
-                datas.Add(await GetDataAsync(cell));
+                datas.Add(await GetDataAsync(cell).ConfigureAwait(false));
             }
             return datas;
+        }
+
+        public async Task<DemDataView<TPixel>> CreateView<TPixel>(Coordinates start, Coordinates end)
+            where TPixel : unmanaged
+        {
+            var cells = await GetDataCellsAsync(start, end).ConfigureAwait(false);
+            var converted = cells.Select(c => c.To<TPixel>()).ToList();
+            return new DemDataView<TPixel>(converted, start, end);
         }
 
         public double GetElevation(Coordinates coordinates, IInterpolation interpolation)
@@ -132,24 +149,13 @@ namespace SimpleDEM.Databases
 
         private async Task<IDemDataCell> GetDataAsync(DemDatabaseEntry demDatabaseEntry)
         {
-            var data = demDatabaseEntry.PickData();
+            var data = demDatabaseEntry.PickData(cache);
             if (data == null)
             {
-                await semaphoreSlim.WaitAsync();
+                await semaphoreSlim.WaitAsync(); // loads only a cell a time
                 try
                 {
-                    data = await demDatabaseEntry.Load(storage);
-                    loadedBytes += data.SizeInBytes;
-
-                    while (loadedBytes >= maxBytes)
-                    {
-                        var older = entries.Where(d => d.Data != null).OrderBy(d => d.LastAccess).FirstOrDefault();
-                        if (older == null)
-                        {
-                            throw new InvalidOperationException("Memory limit reached, but no data loaded.");
-                        }
-                        loadedBytes -= older.UnLoad();
-                    }
+                    data = await demDatabaseEntry.Load(storage, cache).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -157,26 +163,6 @@ namespace SimpleDEM.Databases
                 }
             }
             return data;
-        }
-
-        public async Task ReleaseOlderDataAsync(TimeSpan timeSpan)
-        {
-            await semaphoreSlim.WaitAsync();
-            try
-            {
-                var old = DateTime.UtcNow.Add(timeSpan).Ticks;
-                foreach (var entry in entries)
-                {
-                    if (entry.Data != null && entry.LastAccess < old)
-                    {
-                        loadedBytes -= entry.UnLoad();
-                    }
-                }
-            }
-            finally
-            {
-                semaphoreSlim.Release();
-            }
         }
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace SimpleDEM.DataCells
 {
-    public sealed class DemDataCellPixelIsPoint<T>
-        : DemDataCellBase<T> where T : unmanaged
+    public sealed class DemDataCellPixelIsPoint<TPixel>
+        : DemDataCellBase<TPixel> where TPixel : unmanaged
     {
-        public DemDataCellPixelIsPoint(Coordinates start, Coordinates end, T[,] data)
+        public DemDataCellPixelIsPoint(Coordinates start, Coordinates end, TPixel[,] data)
             : base(start, end, data)
         {
             PixelSizeLat = SizeLat / (PointsLat - 1);
@@ -18,7 +18,7 @@ namespace SimpleDEM.DataCells
         public override double PixelSizeLat { get; }
         public override double PixelSizeLon { get; }
 
-        public override T GetRawElevation(Coordinates coordinates)
+        public override TPixel GetRawElevation(Coordinates coordinates)
         {
             var relLat = (int)Math.Round((coordinates.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
             var relLon = (int)Math.Round((coordinates.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
@@ -100,33 +100,33 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        public DemDataCellPixelIsPoint<U> ToType<U>() where U : unmanaged
+        public DemDataCellPixelIsPoint<TOtherPixel> ConvertTo<TOtherPixel>() where TOtherPixel : unmanaged
         {
-            return new DemDataCellPixelIsPoint<U>(Start, End, ConvertData<U>());
+            return new DemDataCellPixelIsPoint<TOtherPixel>(Start, End, ConvertData<TOtherPixel>());
         }
 
-        public override DemDataCellPixelIsArea<T> AsPixelIsArea()
+        public override DemDataCellPixelIsArea<TPixel> AsPixelIsArea()
         {
-            return new DemDataCellPixelIsArea<T>(
+            return new DemDataCellPixelIsArea<TPixel>(
                 new Coordinates(Start.Latitude - PixelSizeLat / 2, Start.Longitude - PixelSizeLon / 2),
                 new Coordinates(End.Latitude + PixelSizeLat / 2, End.Longitude + PixelSizeLon / 2),
                 Data);
         }
 
-        public override DemDataCellPixelIsPoint<T> AsPixelIsPoint()
+        public override DemDataCellPixelIsPoint<TPixel> AsPixelIsPoint()
         {
             return this;
         }
 
 
-        protected override DemDataCellBase<T> CropExact(Coordinates realStart, Coordinates realEnd)
+        protected override DemDataCellBase<TPixel> CropExact(Coordinates realStart, Coordinates realEnd)
         {
             var startRelLat = (int)Math.Round((realStart.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
             var startRelLon = (int)Math.Round((realStart.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
             var endRelLat = (int)Math.Round((realEnd.Latitude - Start.Latitude) / SizeLat * (PointsLat - 1));
             var endRelLon = (int)Math.Round((realEnd.Longitude - Start.Longitude) / SizeLon * (PointsLon - 1));
 
-            return new DemDataCellPixelIsPoint<T>(realStart, realEnd, CropData(startRelLat, startRelLon, endRelLat - startRelLat + 1, endRelLon - startRelLon + 1));
+            return new DemDataCellPixelIsPoint<TPixel>(realStart, realEnd, CropData(startRelLat, startRelLon, endRelLat - startRelLat + 1, endRelLon - startRelLon + 1));
         }
 
 
@@ -137,13 +137,13 @@ namespace SimpleDEM.DataCells
         }
 
 
-        public DemDataCellPixelIsPoint<T> Downsample(int factor, DemDataCellPixelIsPoint<T> north, DemDataCellPixelIsPoint<T> northEast, DemDataCellPixelIsPoint<T> east)
+        public DemDataCellPixelIsPoint<TPixel> Downsample(int factor, DemDataCellPixelIsPoint<TPixel> north, DemDataCellPixelIsPoint<TPixel> northEast, DemDataCellPixelIsPoint<TPixel> east)
         {
             var newPointsLat = ((PointsLat - 1) / factor) + 1;
             var newPointsLon = ((PointsLon - 1) / factor) + 1;
 
-            var newData = new T[newPointsLat, newPointsLon];
-            var samples = new T[factor * factor];
+            var newData = new TPixel[newPointsLat, newPointsLon];
+            var samples = new TPixel[factor * factor];
             var northLat = newPointsLat - 1;
             var eastLon = newPointsLon - 1;
 
@@ -155,10 +155,10 @@ namespace SimpleDEM.DataCells
 
             DownsampleNorthEastPoint(factor, northEast, newData, samples, northLat, eastLon);
 
-            return new DemDataCellPixelIsPoint<T>(Start, End, newData);
+            return new DemDataCellPixelIsPoint<TPixel>(Start, End, newData);
         }
 
-        private void DownsampleNorthEastPoint(int factor, DemDataCellPixelIsPoint<T> northEast, T[,] newData, T[] samples, int northLat, int eastLon)
+        private void DownsampleNorthEastPoint(int factor, DemDataCellPixelIsPoint<TPixel> northEast, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (northEast != null)
             {
@@ -175,7 +175,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        private void DownsampleEastEdge(int factor, DemDataCellPixelIsPoint<T> east, T[,] newData, T[] samples, int northLat, int eastLon)
+        private void DownsampleEastEdge(int factor, DemDataCellPixelIsPoint<TPixel> east, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (east != null)
             {
@@ -191,7 +191,7 @@ namespace SimpleDEM.DataCells
             }
             else
             {
-                var samplesLine = new T[factor];
+                var samplesLine = new TPixel[factor];
                 for (var newLat = 0; newLat < northLat; newLat++)
                 {
                     FillSamplesLat(samplesLine, newLat * 3, eastLon);
@@ -200,7 +200,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        private void DownsampleNorthEdge(int factor, DemDataCellPixelIsPoint<T> north, T[,] newData, T[] samples, int northLat, int eastLon)
+        private void DownsampleNorthEdge(int factor, DemDataCellPixelIsPoint<TPixel> north, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (north != null)
             {
@@ -216,7 +216,7 @@ namespace SimpleDEM.DataCells
             }
             else
             {
-                var samplesLine = new T[factor];
+                var samplesLine = new TPixel[factor];
                 for (var newLon = 0; newLon < eastLon; newLon++)
                 {
                     FillSamplesLon(samplesLine, northLat, newLon * 3);
@@ -225,7 +225,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        private void FillSamplesLat(T[] samples, int startLat, int lon)
+        private void FillSamplesLat(TPixel[] samples, int startLat, int lon)
         {
             for (var i = 0; i < samples.Length; ++i)
             {
@@ -233,7 +233,7 @@ namespace SimpleDEM.DataCells
             }
         }
 
-        private void FillSamplesLon(T[] samples, int lat, int startLon)
+        private void FillSamplesLon(TPixel[] samples, int lat, int startLon)
         {
             for (var i = 0; i < samples.Length; ++i)
             {
@@ -246,16 +246,21 @@ namespace SimpleDEM.DataCells
             return PixelFormat.Accept(visitor, this);
         }
 
-        public override IEnumerable<DemDataPoint> GetScanLine(int lat, int lonSt, int count)
+        public override IEnumerable<DemDataPoint> GetPointsOnParallel(int lat, int startLon, int count)
         {
-            var lonEnd = lonSt + count;
-            for (var lon = lonSt; lon < lonEnd; ++lon)
+            var lonEnd = startLon + count;
+            for (var lon = startLon; lon < lonEnd; ++lon)
             {
                 yield return new DemDataPoint(
                     new Coordinates(Start.Latitude + (lat * PixelSizeLat),
                     Start.Longitude + (lon * PixelSizeLon)),
                     PixelFormat.ToDouble(Data[lat, lon]));
             }
+        }
+
+        public override DemDataCellBase<TOtherPixel> ConvertToBase<TOtherPixel>()
+        {
+            return ConvertTo<TOtherPixel>();
         }
     }
 }

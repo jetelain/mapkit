@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using SimpleDEM.DataCells;
 
 namespace SimpleDEM.Databases
@@ -16,16 +15,6 @@ namespace SimpleDEM.Databases
         public string Path { get; }
 
         public IDemDataCellMetadata Metadata { get; }
-
-        public IDemDataCell? Data { get; private set; }
-
-        private long lastAccess;
-
-        public long LastAccess
-        {
-            get { return Interlocked.Read(ref lastAccess); }
-            private set { Interlocked.Exchange(ref lastAccess, lastAccess = value); }
-        }
 
         public bool Contains(Coordinates coordinates)
         {
@@ -43,34 +32,19 @@ namespace SimpleDEM.Databases
                     Metadata.End.Longitude >= start.Longitude;
         }
 
-        private void SetLastAccess()
+        public Task<IDemDataCell> Load(IDemStorage storage, IMemoryCache memoryCache)
         {
-            LastAccess = DateTime.UtcNow.Ticks;
+            return memoryCache.GetOrCreateAsync(this, e => storage.Load(Path));
         }
 
-        public async Task<IDemDataCell> Load(IDemStorage storage)
+        public IDemDataCell? PickData(IMemoryCache memoryCache)
         {
-            var data = await storage.Load(Path);
-            SetLastAccess();
-            Data = data;
-            return data;
+            return memoryCache.Get<IDemDataCell>(this);
         }
 
-        public IDemDataCell? PickData()
+        public void UnLoad(IMemoryCache memoryCache)
         {
-            var data = Data;
-            if (data != null)
-            {
-                SetLastAccess();
-            }
-            return data;
-        }
-
-        public int UnLoad()
-        {
-            var bytes = Data?.SizeInBytes ?? 0;
-            Data = null;
-            return bytes;
+            memoryCache.Remove(this);
         }
     }
 }

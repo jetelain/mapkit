@@ -27,6 +27,7 @@ namespace SimpleDEM.Contours
 
         public bool IsDiscarded => IsClosed && Points.Count == 0;
 
+
         internal bool TryAdd(ContourSegment segment, double thresholdSqared = Coordinates.DefaultThresholdSquared)
         {
             if (IsClosed || segment.Level != Level)
@@ -57,7 +58,7 @@ namespace SimpleDEM.Contours
             return true;
         }
 
-        internal bool TryMerge(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        internal bool TryMerge(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared, bool log = false)
         {
             if (IsClosed || other.IsClosed || other.Level != Level || other == this)
             {
@@ -65,18 +66,44 @@ namespace SimpleDEM.Contours
             }
             if (Last.AlmostEquals(other.First, thresholdSqared))
             {
+                if (log)
+                {
+
+                }
+
                 Points.AddRange(other.Points.Skip(1));
                 other.Discard();
             }
             else if (Last.AlmostEquals(other.Last, thresholdSqared))
             {
+                if (log)
+                {
+
+                }
+
                 other.Points.Reverse(); // other.Last becomes other.First
                 Points.AddRange(other.Points.Skip(1));
                 other.Discard();
             }
             else if (First.AlmostEquals(other.First, thresholdSqared))
             {
+                if (log)
+                {
+
+
+                }
                 Points.Reverse(); // First becomes Last
+                Points.AddRange(other.Points.Skip(1));
+                other.Discard();
+            }
+            else if (First.AlmostEquals(other.Last, thresholdSqared))
+            {
+                if (log)
+                {
+
+                }
+                Points.Reverse(); // First becomes Last
+                other.Points.Reverse(); // First becomes Last
                 Points.AddRange(other.Points.Skip(1));
                 other.Discard();
             }

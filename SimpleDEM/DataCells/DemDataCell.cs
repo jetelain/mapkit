@@ -9,6 +9,12 @@ namespace SimpleDEM.DataCells
     {
         public const string Extension = ".ddc";
 
+        public static DemDataCellBase<TPixel> To<TPixel>(this IDemDataCell cell)
+            where TPixel : unmanaged
+        {
+            return (cell as DemDataCellBase<TPixel>) ?? cell.ConvertToBase<TPixel>();
+        }
+
         public static bool IsDemDataCellFile(string file)
         {
             var ext = CompressionHelper.GetExtension(file);
@@ -16,7 +22,7 @@ namespace SimpleDEM.DataCells
             return ext == Extension || ext == SRTMHelper.Extension || ext == GeoTiffHelper.Extension || ext == EsriAsciiHelper.Extension;
         }
 
-        public static IDemDataCell Load(string file)
+        public static IDemDataCell Load(string file, IProgress<double>? progress = null)
         {
             var ext = CompressionHelper.GetExtension(file);
             if (ext == SRTMHelper.Extension)
@@ -29,7 +35,7 @@ namespace SimpleDEM.DataCells
             }
             if (ext == EsriAsciiHelper.Extension)
             {
-                return EsriAsciiHelper.LoadDataCell(file);
+                return EsriAsciiHelper.LoadDataCell(file, progress);
             }
             if (ext == Extension)
             {

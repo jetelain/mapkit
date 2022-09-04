@@ -15,18 +15,20 @@ namespace SimpleDEM.DataCells.FileFormats
             return CompressionHelper.Read(filepath, stream => LoadDataCellMetadata(new StreamReader(stream, Encoding.UTF8, false, 4096, true), out _));
         }
 
-        public static DemDataCellBase<float> LoadDataCell(string filepath)
+        public static DemDataCellBase<float> LoadDataCell(string filepath, IProgress<double>? progress = null)
         {
-            return CompressionHelper.Read(filepath, stream => LoadDataCell(new StreamReader(stream, Encoding.UTF8, false, 4096, true)));
+            return CompressionHelper.Read(filepath, stream => LoadDataCell(new StreamReader(stream, Encoding.UTF8, false, 10240, true), progress));
         }
 
-        private static DemDataCellBase<float> LoadDataCell(StreamReader streamReader)
+        private static DemDataCellBase<float> LoadDataCell(StreamReader streamReader, IProgress<double>? progress = null)
         {
             var metadata = LoadDataCellMetadata(streamReader, out var nodata);
             var data = new float[metadata.PointsLat, metadata.PointsLon];
             var buffer = new StringBuilder(16);
             var lat = metadata.PointsLat - 1; // "Row 1 of the data is at the top of the raster"
             var lon = 0;
+            var read = 0;
+            var total = metadata.PointsLat;
             while (lat >= 0)
             {
                 var c = streamReader.Read();
@@ -46,7 +48,13 @@ namespace SimpleDEM.DataCells.FileFormats
                         {
                             lat--;
                             lon = 0;
+                            if (progress != null)
+                            {
+                                read++;
+                                progress.Report(read * 100.0 / total);
+                            }
                         }
+                        
                     }
                 }
                 else

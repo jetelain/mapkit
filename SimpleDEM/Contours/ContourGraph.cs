@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using GeoJSON.Text.Feature;
 using GeoJSON.Text.Geometry;
 using SimpleDEM.DataCells;
@@ -52,35 +49,35 @@ namespace SimpleDEM.Contours
             }
             return currentScanIndex;
         }
+        private static readonly Coordinates A = new Coordinates(330, 13661.818181818182);
 
-        private ContourLine AddSegment(ContourSegment segment, LinesByElevation prevScan, LinesByElevation currentScan)
+        private ContourLine AddSegment(ContourSegment segment, LinesByElevation previousParallel, LinesByElevation currentParallel)
         {
-            if (currentScan.TryGetValue((int)segment.Level, out var currentLines))
+            var segmentKey = (int)segment.Level;
+
+            if (currentParallel.TryGetValue(segmentKey, out var currentLines))
             {
-                var prev = currentLines[currentLines.Count - 1];
-                if (prev.TryAdd(segment))
+                var lastest = currentLines.AsEnumerable().Reverse().Take(5);
+                foreach (var prev in lastest)
                 {
-                    if (prevScan.TryGetValue((int)segment.Level, out var prevLinesX))
+                    if (prev.TryAdd(segment))
                     {
-                        foreach (var line in prevLinesX)
+                        var merged = Merge(prev, lastest);
+                        if (previousParallel.TryGetValue(segmentKey, out var prevLinesX))
                         {
-                            if (line != prev && line.TryMerge(prev, thresholdSqared))
-                            {
-                                return line;
-                            }
+                            return Merge(merged, prevLinesX);
                         }
+                        return merged;
                     }
-                    return prev;
                 }
             }
-            if (prevScan.TryGetValue((int)segment.Level, out var prevLines))
+            if (previousParallel.TryGetValue(segmentKey, out var prevLines))
             {
                 foreach (var line in prevLines)
                 {
                     if (line.TryAdd(segment, thresholdSqared))
                     {
-                        // XXX: segment may merge with an other line
-                        return line;
+                        return Merge(line, prevLines);
                     }
                 }
             }
@@ -89,7 +86,19 @@ namespace SimpleDEM.Contours
             return newLine;
         }
 
-        public void Add(IDemDataCell cell, ContourLevelGenerator generator, IProgress<double>? progress = null)
+        private ContourLine Merge(ContourLine editedLine, IEnumerable<ContourLine> parallel)
+        {
+            foreach (var line in parallel)
+            {
+                if (line != editedLine && line.TryMerge(editedLine, thresholdSqared))
+                {
+                    return line;
+                }
+            }
+            return editedLine;
+        }
+
+        public void Add(IDemDataView cell, ContourLevelGenerator generator, IProgress<double>? progress = null)
         {
             var prevScan = new LinesByElevation();
             var segments = new List<ContourSegment>();
@@ -99,7 +108,7 @@ namespace SimpleDEM.Contours
                 DemDataPoint? southWest = null;
                 DemDataPoint? northWest = null;
                 segments.Clear();
-                foreach (var point in cell.GetScanLine(lat, 0, cell.PointsLon).Zip(cell.GetScanLine(lat + 1, 0, cell.PointsLon), (south, north) => new { south, north }))
+                foreach (var point in cell.GetPointsOnParallel(lat, 0, cell.PointsLon).Zip(cell.GetPointsOnParallel(lat + 1, 0, cell.PointsLon), (south, north) => new { south, north }))
                 {
                     var southEast = point.south;
                     var northEast = point.north;
@@ -133,12 +142,13 @@ namespace SimpleDEM.Contours
 
             var initialCount = Count;
             var done = 0;
+            var merged = 0;
             Parallel.ForEach(linesByLevel.Values, lines =>
             {
                 var initial = lines.Count;
                 var toKeepAsIs = lines.Where(l => l.IsClosed && !l.IsDiscarded).ToArray();
                 var toAnalyse = lines.Where(l => !l.IsClosed).ToArray();
-                for(var i = 0; i < toAnalyse.Length; ++i)
+                for (var i = 0; i < toAnalyse.Length; ++i)
                 {
                     var a = toAnalyse[i];
                     if (!a.IsClosed)
@@ -150,7 +160,10 @@ namespace SimpleDEM.Contours
                                 var b = toAnalyse[j];
                                 if (!b.IsClosed)
                                 {
-                                    a.TryMerge(b, thresholdSqared);
+                                    if (a.TryMerge(b, thresholdSqared, true))
+                                    {
+                                        Interlocked.Increment(ref merged);
+                                    }
                                 }
                             }
                         }
@@ -163,6 +176,7 @@ namespace SimpleDEM.Contours
                 progress?.Report((double)total / initialCount * 100d);
             });
             progress?.Report(100d);
+            Console.WriteLine("Merged => " + merged);
         }
 
         public IEnumerable<Feature> ToGeoJsonFeatures(int rounding = -1)

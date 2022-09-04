@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SimpleDEM.DataCells
 {
-    public interface IDemDataCell : IDemDataCellMetadata
+    public interface IDemDataCell : IDemDataCellMetadata, IDemDataView
     {
         void Save(Stream target);
 
@@ -26,8 +26,8 @@ namespace SimpleDEM.DataCells
 
         int SizeInBytes { get; }
 
-        IEnumerable<DemDataPoint> GetScanLine(int lat, int lon, int count);
-
         IDemDataCell Crop(Coordinates subStart, Coordinates subEnd);
+
+        DemDataCellBase<TPixel> ConvertToBase<TPixel>() where TPixel : unmanaged;
     }
 }
