@@ -12,15 +12,15 @@ namespace SimpleDEM.Contours
     {
         private const string SvgXmlns = "http://www.w3.org/2000/svg";
 
-        public void WriteSVG(TextWriter writer, ContourGraph graph, IProjectionArea projection)
+        public void WriteSVG(TextWriter writer, ContourGraph graph, IProjectionArea projection, string? hillshadeFile = null)
         {
             using (var xml = XmlWriter.Create(writer))
             {
-                WriteSVG(xml, graph, projection);
+                WriteSVG(xml, graph, projection, hillshadeFile);
             }
         }
 
-        public void WriteSVG(XmlWriter writer, ContourGraph graph, IProjectionArea projection)
+        public void WriteSVG(XmlWriter writer, ContourGraph graph, IProjectionArea projection, string? hillshadeFile = null)
         {
             var minLat = graph.Lines.SelectMany(l => l.Points).Min(p => p.Latitude);
             var minLon = graph.Lines.SelectMany(l => l.Points).Min(p => p.Longitude);
@@ -62,6 +62,17 @@ namespace SimpleDEM.Contours
 ");
             writer.WriteEndElement();
             writer.WriteString(Environment.NewLine);
+
+            if (!string.IsNullOrEmpty(hillshadeFile))
+            {
+                writer.WriteStartElement("image", SvgXmlns);
+                writer.WriteAttributeString("href", hillshadeFile);
+                writer.WriteAttributeString("width", $"{projection.Size.X}");
+                writer.WriteAttributeString("height", $"{projection.Size.Y}");
+                writer.WriteAttributeString("opacity", "0.2");
+                writer.WriteEndElement();
+            }
+
             int id = 0;
 
             foreach (var line in graph.Lines)
