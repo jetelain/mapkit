@@ -7,9 +7,9 @@ namespace SimpleDEM.Hillshading
         private readonly GradientBase gradient;
         private readonly double azimuthRad;
 
-        public HillshaderIgor(double azimuth = 315, double factor = 0.5)
+        public HillshaderIgor(Vector? resolution = null, double azimuth = 315, double factor = 1)
         {
-            gradient = new Horn(factor);
+            gradient = new Horn(resolution ?? Vector.One, factor);
             azimuthRad = azimuth * Math.PI / 180.0;
         }
 

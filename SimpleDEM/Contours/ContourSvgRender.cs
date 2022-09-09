@@ -10,7 +10,7 @@ namespace SimpleDEM.Contours
 {
     public class ContourSvgRender
     {
-        private const string SvgXmlns = "http://www.w3.org/2000/svg";
+        public const string SvgXmlns = "http://www.w3.org/2000/svg";
 
         public void WriteSVG(TextWriter writer, ContourGraph graph, IProjectionArea projection, string? hillshadeFile = null)
         {
@@ -22,27 +22,17 @@ namespace SimpleDEM.Contours
 
         public void WriteSVG(XmlWriter writer, ContourGraph graph, IProjectionArea projection, string? hillshadeFile = null)
         {
-            var minLat = graph.Lines.SelectMany(l => l.Points).Min(p => p.Latitude);
-            var minLon = graph.Lines.SelectMany(l => l.Points).Min(p => p.Longitude);
-            var maxLat = graph.Lines.SelectMany(l => l.Points).Max(p => p.Latitude);
-            var maxLon = graph.Lines.SelectMany(l => l.Points).Max(p => p.Longitude);
-
-            /*
-<filter id="blur">
-  <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#fff" />
-</filter>
-<style>
-.lt { font: 18px "Gill Sans Extrabold",sans-serif; font-weight:bolder ; fill:#B29A94; filter:url(#blur);  }
-.ls { fill: none; stroke: #D4C5BF; stroke-width: 2; }
-.lm { fill: none; stroke: #B29A94; stroke-width: 2; }
-</style>
-            */
-
             writer.WriteStartElement("svg", SvgXmlns);
             writer.WriteAttributeString("viewBox", FormattableString.Invariant($"0 0 {projection.Size.X} {projection.Size.Y}"));
 
             writer.WriteString(Environment.NewLine);
+            WriteSVGContent(writer, graph, projection, hillshadeFile);
 
+            writer.WriteEndElement();
+        }
+
+        public void WriteSVGContent(XmlWriter writer, ContourGraph graph, IProjectionArea projection, string? hillshadeFile)
+        {
             writer.WriteStartElement("filter", SvgXmlns);
             writer.WriteAttributeString("id", "blur");
             writer.WriteStartElement("feDropShadow", SvgXmlns);
@@ -69,7 +59,7 @@ namespace SimpleDEM.Contours
                 writer.WriteAttributeString("href", hillshadeFile);
                 writer.WriteAttributeString("width", $"{projection.Size.X}");
                 writer.WriteAttributeString("height", $"{projection.Size.Y}");
-                writer.WriteAttributeString("opacity", "0.2");
+                writer.WriteAttributeString("opacity", "0.5");
                 writer.WriteEndElement();
             }
 
@@ -88,9 +78,6 @@ namespace SimpleDEM.Contours
                 id++;
                 writer.WriteString(Environment.NewLine);
             }
-
-
-            writer.WriteEndElement();
         }
 
         private static void RenderLine(XmlWriter writer, IProjectionArea projection, ContourLine line)
@@ -180,30 +167,6 @@ namespace SimpleDEM.Contours
 
                 subid++;
             }
-            /*  <path id="MyPath" fill="none" stroke="red"
-        d="M10,90 Q90,90 90,45 Q90,10 50,10 Q10,10 10,40 Q10,70 45,70 Q70,70 75,50" />
-  <!-- </defs> -->
-
-  <text>
-    <textPath href="#MyPath">
-      Quick brown fox jumps over the lazy dog.
-    </textPath>
-  </text>*/
-            /*  
-             *  
-<path id="MyPath" fill="none" stroke="red"
-        d="M10,90 Q90,90 90,45 Q90,10 50,10 Q10,10 10,40 Q10,70 45,70 Q70,70 75,50" />
-  <!-- </defs> -->
-
-  <text>
-    <textPath href="#MyPath">
-      Quick brown fox jumps over the lazy dog.
-    </textPath>
-  </text>
-            
-             
-             */
-
         }
 
         private static void GeneratePath(StringBuilder sb, IReadOnlyList<Vector> points)

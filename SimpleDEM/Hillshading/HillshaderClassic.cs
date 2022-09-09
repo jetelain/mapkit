@@ -9,7 +9,7 @@ namespace SimpleDEM.Hillshading
         private readonly double zenithSin;
         private readonly double azimuthRad;
 
-        public HillshaderClassic(double elevation = 35, double azimuth = 315, double factor = 0.2)
+        public HillshaderClassic(Vector? resolution = null, double elevation = 35, double azimuth = 315, double factor = 1)
         {
             var zenithRad = (90.0 - elevation) * Math.PI / 180.0;
             zenithCos = Math.Cos(zenithRad);
@@ -22,7 +22,7 @@ namespace SimpleDEM.Hillshading
             }
             azimuthRad = azimuthMath * Math.PI / 180.0;
 
-            this.gradient = new Horn(factor);
+            this.gradient = new Horn(resolution ?? Vector.One, factor);
         }
 
         protected override double Flat => zenithCos;

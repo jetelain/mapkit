@@ -4,8 +4,8 @@ namespace SimpleDEM.Hillshading
 {
     public sealed class Horn : GradientBase
     {
-        public Horn(double factor = 1) 
-            : base(factor, 8)
+        public Horn(Vector resolution, double factor = 1) 
+            : base(resolution, factor, 8)
         {
 
         }

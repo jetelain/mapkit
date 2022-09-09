@@ -16,12 +16,28 @@ namespace SimpleDEM.Hillshading
         public Image<L8> GetPixelsBelowFlat(IDemDataView cell, IProgress<double>? progress = null)
         {
             var flat = Flat;
-            if ( flat == 1)
+            if (flat == 1)
             {
                 return GetPixels(cell, progress);
             }
             var scale = 255 / flat;
             return GetPixels(cell, v => v >= flat ? new L8(255) : new L8((byte)(v * scale)), progress);
+        }
+
+        public Image<La16> GetPixelsAlpha(IDemDataView cell, IProgress<double>? progress = null)
+        {
+            return GetPixels(cell, v => new La16(0, (byte)(255 - (255 * v))), progress);
+        }
+
+        public Image<La16> GetPixelsAlphaBelowFlat(IDemDataView cell, IProgress<double>? progress = null)
+        {
+            var flat = Flat;
+            if (flat == 1)
+            {
+                return GetPixelsAlpha(cell, progress);
+            }
+            var scale = 255 / flat;
+            return GetPixels(cell, v => v >= flat ? new La16(0, 0) : new La16(0,(byte)(255 - (v * scale))), progress);
         }
 
         public Image<TPixel> GetPixels<TPixel>(IDemDataView cell, Func<double,TPixel> luminanceToPixel, IProgress<double>? progress = null)

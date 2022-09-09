@@ -5,8 +5,8 @@ namespace SimpleDEM.Hillshading
     public sealed class ZevenbergenThorne : GradientBase
     {
 
-        public ZevenbergenThorne(double factor = 1)
-            : base(factor, 2)
+        public ZevenbergenThorne(Vector resolution, double factor = 1)
+            : base(resolution, factor, 2)
         {
 
         }
