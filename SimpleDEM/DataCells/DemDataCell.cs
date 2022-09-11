@@ -107,6 +107,8 @@ namespace SimpleDEM.DataCells
                     return ReadData<ushort>(reader, metadata);
                 case 3:
                     return ReadData<double>(reader, metadata);
+                case 4:
+                    return ReadData<int>(reader, metadata);
                 default:
                     throw new IOException($"{dataType} is not a valid data type.");
             }
@@ -183,6 +185,10 @@ namespace SimpleDEM.DataCells
             if (t == typeof(double))
             {
                 return 3;
+            }
+            if (t == typeof(int))
+            {
+                return 4;
             }
             throw new ArgumentException();
         }

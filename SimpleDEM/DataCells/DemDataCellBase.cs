@@ -125,6 +125,11 @@ namespace SimpleDEM.DataCells
             return stream.ToArray();
         }
 
+        public void Save(string target)
+        {
+            Save(File.Create(target));
+        }
+
         public void Save(Stream target)
         {
             using (var writer = new BinaryWriter(target))

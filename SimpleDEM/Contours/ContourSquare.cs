@@ -29,7 +29,7 @@ namespace SimpleDEM.Contours
             this.northEast = northEast;
         }
 
-        public IEnumerable<ContourSegment> Segments(ContourLevelGenerator generator)
+        public IEnumerable<ContourSegment> Segments(IContourLevelGenerator generator)
         {
             // TODO: Take care of NaN
             var elevations = new[] { northWest.Elevation, southWest.Elevation, southEast.Elevation, northEast.Elevation };
@@ -40,49 +40,92 @@ namespace SimpleDEM.Contours
 
         private IEnumerable<ContourSegment> SegmentsForLevel(double level)
         {
-            switch (GetMarchingSquareCase(level))
+            var kind = GetMarchingSquareCase(level);
+            switch (kind)
             {
                 case NorthWestBit:
-                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateWestBorder(level), level);
+                    // 1 0
+                    // 0 0
+                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateNorthBorder(level), level, kind);
                     break;
                 case SouthWestBit:
-                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateSouthBorder(level), level);
+                    // 0 0
+                    // 1 0
+                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateWestBorder(level), level, kind);
                     break;
                 case SouthEastBit:
-                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateEastBorder(level), level);
+                    // 0 0
+                    // 0 1
+                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateSouthBorder(level), level, kind);
                     break;
                 case NorthEastBit:
-                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateNorthBorder(level), level);
+                    // 0 1
+                    // 0 0
+                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateEastBorder(level), level, kind);
                     break;
                 case 0b0011: // NorthWestBit | SouthWestBit
-                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateSouthBorder(level), level);
+                    // 1 0
+                    // 1 0
+                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateNorthBorder(level), level, kind);
                     break;
                 case 0b0110: // SouthWestBit | SouthEastBit
-                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateEastBorder(level), level);
+                    // 0 0
+                    // 1 1
+                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateWestBorder(level), level, kind);
                     break;
                 case 0b1100: // SouthEastBit | NorthEastBit
-                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateNorthBorder(level), level);
+                    // 0 1
+                    // 0 1
+                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateSouthBorder(level), level, kind);
                     break;
                 case 0b1001: // NorthWestBit | NorthEastBit
-                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateWestBorder(level), level);
+                    // 1 1
+                    // 0 0
+                    yield return new ContourSegment( InterpolateWestBorder(level), InterpolateEastBorder(level), level, kind);
                     break;
                 case 0b1110: // Reverse NorthWestBit
-                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateNorthBorder(level), level);
+                    // 0 1
+                    // 1 1
+                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateWestBorder(level), level, kind);
                     break;
                 case 0b1101: // Reverse SouthWestBit
-                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateWestBorder(level), level);
+                    // 1 1
+                    // 0 1
+                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateSouthBorder(level), level, kind);
                     break;
                 case 0b1011: // Reverse SouthEastBit
-                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateSouthBorder(level), level);
+                    // 1 1
+                    // 1 0
+                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateEastBorder(level), level, kind) ;
                     break;
                 case 0b0111: // Reverse NorthEastBit
-                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateEastBorder(level), level);
+                    // 1 0
+                    // 1 1
+                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateNorthBorder(level), level, kind);
                     break;
-                case 0b0101: // Saddle North-East
-                case 0b1010: // Saddle North-West
-                    // Behave like gdal reference implementaton
-                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateSouthBorder(level), level);
-                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateNorthBorder(level), level);
+                case 0b0101: // Saddle North-East : WN+ES or WS+EN
+                    // 1 0
+                    // 0 1
+                    var h = new ContourHypothesis();
+
+                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateNorthBorder(level), level, kind, h, 1);
+                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateSouthBorder(level), level, kind, h, 1);
+
+                    yield return new ContourSegment(InterpolateWestBorder(level), InterpolateSouthBorder(level), level, kind, h, 2);
+                    yield return new ContourSegment(InterpolateEastBorder(level), InterpolateNorthBorder(level), level, kind, h, 2);
+
+                    break;
+                case 0b1010: // Saddle North-West : NW+SE or NE+SW
+                    // 0 1
+                    // 1 0
+                    h = new ContourHypothesis();
+
+                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateWestBorder(level), level, kind, h, 1);
+                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateEastBorder(level), level, kind, h, 1);
+
+                    yield return new ContourSegment(InterpolateNorthBorder(level), InterpolateEastBorder(level), level, kind, h, 2);
+                    yield return new ContourSegment(InterpolateSouthBorder(level), InterpolateWestBorder(level), level, kind, h, 2);
+
                     break;
                 case 0b0000: // None above level
                 case 0b1111: // All above level

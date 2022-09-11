@@ -36,28 +36,60 @@ namespace SimpleDEM.Contours
         {
             var currentScan = new HashSet<ContourLine>();
             var currentScanIndex = new LinesByElevation();
-            ContourLine prevLine;
+
+            var unknownHypothesis = AddSegments(segments.Where(s => !s.Point1.AlmostEquals(s.Point2, thresholdSqared)), prevScan, currentScan, currentScanIndex);
+
+            if (unknownHypothesis.Count > 0)
+            {
+                var remain = AddSegments(unknownHypothesis, prevScan, currentScan, currentScanIndex);
+                var remain2 = AddSegments(remain, prevScan, currentScan, currentScanIndex);
+                var remain3 = AddSegments(remain2, prevScan, currentScan, currentScanIndex);
+
+                if (remain3.Count > 0)
+                {
+                    // Give up, keep first hypothesis
+                    // might create some issues in generated graph
+                    foreach (var x in remain3)
+                    {
+                        if (x.IsValidHypothesis)
+                        {
+                            x.ValidateHypothesis();
+                        }
+                    }
+                    AddSegments(remain3, prevScan, currentScan, currentScanIndex);
+                }
+            }
+            return currentScanIndex;
+        }
+
+        private List<ContourSegment> AddSegments(IEnumerable<ContourSegment> segments, LinesByElevation prevScan, HashSet<ContourLine> currentScan, LinesByElevation currentScanIndex)
+        {
+            var unknownHypothesis = new List<ContourSegment>();
             foreach (var segment in segments)
             {
-                if (!segment.Point1.AlmostEquals(segment.Point2, thresholdSqared)) // filters bad segments
+                if (segment.IsValidHypothesis)
                 {
-                    if (currentScan.Add(prevLine = AddSegment(segment, prevScan, currentScanIndex)))
+                    var prevLine = AddSegment(segment, prevScan, currentScanIndex);
+                    if (prevLine == null)
+                    {
+                        unknownHypothesis.Add(segment);
+                    }
+                    else if (currentScan.Add(prevLine))
                     {
                         currentScanIndex.GetOrCreateElevation((int)prevLine.Level).Add(prevLine);
                     }
                 }
             }
-            return currentScanIndex;
+            return unknownHypothesis;
         }
-        private static readonly Coordinates A = new Coordinates(330, 13661.818181818182);
 
-        private ContourLine AddSegment(ContourSegment segment, LinesByElevation previousParallel, LinesByElevation currentParallel)
+        private ContourLine? AddSegment(ContourSegment segment, LinesByElevation previousParallel, LinesByElevation currentParallel)
         {
             var segmentKey = (int)segment.Level;
 
             if (currentParallel.TryGetValue(segmentKey, out var currentLines))
             {
-                var lastest = currentLines.AsEnumerable().Reverse().Take(5);
+                var lastest = currentLines.AsEnumerable().Reverse()/*.Take(5)*/;
                 foreach (var prev in lastest)
                 {
                     if (prev.TryAdd(segment))
@@ -81,6 +113,10 @@ namespace SimpleDEM.Contours
                     }
                 }
             }
+            if (segment.IsHypothesis)
+            {
+                return null;
+            }
             var newLine = new ContourLine(segment);
             linesByLevel.GetOrCreateElevation((int)segment.Level).Add(newLine);
             return newLine;
@@ -98,7 +134,7 @@ namespace SimpleDEM.Contours
             return editedLine;
         }
 
-        public void Add(IDemDataView cell, ContourLevelGenerator generator, IProgress<double>? progress = null)
+        public void Add(IDemDataView cell, IContourLevelGenerator generator, IProgress<double>? progress = null)
         {
             var prevScan = new LinesByElevation();
             var segments = new List<ContourSegment>();
@@ -160,7 +196,7 @@ namespace SimpleDEM.Contours
                                 var b = toAnalyse[j];
                                 if (!b.IsClosed)
                                 {
-                                    if (a.TryMerge(b, thresholdSqared, true))
+                                    if (a.TryMerge(b, thresholdSqared))
                                     {
                                         Interlocked.Increment(ref merged);
                                     }

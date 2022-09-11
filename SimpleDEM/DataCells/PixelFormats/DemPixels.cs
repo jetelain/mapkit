@@ -11,6 +11,7 @@ namespace SimpleDEM.DataCells.PixelFormats
             { typeof(short), new Int16Pixel() },
             { typeof(ushort), new UInt16Pixel() },
             { typeof(double), new DoublePixel() },
+            { typeof(int), new Int32Pixel() },
         };
 
         internal static DemPixel<T> Get<T>() 

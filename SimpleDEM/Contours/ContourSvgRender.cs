@@ -146,11 +146,6 @@ namespace SimpleDEM.Contours
                 writer.WriteStartElement("path", SvgXmlns);
                 writer.WriteAttributeString("id", "p" + id + "l" + subid);
 
-                if (p[0].X > p[p.Count - 1].X)
-                {
-                    p.Reverse();
-                }
-
                 GeneratePath(sb, p.Take(1).Concat(p.Skip(p.Count-1)).ToList());
                 writer.WriteAttributeString("d", sb.ToString());
                 writer.WriteEndElement();

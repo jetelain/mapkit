@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleDEM.Contours
 {
-    public class ContourLevelGenerator
+    public class ContourLevelGenerator : IContourLevelGenerator
     {
         private readonly double step;
 
@@ -12,7 +12,7 @@ namespace SimpleDEM.Contours
             this.step = step;
         }
 
-        internal IEnumerable<double> Levels(double min, double max)
+        public IEnumerable<double> Levels(double min, double max)
         {
             var start = Math.Ceiling(min / step) * step;
             var end = Math.Ceiling(max / step) * step;
