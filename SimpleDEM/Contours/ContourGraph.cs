@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClipperLib;
 using GeoJSON.Text.Feature;
 using GeoJSON.Text.Geometry;
 using SimpleDEM.DataCells;
@@ -215,16 +216,29 @@ namespace SimpleDEM.Contours
             Console.WriteLine("Merged => " + merged);
         }
 
-        public IEnumerable<Feature> ToGeoJsonFeatures(int rounding = -1)
+        public IEnumerable<Polygon> ToPolygons(int rounding = -1, IProgress<double>? progress = null)
         {
-            if (rounding == -1)
-            {
-                return Lines.Select(l => new Feature(new LineString(l.Points), new Dictionary<string, object>() { { "level", (object)l.Level } }));
-            }
-            return Lines.Select(l => new Feature(new LineString(l.Points.Select(p => new Position(Math.Round(p.Latitude, rounding), Math.Round(p.Longitude, rounding))).ToList()), new Dictionary<string, object>() { { "level", (object)l.Level} }));
+            return linesByLevel.SelectMany(l => ToPolygons(l.Value, rounding, progress)).ToList();
         }
 
+        private IEnumerable<Polygon> ToPolygons(List<ContourLine> value, int rounding, IProgress<double>? progress)
+        {
+            var clipper = new Clipper(progress);
+            foreach (var line in value)
+            {
+                clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+            }
+            var result = new PolyTree();
+            clipper.Execute(ClipType.ctXor, result);
+            return result.Childs
+                .Select(c => new Polygon((new[] { ToLineString(c, rounding) })
+                             .Concat(c.Childs.Select(h => ToLineString(h, rounding))))).ToList();
+        }
 
-
+        private static LineString ToLineString(PolyNode c, int rounding)
+        {
+            var points = c.Contour.Select(c => new Coordinates(c, rounding));
+            return new LineString(points.Concat(points.Take(1)).ToList());
+        }
     }
 }

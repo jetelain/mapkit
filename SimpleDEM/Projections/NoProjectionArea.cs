@@ -1,4 +1,5 @@
 ﻿using System;
+using GeoJSON.Text.Geometry;
 
 namespace SimpleDEM.Projections
 {
@@ -24,7 +25,7 @@ namespace SimpleDEM.Projections
 
         public Vector Size { get; }
 
-        public Vector Project(Coordinates point)
+        public Vector Project(IPosition point)
         {
             if (rounding == -1)
             {

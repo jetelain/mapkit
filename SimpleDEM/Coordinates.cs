@@ -1,16 +1,31 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using ClipperLib;
 using GeoJSON.Text.Geometry;
 
 namespace SimpleDEM
 {
     public class Coordinates : IEquatable<Coordinates>, IPosition
     {
+        internal const double ScaleForClipper = 2_000_000d;
+
         [JsonConstructor]
         public Coordinates(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
+        }
+
+        public Coordinates(IntPoint point, int rounding = -1, double scaleForClipper = ScaleForClipper)
+        {
+            Latitude = point.Y / scaleForClipper;
+            Longitude = point.X / scaleForClipper;
+
+            if (rounding > -1)
+            {
+                Latitude = Math.Round(Latitude, rounding);
+                Longitude = Math.Round(Longitude, rounding);
+            }
         }
 
         public double Latitude { get; }
@@ -56,7 +71,7 @@ namespace SimpleDEM
             return (dx * dx) + (dy * dy);
         }
 
-        internal const double DefaultThreshold = 0.000005; // Less than 1m at equator
+        internal const double DefaultThreshold = 0.000_005; // Less than 1m at equator
         internal const double DefaultThresholdSquared = DefaultThreshold * DefaultThreshold;
 
         public bool AlmostEquals(Coordinates? other, double thresholdSqared = DefaultThresholdSquared)
@@ -79,6 +94,11 @@ namespace SimpleDEM
         {
             return start.Latitude <= Latitude && Latitude <= end.Latitude &&
                    start.Longitude <= Longitude && Longitude <= end.Longitude;
+        }
+
+        public IntPoint ToIntPoint(double scaleForClipper = ScaleForClipper)
+        {
+            return new IntPoint(Longitude * scaleForClipper, Latitude * scaleForClipper);
         }
     }
 }

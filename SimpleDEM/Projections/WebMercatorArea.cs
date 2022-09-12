@@ -1,4 +1,5 @@
 ﻿using System;
+using GeoJSON.Text.Geometry;
 
 namespace SimpleDEM.Projections
 {
@@ -29,7 +30,7 @@ namespace SimpleDEM.Projections
 
         public Vector Size { get; }
 
-        public Vector Project(Coordinates point)
+        public Vector Project(IPosition point)
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;
             var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;

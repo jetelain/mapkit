@@ -1,8 +1,10 @@
-﻿namespace SimpleDEM.Projections
+﻿using GeoJSON.Text.Geometry;
+
+namespace SimpleDEM.Projections
 {
     public interface IProjectionArea
     {
-        Vector Project(Coordinates coordinates);
+        Vector Project(IPosition coordinates);
 
         Vector Min { get; }
 
