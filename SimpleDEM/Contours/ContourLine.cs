@@ -98,6 +98,19 @@ namespace SimpleDEM.Contours
             return true;
         }
 
+        public void Append(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        {
+            if (other == this)
+            {
+                Points.Add(First);
+                UpdateIsClosed(thresholdSqared);
+                return;
+            }
+            Points.AddRange(other.Points);
+            other.Discard();
+            UpdateIsClosed(thresholdSqared);
+        }
+
         private void Discard()
         {
             IsClosed = true;

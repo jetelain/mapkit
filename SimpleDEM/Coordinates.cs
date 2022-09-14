@@ -100,5 +100,14 @@ namespace SimpleDEM
         {
             return new IntPoint(Longitude * scaleForClipper, Latitude * scaleForClipper);
         }
+
+        public static Coordinates operator+ (Coordinates c, Vector v)
+        {
+            return new Coordinates(c.Latitude + v.DeltaLat, c.Longitude + v.DeltaLon);
+        }
+        public static Coordinates operator -(Coordinates c, Vector v)
+        {
+            return new Coordinates(c.Latitude - v.DeltaLat, c.Longitude - v.DeltaLon);
+        }
     }
 }

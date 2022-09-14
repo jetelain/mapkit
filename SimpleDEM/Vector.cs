@@ -66,6 +66,15 @@ namespace SimpleDEM
             return new Vector2((float)X, (float)Y);
         }
 
+        public static Vector operator *(Vector v, double f)
+        {
+            return new Vector(v.X * f, v.Y * f);
+        }
+        public static Vector operator /(Vector v, double f)
+        {
+            return new Vector(v.X / f, v.Y / f);
+        }
+
         public override string ToString()
         {
             return FormattableString.Invariant($"({X};{Y})");
