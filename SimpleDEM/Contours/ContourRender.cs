@@ -10,27 +10,19 @@ namespace SimpleDEM.Contours
     public class ContourRender
     {
         private readonly IDrawSurface writer;
-        private readonly IDrawTextStyle lt;
-        private readonly IDrawStyle ls;
-        private readonly IDrawStyle lm;
+        private readonly IContourRenderStyle style;
 
-        public ContourRender(IDrawSurface writer)
+        public ContourRender(IDrawSurface writer) 
+            : this(writer, new ContourRenderStyle(writer))
         {
-            this.writer = writer;
 
-            lt = writer.AllocateTextStyle(
-                new[] { "Calibri", "sans-serif" },
-                18,
-                new SolidColorBrush(Color.ParseHex("B29A94")),
-                new Pen(new SolidColorBrush(Color.ParseHex("FFFFFFCC")), 3),
-                true,
-                "lt"); 
-
-            ls = writer.AllocateStyle(null, new Pen(new SolidColorBrush(Color.ParseHex("D4C5BF")), 2), "ls");
-
-            lm = writer.AllocateStyle(null, new Pen(new SolidColorBrush(Color.ParseHex("B29A94")), 2), "lm");
         }
 
+        public ContourRender(IDrawSurface writer, IContourRenderStyle style)
+        {
+            this.writer = writer;
+            this.style = style;
+        }
 
         public void Render(ContourGraph graph, IProjectionArea projection, Image? hillshade)
         {
@@ -52,16 +44,16 @@ namespace SimpleDEM.Contours
             }
             foreach(var line in masters)
             {
-                RenderMasterLine(projection, line);
+                RenderMajorLine(projection, line);
             }
         }
 
         private void RenderLine(IProjectionArea projection, ContourLine line)
         {
-            writer.DrawPolyline(line.Points.Select(p => projection.Project(p)), ls);
+            writer.DrawPolyline(line.Points.Select(p => projection.Project(p)), style.MinorContourLine);
         }
 
-        private void RenderMasterLine(IProjectionArea projection, ContourLine line)
+        private void RenderMajorLine(IProjectionArea projection, ContourLine line)
         {
             var points = new List<Vector>();
             var elevationMarks = new List<List<Vector>>();
@@ -94,7 +86,7 @@ namespace SimpleDEM.Contours
                 prev = p;
             }
 
-            writer.DrawPolyline(points, lm);
+            writer.DrawPolyline(points, style.MajorContourLine);
 
             if (reg > 300 && elevationMarks.Count == 0)
             {
@@ -103,7 +95,7 @@ namespace SimpleDEM.Contours
 
             foreach(var p in elevationMarks)
             {
-                writer.DrawTextPath(p.Take(1).Concat(p.Skip(p.Count - 1)).ToList(), $"{line.Level}", lt);
+                writer.DrawTextPath(p.Take(1).Concat(p.Skip(p.Count - 1)).ToList(), $"{line.Level}", style.MajorContourText);
             }
         }
     }
