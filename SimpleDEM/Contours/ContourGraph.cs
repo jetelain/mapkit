@@ -300,9 +300,8 @@ namespace SimpleDEM.Contours
             }
             else if ( depth < 4 )
             {
-                var southEast = new Coordinates(edgeSW.Latitude, edgeNE.Longitude);
-                line.Points.Insert(0, southEast);
-                LookSouth(edgeSW, edgeNE, notClosed, line, southEast, depth + 1);
+                line.Points.Insert(0, edgeNE);
+                LookSouth(edgeSW, edgeNE, notClosed, line, edgeNE, depth + 1);
             }
         }
 
@@ -318,8 +317,9 @@ namespace SimpleDEM.Contours
             }
             else if (depth < 4)
             {
-                line.Points.Insert(0, edgeSW);
-                LookWest(edgeSW, edgeNE, notClosed, line, edgeSW, depth + 1);
+                var southEast = new Coordinates(edgeSW.Latitude, edgeNE.Longitude);
+                line.Points.Insert(0, southEast);
+                LookWest(edgeSW, edgeNE, notClosed, line, southEast, depth + 1);
             }
         }
 
@@ -335,9 +335,8 @@ namespace SimpleDEM.Contours
             }
             else if (depth < 4)
             {
-                var northWest = new Coordinates(edgeNE.Latitude, edgeSW.Longitude);
-                line.Points.Insert(0, northWest);
-                LookNorth(edgeSW, edgeNE, notClosed, line, northWest, depth + 1);
+                line.Points.Insert(0, edgeSW);
+                LookNorth(edgeSW, edgeNE, notClosed, line, edgeSW, depth + 1);
             }
         }
 
@@ -353,8 +352,9 @@ namespace SimpleDEM.Contours
             }
             else if (depth < 4)
             {
-                line.Points.Insert(0, edgeNE);
-                LookEast(edgeSW, edgeNE, notClosed, line, edgeNE, depth + 1);
+                var northWest = new Coordinates(edgeNE.Latitude, edgeSW.Longitude);
+                line.Points.Insert(0, northWest);
+                LookEast(edgeSW, edgeNE, notClosed, line, northWest, depth + 1);
             }
         }
 
