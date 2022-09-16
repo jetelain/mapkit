@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SimpleDEM.Drawing;
+using MapToolkit.Drawing;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public interface IContourRenderStyle
     {

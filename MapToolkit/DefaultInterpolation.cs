@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     public sealed class DefaultInterpolation : IInterpolation
     {

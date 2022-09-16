@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public interface IDemDataCell : IDemDataCellMetadata, IDemDataView
     {

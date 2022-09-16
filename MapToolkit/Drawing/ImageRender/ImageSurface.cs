@@ -8,7 +8,7 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
 
-namespace SimpleDEM.Drawing.ImageRender
+namespace MapToolkit.Drawing.ImageRender
 {
     internal class ImageSurface : IDrawSurface
     {

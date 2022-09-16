@@ -1,7 +1,7 @@
 ﻿using PdfSharpCore.Drawing;
 using SixLabors.Fonts;
 
-namespace SimpleDEM.Drawing.PdfRender
+namespace MapToolkit.Drawing.PdfRender
 {
     internal class PdfTextStyle : PdfStyle, IDrawTextStyle
     {

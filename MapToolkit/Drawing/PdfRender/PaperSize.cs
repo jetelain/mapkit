@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SimpleDEM.Drawing.PdfRender
+namespace MapToolkit.Drawing.PdfRender
 {
     public static class PaperSize
     {

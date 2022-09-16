@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     public class CompressionHelper
     {

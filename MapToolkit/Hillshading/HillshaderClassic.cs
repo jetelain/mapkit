@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM.Hillshading
+namespace MapToolkit.Hillshading
 {
     public sealed class HillshaderClassic : HillshaderBase
     {

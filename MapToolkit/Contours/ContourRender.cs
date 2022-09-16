@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleDEM.Drawing;
-using SimpleDEM.Projections;
+using MapToolkit.Drawing;
+using MapToolkit.Projections;
 using SixLabors.ImageSharp;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourRender
     {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SimpleDEM.DataCells.FileFormats
+namespace MapToolkit.DataCells.FileFormats
 {
     internal class EsriAsciiHelper
     {

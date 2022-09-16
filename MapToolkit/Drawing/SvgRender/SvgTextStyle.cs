@@ -1,4 +1,4 @@
-﻿namespace SimpleDEM.Drawing.SvgRender
+﻿namespace MapToolkit.Drawing.SvgRender
 {
     internal class SvgTextStyle : SvgStyle, IDrawTextStyle
     {

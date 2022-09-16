@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SimpleDEM.Drawing.SvgRender
+namespace MapToolkit.Drawing.SvgRender
 {
     internal class SvgStyle : IDrawStyle
     {

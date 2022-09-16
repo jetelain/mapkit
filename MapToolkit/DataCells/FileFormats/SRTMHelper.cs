@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SimpleDEM.DataCells.FileFormats
+namespace MapToolkit.DataCells.FileFormats
 {
     internal class SRTMHelper
     {

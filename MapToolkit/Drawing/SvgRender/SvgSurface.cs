@@ -7,7 +7,7 @@ using System.Text;
 using System.Xml;
 using SixLabors.ImageSharp;
 
-namespace SimpleDEM.Drawing.SvgRender
+namespace MapToolkit.Drawing.SvgRender
 {
 
     internal sealed class SvgSurface : IDrawSurface, IDisposable

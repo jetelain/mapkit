@@ -1,7 +1,7 @@
-﻿using SimpleDEM.Drawing;
+﻿using MapToolkit.Drawing;
 using SixLabors.ImageSharp;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourRenderStyle : IContourRenderStyle
     {

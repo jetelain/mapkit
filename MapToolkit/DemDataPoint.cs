@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     public sealed class DemDataPoint : IEquatable<DemDataPoint>
     {

@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace SimpleDEM.Drawing.ImageRender
+namespace MapToolkit.Drawing.ImageRender
 {
     internal class ImageStyle : IDrawStyle
     {

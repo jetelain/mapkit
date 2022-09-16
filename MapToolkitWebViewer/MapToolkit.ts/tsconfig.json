@@ -5,7 +5,7 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es6",
-    "outFile": "../wwwroot/js/simpledem.js"
+    "outFile": "../wwwroot/js/MapToolkit.js"
   },
   "exclude": [
     "node_modules",

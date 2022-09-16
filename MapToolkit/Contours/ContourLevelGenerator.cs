@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourLevelGenerator : IContourLevelGenerator
     {

@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Text.Json.Serialization;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     public sealed class Vector : IEquatable<Vector>
     {

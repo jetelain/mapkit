@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public sealed class DemDataCellPixelIsArea<TPixel>
         : DemDataCellBase<TPixel> where TPixel : unmanaged

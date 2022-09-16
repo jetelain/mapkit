@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourFeatureProperties
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleDEM.Drawing
+namespace MapToolkit.Drawing
 {
     public class Pen
     {

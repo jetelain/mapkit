@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SimpleDEM.DataCells.PixelFormats
+namespace MapToolkit.DataCells.PixelFormats
 {
     internal static class DemPixels
     {

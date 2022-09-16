@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using ClipperLib;
 using GeoJSON.Text.Geometry;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     public class Coordinates : IEquatable<Coordinates>, IPosition
     {

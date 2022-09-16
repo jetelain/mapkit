@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace SimpleDEM.Hillshading
+namespace MapToolkit.Hillshading
 {
     public abstract class HillshaderBase
     {

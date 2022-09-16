@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SixLabors.ImageSharp;
 
-namespace SimpleDEM.Drawing.PdfRender
+namespace MapToolkit.Drawing.PdfRender
 {
     internal sealed class ScaleAndShiftDraw : IDrawSurface
     {

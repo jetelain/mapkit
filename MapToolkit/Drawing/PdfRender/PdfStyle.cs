@@ -3,7 +3,7 @@ using System.Linq;
 using PdfSharpCore.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace SimpleDEM.Drawing.PdfRender
+namespace MapToolkit.Drawing.PdfRender
 {
     internal class PdfStyle : IDrawStyle
     {

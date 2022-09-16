@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
-using SimpleDEM.GeodeticSystems;
+using MapToolkit.GeodeticSystems;
 
-namespace SimpleDEM.DataCells.FileFormats
+namespace MapToolkit.DataCells.FileFormats
 {
     internal class GeoTiffHelper
     {

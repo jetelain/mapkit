@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using ClipperLib;
 using GeoJSON.Text.Feature;
 using GeoJSON.Text.Geometry;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourGraph
     {

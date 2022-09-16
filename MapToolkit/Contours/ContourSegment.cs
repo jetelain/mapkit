@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     internal class ContourSegment
     {

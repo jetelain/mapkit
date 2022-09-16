@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public sealed class RasterPixelIsPoint : RasterMapping
     {

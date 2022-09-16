@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleDEM
+namespace MapToolkit
 {
     /// <summary>
     /// Triangle Meshing using basic triangles from NW to SE

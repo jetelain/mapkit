@@ -1,4 +1,4 @@
-﻿namespace SimpleDEM
+﻿namespace MapToolkit
 {
     public enum Compression
     {

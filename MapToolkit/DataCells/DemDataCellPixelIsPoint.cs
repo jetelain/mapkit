@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public sealed class DemDataCellPixelIsPoint<TPixel>
         : DemDataCellBase<TPixel> where TPixel : unmanaged

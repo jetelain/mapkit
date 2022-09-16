@@ -1,4 +1,4 @@
-﻿module SimpleDEM {
+﻿module MapToolkit {
 
     abstract class DemDataCellBase {
         size: number[];

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SixLabors.ImageSharp;
 
-namespace SimpleDEM.Drawing
+namespace MapToolkit.Drawing
 {
     public interface IDrawSurface
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM.Hillshading
+namespace MapToolkit.Hillshading
 {
     /// <summary>
     /// Almost same result of <see cref="HillshaderClassic"/> but twice as fast

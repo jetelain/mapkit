@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using SimpleDEM;
-using SimpleDEM.DataCells;
-using SimpleDEM.GeodeticSystems;
+using MapToolkit;
+using MapToolkit.DataCells;
+using MapToolkit.GeodeticSystems;
 
 namespace DemFormat
 {

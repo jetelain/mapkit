@@ -3,7 +3,7 @@ using System.Numerics;
 using PdfSharpCore.Drawing;
 using SixLabors.Fonts;
 
-namespace SimpleDEM.Drawing.PdfRender
+namespace MapToolkit.Drawing.PdfRender
 {
     /// <summary>
     /// Render SixLabors.Fonts to PdfSharpCore paths

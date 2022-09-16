@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 
-namespace SimpleDEM.Test.DataCells
+namespace MapToolkit.Test.DataCells
 {
     /// <summary>
     /// Tests of <see cref="DemDataCellPixelIsPoint{T}"/>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM.GeodeticSystems
+namespace MapToolkit.GeodeticSystems
 {
     public class WSG84
     {

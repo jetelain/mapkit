@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 using System.Text.Json.Serialization;
 
-namespace SimpleDEM.Databases
+namespace MapToolkit.Databases
 {
     public class DemDatabaseFileInfos
     {

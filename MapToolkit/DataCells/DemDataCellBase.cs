@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using SimpleDEM.DataCells.PixelFormats;
+using MapToolkit.DataCells.PixelFormats;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public abstract class DemDataCellBase<TPixel> : IDemDataCell
         where TPixel : unmanaged

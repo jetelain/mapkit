@@ -1,4 +1,4 @@
-﻿namespace SimpleDEM.DataCells.PixelFormats
+﻿namespace MapToolkit.DataCells.PixelFormats
 {
     internal class DemPixel
     {

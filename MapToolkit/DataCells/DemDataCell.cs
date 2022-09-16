@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using SimpleDEM.DataCells.FileFormats;
+using MapToolkit.DataCells.FileFormats;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public static class DemDataCell
     {

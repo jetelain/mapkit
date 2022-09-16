@@ -5,9 +5,9 @@ using System.IO.Compression;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CommandLine;
-using SimpleDEM;
-using SimpleDEM.Databases;
-using SimpleDEM.DataCells;
+using MapToolkit;
+using MapToolkit.Databases;
+using MapToolkit.DataCells;
 
 namespace DemUtility
 {

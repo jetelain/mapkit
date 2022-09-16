@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleDEM.DataCells.PixelFormats
+namespace MapToolkit.DataCells.PixelFormats
 {
     internal sealed class UInt16Pixel : DemPixel<ushort>
     {

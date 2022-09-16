@@ -1,6 +1,6 @@
 ﻿using SixLabors.Fonts;
 
-namespace SimpleDEM.Drawing.ImageRender
+namespace MapToolkit.Drawing.ImageRender
 {
     internal class ImageTextStyle : ImageStyle, IDrawTextStyle
     {

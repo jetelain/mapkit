@@ -1,4 +1,4 @@
-﻿namespace SimpleDEM.Drawing
+﻿namespace MapToolkit.Drawing
 {
     public interface IDrawStyle
     {

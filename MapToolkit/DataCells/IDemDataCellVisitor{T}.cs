@@ -1,4 +1,4 @@
-﻿namespace SimpleDEM.DataCells
+﻿namespace MapToolkit.DataCells
 {
     internal interface IDemDataCellVisitor<U>
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 
-namespace SimpleDEM.Databases
+namespace MapToolkit.Databases
 {
     internal class DemDatabaseEntry
     {

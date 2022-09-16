@@ -1,6 +1,6 @@
 ﻿using GeoJSON.Text.Geometry;
 
-namespace SimpleDEM.Projections
+namespace MapToolkit.Projections
 {
     public interface IProjectionArea
     {

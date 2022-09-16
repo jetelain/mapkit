@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace SimpleDEM.Databases
+namespace MapToolkit.Databases
 {
     public class DemDatabaseIndex
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleDEM.Drawing
+namespace MapToolkit.Drawing
 {
     public sealed class VectorBrush : IBrush
     {

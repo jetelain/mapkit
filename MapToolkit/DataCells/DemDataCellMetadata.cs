@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json.Serialization;
 
-namespace SimpleDEM.DataCells
+namespace MapToolkit.DataCells
 {
     public class DemDataCellMetadata : IDemDataCellMetadata
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 
-namespace SimpleDEM.Test.DataCells
+namespace MapToolkit.Test.DataCells
 {
     public class DemDataViewTest
     {

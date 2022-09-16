@@ -1,7 +1,7 @@
 ﻿using System;
 using GeoJSON.Text.Geometry;
 
-namespace SimpleDEM.Projections
+namespace MapToolkit.Projections
 {
     public class WebMercatorArea : IProjectionArea
     {

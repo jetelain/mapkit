@@ -7,7 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace SimpleDEM.Drawing
+namespace MapToolkit.Drawing
 {
     public static class Render
     {

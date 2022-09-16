@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using SimpleDEM.Projections;
+using MapToolkit.Projections;
 
-namespace SimpleDEM.Contours
+namespace MapToolkit.Contours
 {
     public class ContourSvgRender
     {

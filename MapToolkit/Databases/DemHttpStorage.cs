@@ -4,9 +4,9 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using SimpleDEM.DataCells;
+using MapToolkit.DataCells;
 
-namespace SimpleDEM.Databases
+namespace MapToolkit.Databases
 {
     public class DemHttpStorage : IDemStorage
     {
