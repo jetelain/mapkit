@@ -23,14 +23,14 @@ namespace SimpleDEM.Drawing.PdfRender
 
         public double Scale => scaleLines;
 
-        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen, string? name = null)
+        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             return new PdfStyle(fill, pen, scaleLines);
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, string? name = null)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, XFontStyle.Bold), fillCoverPen);
+            return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, XFontStyle.Bold), fillCoverPen, textAnchor);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
@@ -98,7 +98,11 @@ namespace SimpleDEM.Drawing.PdfRender
             {
                 var result = new PdfGlyphRender(point.X, point.Y);
                 var textRender = new TextRenderer(result);
-                textRender.RenderText(text, new TextOptions(pstyle.SixFont));
+                var to = new TextOptions(pstyle.SixFont);
+                to.VerticalAlignment = pstyle.VerticalAlignment;
+                to.HorizontalAlignment = pstyle.HorizontalAlignment;
+                textRender.RenderText(text, to);
+
                 if (pstyle.Pen != null)
                 {
                     foreach (var path in result.Paths)
@@ -132,6 +136,7 @@ namespace SimpleDEM.Drawing.PdfRender
 
             graphics.Restore(state);
         }
+
         public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;

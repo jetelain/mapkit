@@ -9,8 +9,7 @@ namespace SimpleDEM.Drawing
 
         IDrawStyle AllocateStyle(
             IBrush? fill,
-            Pen? pen,
-            string? name = null);
+            Pen? pen);
 
         IDrawTextStyle AllocateTextStyle(
             string[] fontNames,
@@ -18,7 +17,7 @@ namespace SimpleDEM.Drawing
             IBrush? fill,
             Pen? pen,
             bool fillCoverPen = false,
-            string? name = null);
+            TextAnchor textAnchor = TextAnchor.CenterLeft);
 
         void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style);
 

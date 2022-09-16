@@ -21,12 +21,12 @@ namespace SimpleDEM.Drawing.ImageRender
 
         public double Scale => 1;
 
-        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen, string? name = null)
+        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             return new ImageStyle(fill, pen);
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, string? name = null)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
             FontFamily fontFamily;
             var success = false;
@@ -42,7 +42,7 @@ namespace SimpleDEM.Drawing.ImageRender
             {
                 fontFamily = SystemFonts.Collection.Get("Arial");
             }
-            return new ImageTextStyle(fill, pen, fontFamily.CreateFont((float)size, FontStyle.Bold), fillCoverPen);
+            return new ImageTextStyle(fill, pen, fontFamily.CreateFont((float)size, FontStyle.Bold), fillCoverPen, textAnchor);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
@@ -99,7 +99,8 @@ namespace SimpleDEM.Drawing.ImageRender
 
             var to = new TextOptions(istyle.Font);
             to.Origin = new PointF((float)point.X, (float)point.Y);
-            to.VerticalAlignment = VerticalAlignment.Center;
+            to.VerticalAlignment = istyle.VerticalAlignment;
+            to.HorizontalAlignment = istyle.HorizontalAlignment;
 
             if (istyle.FillCoverPen && istyle.Pen != null)
             {
@@ -139,7 +140,6 @@ namespace SimpleDEM.Drawing.ImageRender
             {
                 pb.AddLines(hole.Select(p => new PointF((float)p.X, (float)p.Y))).CloseFigure();
             }
-
             var path = pb.Build();
             if (istyle.Brush != null)
             {
@@ -149,11 +149,6 @@ namespace SimpleDEM.Drawing.ImageRender
             {
                 target.Draw(istyle.Pen, path);
             }
-        }
-
-        private static LinearLineSegment ToLinearLineSegment(IEnumerable<Vector> contour)
-        {
-            return new LinearLineSegment(contour.Select(p => new PointF((float)p.X, (float)p.Y)).Concat(contour.Take(1).Select(p => new PointF((float)p.X, (float)p.Y))).ToArray());
         }
     }
 }

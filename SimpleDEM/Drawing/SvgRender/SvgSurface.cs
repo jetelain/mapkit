@@ -21,7 +21,6 @@ namespace SimpleDEM.Drawing.SvgRender
         private int nextStyleId = 0;
         private int nextBrushId = 0;
         private int nextImageId = 0;
-        private int nextMaskId = 0;
 
         private bool isWrittingStyle = false;
         private readonly StringBuilder styles = new StringBuilder();
@@ -35,12 +34,9 @@ namespace SimpleDEM.Drawing.SvgRender
             StartSvg(size);
         }
 
-        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen, string? name = null)
+        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "s" + nextStyleId++;
-            }
+            var name = "s" + nextStyleId++;
             StartClass(name);
             Append(fill, pen);
             EndClass();
@@ -75,16 +71,34 @@ namespace SimpleDEM.Drawing.SvgRender
             }
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, string? name = null)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "s" + nextStyleId++;
-            }
+            var name = "s" + nextStyleId++;
             StartClass(name);
             Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
             Append(fill, fillCoverPen ? null : pen);
-            Append("dominant-baseline", "middle"); // FIXME
+
+            switch (textAnchor)
+            {
+                case TextAnchor.CenterLeft:
+                    Append("dominant-baseline", "middle");
+                    break;
+                case TextAnchor.CenterRight:
+                    Append("dominant-baseline", "middle");
+                    Append("text-anchor", "end");
+                    break;
+                case TextAnchor.TopCenter:
+                    Append("dominant-baseline", "auto");
+                    Append("text-anchor", "middle");
+                    break;
+                case TextAnchor.BottomCenter:
+                    Append("dominant-baseline", "hanging");
+                    Append("text-anchor", "middle");
+                    break;
+                default:
+                    break;
+            }
+
             Append("font-weight", "bolder"); // FIXME
             EndClass();
 
@@ -92,12 +106,12 @@ namespace SimpleDEM.Drawing.SvgRender
             {
                 var bgName = name + "-bg";
                 StartClass(bgName);
-                Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
+                //Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
                 Append(null, pen);
-                Append("dominant-baseline", "middle"); // FIXME
-                Append("font-weight", "bolder"); // FIXME
+                //Append("dominant-baseline", "middle"); // FIXME
+                //Append("font-weight", "bolder"); // FIXME
                 EndClass();
-                return new SvgTextStyle(name, bgName);
+                return new SvgTextStyle(name, name +" "+bgName);
             }
             return new SvgTextStyle(name, null);
         }
@@ -334,8 +348,26 @@ namespace SimpleDEM.Drawing.SvgRender
 
         public void DrawText(Vector point, string text, IDrawTextStyle style)
         {
+            var sstyle = (SvgTextStyle)style;
             FlushStyles();
-            throw new NotImplementedException();
+
+            if (!string.IsNullOrEmpty(sstyle.BgName))
+            {
+                writer.WriteStartElement("text", SvgXmlns);
+                writer.WriteAttributeString("class", sstyle.BgName);
+                writer.WriteAttributeString("x", point.X.ToString(CultureInfo.InvariantCulture));
+                writer.WriteAttributeString("y", point.Y.ToString(CultureInfo.InvariantCulture));
+                writer.WriteString(text);
+                writer.WriteEndElement();
+            }
+
+            writer.WriteStartElement("text", SvgXmlns);
+            writer.WriteAttributeString("class", sstyle.Name);
+            writer.WriteAttributeString("x", point.X.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("y", point.Y.ToString(CultureInfo.InvariantCulture));
+            writer.WriteString(text);
+            writer.WriteEndElement();
+            writer.WriteString(Environment.NewLine);
         }
 
         public void Dispose()

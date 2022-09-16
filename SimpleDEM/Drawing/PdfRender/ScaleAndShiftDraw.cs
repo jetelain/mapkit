@@ -23,14 +23,14 @@ namespace SimpleDEM.Drawing.PdfRender
             this.dy = dy;
         }
 
-        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen, string? name = null)
+        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
-            return drawSurface.AllocateStyle(fill, pen, name);
+            return drawSurface.AllocateStyle(fill, pen);
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, string? name = null)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            return drawSurface.AllocateTextStyle(fontNames, size, fill, pen, fillCoverPen, name);
+            return drawSurface.AllocateTextStyle(fontNames, size, fill, pen, fillCoverPen, textAnchor);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
