@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDEM\SimpleDEM.csproj" />
+    <ProjectReference Include="..\MapToolkit\MapToolkit.csproj" />
   </ItemGroup>
 
 </Project>
