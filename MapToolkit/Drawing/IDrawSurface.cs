@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing
@@ -13,6 +14,7 @@ namespace MapToolkit.Drawing
 
         IDrawTextStyle AllocateTextStyle(
             string[] fontNames,
+            FontStyle style,
             double size,
             IBrush? fill,
             Pen? pen,

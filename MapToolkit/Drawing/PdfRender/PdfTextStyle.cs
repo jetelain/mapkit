@@ -5,14 +5,14 @@ namespace MapToolkit.Drawing.PdfRender
 {
     internal class PdfTextStyle : PdfStyle, IDrawTextStyle
     {
-        public PdfTextStyle(IBrush? fill, Pen? pen, double scaleLines, XFont xFont, bool fillCoverPen, TextAnchor textAnchor) 
+        public PdfTextStyle(IBrush? fill, Pen? pen, double scaleLines, XFont xFont, bool fillCoverPen, TextAnchor textAnchor, FontStyle style) 
             : base(fill, pen, scaleLines)
         {
             Font = xFont;
             TextAnchor = textAnchor;
             if (Pen != null || fillCoverPen)
             {
-                SixFont = SystemFonts.Collection.Get(xFont.Name).CreateFont((float)xFont.Size, FontStyle.Bold);
+                SixFont = SystemFonts.Collection.Get(xFont.Name).CreateFont((float)xFont.Size, style);
             }
             switch (textAnchor)
             {

@@ -28,9 +28,23 @@ namespace MapToolkit.Drawing.PdfRender
             return new PdfStyle(fill, pen, scaleLines);
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, XFontStyle.Bold), fillCoverPen, textAnchor);
+            var xstyle = XFontStyle.Regular;
+            switch (style)
+            {
+                case FontStyle.Bold:
+                    xstyle = XFontStyle.Bold;
+                    break;
+                case FontStyle.Italic:
+                    xstyle = XFontStyle.Italic;
+                    break;
+                case FontStyle.BoldItalic:
+                    xstyle = XFontStyle.BoldItalic;
+                    break;
+            }
+
+            return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, xstyle), fillCoverPen, textAnchor, style);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)

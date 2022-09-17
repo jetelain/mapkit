@@ -9,6 +9,7 @@ namespace MapToolkit.Contours
         {
             MajorContourText = writer.AllocateTextStyle(
                 new[] { "Calibri", "sans-serif" },
+                SixLabors.Fonts.FontStyle.Bold,
                 18,
                 new SolidColorBrush(Color.ParseHex("B29A94")),
                 new Pen(new SolidColorBrush(Color.ParseHex("FFFFFFCC")), 3),

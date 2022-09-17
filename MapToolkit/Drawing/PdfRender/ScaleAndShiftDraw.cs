@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.PdfRender
@@ -28,9 +29,9 @@ namespace MapToolkit.Drawing.PdfRender
             return drawSurface.AllocateStyle(fill, pen);
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            return drawSurface.AllocateTextStyle(fontNames, size, fill, pen, fillCoverPen, textAnchor);
+            return drawSurface.AllocateTextStyle(fontNames, style, size, fill, pen, fillCoverPen, textAnchor);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)

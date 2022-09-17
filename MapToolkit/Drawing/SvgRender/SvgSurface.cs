@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.SvgRender
@@ -71,13 +72,12 @@ namespace MapToolkit.Drawing.SvgRender
             }
         }
 
-        public IDrawTextStyle AllocateTextStyle(string[] fontNames, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
             var name = "s" + nextStyleId++;
             StartClass(name);
             Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
             Append(fill, fillCoverPen ? null : pen);
-
             switch (textAnchor)
             {
                 case TextAnchor.CenterLeft:
@@ -98,20 +98,27 @@ namespace MapToolkit.Drawing.SvgRender
                 default:
                     break;
             }
-
-            Append("font-weight", "bolder"); // FIXME
+            switch (style)
+            {
+                case FontStyle.Bold:
+                    Append("font-weight", "bold");
+                    break;
+                case FontStyle.Italic:
+                    Append("font-style", "italic");
+                    break;
+                case FontStyle.BoldItalic:
+                    Append("font-weight", "bold");
+                    Append("font-style", "italic");
+                    break;
+            }
             EndClass();
-
             if (fillCoverPen && pen != null)
             {
-                var bgName = name + "-bg";
+                var bgName = "s" + nextStyleId++;
                 StartClass(bgName);
-                //Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
                 Append(null, pen);
-                //Append("dominant-baseline", "middle"); // FIXME
-                //Append("font-weight", "bolder"); // FIXME
                 EndClass();
-                return new SvgTextStyle(name, name +" "+bgName);
+                return new SvgTextStyle(name, name + " " + bgName);
             }
             return new SvgTextStyle(name, null);
         }
