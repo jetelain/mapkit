@@ -24,7 +24,9 @@ namespace MapToolkit.Databases
             {
                 using (var input = File.OpenRead(indexFile))
                 {
+#pragma warning disable CS8603 // DeserializeAsync wont return null
                     return await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input);
+#pragma warning restore CS8603 
                 }
             }
             return BuildIndex();
@@ -49,9 +51,9 @@ namespace MapToolkit.Databases
             return file.Substring(basePath.Length).TrimStart('/', '\\');
         }
 
-        public async Task<IDemDataCell> Load(string path)
+        public Task<IDemDataCell> Load(string path)
         {
-            return DemDataCell.Load(Path.Combine(basePath, path));
+            return Task.FromResult(DemDataCell.Load(Path.Combine(basePath, path)));
         }
     }
 }

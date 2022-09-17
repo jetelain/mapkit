@@ -1,4 +1,11 @@
-﻿/*******************************************************************************
+﻿#pragma warning disable CS8600
+#pragma warning disable CS8601
+#pragma warning disable CS8603
+#pragma warning disable CS8604
+#pragma warning disable CS8618
+#pragma warning disable CS8625
+
+/*******************************************************************************
 *                                                                              *
 * Author    :  Angus Johnson                                                   *
 * Version   :  6.4.2                                                           *

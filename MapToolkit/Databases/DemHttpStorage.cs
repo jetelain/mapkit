@@ -55,7 +55,9 @@ namespace MapToolkit.Databases
         {
             using (var input = await client.GetStreamAsync("index.json").ConfigureAwait(false))
             {
+#pragma warning disable CS8603 // DeserializeAsync wont return null
                 return await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input);
+#pragma warning restore CS8603 
             }
         }
     }
