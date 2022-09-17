@@ -124,5 +124,22 @@ namespace MapToolkit.Contours
                 IsClosed = true;
             }
         }
+
+        internal bool IsClockwise
+        {
+            get
+            {
+                var north = Points.IndexOf(Points.OrderByDescending(p => p.Latitude).First());
+                var east = Points.IndexOf(Points.OrderByDescending(p => p.Longitude).First());
+                var south = Points.IndexOf(Points.OrderBy(p => p.Latitude).First());
+                var west = Points.IndexOf(Points.OrderBy(p => p.Longitude).First());
+
+                var epos = (east - north) % Points.Count;
+                var spos = (south - north) % Points.Count;
+                var wpos = (west - north) % Points.Count;
+
+                return epos >= spos && spos >= wpos;
+            }
+        }
     }
 }

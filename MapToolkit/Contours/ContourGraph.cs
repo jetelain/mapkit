@@ -241,16 +241,26 @@ namespace MapToolkit.Contours
 
         private IEnumerable<Polygon> ToPolygons(List<ContourLine> value, int rounding, IProgress<double>? progress)
         {
-            // FIXME : Very naive implementation that assumes that ouside world can't be part of polygons
-            // we need to know edges positions to close open lines on edges.
-            // we should use the anti clockwise/clockwise direction of lines to determine contours and holes.
+            // FIXME : Very naive implementation that assumes that :
+            // - outside world is lower
+            // - polygons around hills
             var clipper = new Clipper(progress);
             foreach (var line in value)
             {
-                clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+                if (line.IsClosed && line.Points.Count > 3)
+                {
+                    if (line.IsClockwise)
+                    {
+                        clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+                    }
+                    else
+                    {
+                        clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptClip, true);
+                    }
+                }
             }
             var result = new PolyTree();
-            clipper.Execute(ClipType.ctXor, result);
+            clipper.Execute(ClipType.ctXor, result, PolyFillType.pftNonZero);
             return result.Childs
                 .Select(c => new Polygon((new[] { ToLineString(c, rounding) })
                              .Concat(c.Childs.Select(h => ToLineString(h, rounding))))).ToList();
