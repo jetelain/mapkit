@@ -33,8 +33,11 @@ namespace MapToolkit.DataCells
             var pixelSizeLat = Unique(cells.Select(c => c.PixelSizeLat));
             var pixelSizeLon = Unique(cells.Select(c => c.PixelSizeLon));
             var rasterType = cells.Select(c => c.RasterType).First();
-            var pinnedStart = Unique(cells.Select(c => c.PinToGridCeiling(wantedStart)));
-            var pinnedEnd = Unique(cells.Select(c => c.PinToGridFloor(wantedEnd)));
+            var pinnedStart = Unique(cells.Select(c => c.PinToGridCeiling(wantedStart).Round(12)));
+            var pinnedEnd = Unique(cells.Select(c => c.PinToGridFloor(wantedEnd).Round(12)));
+
+            // XXX: Rounding was added to avoid usual double rounding problems
+            //      This may leed to precision loss, needs investigating
 
             Mapping = RasterMapping.Create(rasterType, pinnedStart, pinnedEnd, pixelSizeLat, pixelSizeLon);
 
@@ -131,6 +134,7 @@ namespace MapToolkit.DataCells
             if (target < 0)
             {
                 source -= target;
+                count += target;
                 target = 0;
             }
             if (target + count > max)

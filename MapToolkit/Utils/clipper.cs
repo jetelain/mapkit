@@ -3941,7 +3941,7 @@ namespace ClipperLib
       {
         for (int i = 0; i < m_Joins.Count; i++)
         {
-            if (i % 50 == 0)
+            if (i % 100 == 0)
             {
                 progress?.Report(i * 100.0 / (m_Joins.Count + 1));
             }

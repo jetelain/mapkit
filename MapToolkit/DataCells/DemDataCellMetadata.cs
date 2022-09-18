@@ -26,13 +26,13 @@ namespace MapToolkit.DataCells
         }
 
         [JsonConstructor]
-        public DemDataCellMetadata(DemRasterType rasterType, Coordinates start, Coordinates end, int pointsPerCellLat, int pointsPerCellLon)
+        public DemDataCellMetadata(DemRasterType rasterType, Coordinates start, Coordinates end, int pointsLat, int pointsLon)
         {
             RasterType = rasterType;
             Start = start;
             End = end;
-            PointsLat = pointsPerCellLat;
-            PointsLon = pointsPerCellLon;
+            PointsLat = pointsLat;
+            PointsLon = pointsLon;
         }
 
         internal static Coordinates EndFromResolution(Coordinates start, DemRasterType type, int height, int width, double latPx, double lonPx)

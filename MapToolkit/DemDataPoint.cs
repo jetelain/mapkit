@@ -1,8 +1,9 @@
 ﻿using System;
+using GeoJSON.Text.Geometry;
 
 namespace MapToolkit
 {
-    public sealed class DemDataPoint : IEquatable<DemDataPoint>
+    public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition
     {
         public DemDataPoint(Coordinates coordinates, double elevation)
         {
@@ -13,6 +14,12 @@ namespace MapToolkit
         public Coordinates Coordinates { get; }
 
         public double Elevation { get; }
+
+        double? IPosition.Altitude => Elevation;
+
+        double IPosition.Latitude => Coordinates.Latitude;
+
+        double IPosition.Longitude => Coordinates.Longitude;
 
         public bool Equals(DemDataPoint? other)
         {

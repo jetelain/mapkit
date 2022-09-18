@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClipperLib;
-using GeoJSON.Text.Feature;
 using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
 
@@ -189,8 +188,10 @@ namespace MapToolkit.Contours
         }
 
 #if DEBUG
-        public void Simplify()
+        private void Simplify()
         {
+            // Intened only to check for errors in previous algorithm results
+
             Cleanup();
 
             var initialCount = Count;
@@ -249,7 +250,7 @@ namespace MapToolkit.Contours
             {
                 if (line.IsClosed && line.Points.Count > 3)
                 {
-                    if (line.IsClockwise)
+                    if (line.IsCounterClockWise)
                     {
                         clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
                     }

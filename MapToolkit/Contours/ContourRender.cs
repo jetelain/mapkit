@@ -24,13 +24,14 @@ namespace MapToolkit.Contours
             this.style = style;
         }
 
-        public void Render(ContourGraph graph, IProjectionArea projection, Image? hillshade)
+        public void Render(ContourGraph graph, IProjectionArea projection, Image? hillshade, IProgress<int>? progress = null)
         {
             if (hillshade != null)
             {
                 writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
             }
             var masters = new List<ContourLine>();
+            var done = 0;
             foreach (var line in graph.Lines)
             {
                 if (line.Level % 50 == 0)
@@ -40,12 +41,23 @@ namespace MapToolkit.Contours
                 else
                 {
                     RenderLine( projection, line);
+                    done++;
+                    if (done % 100 == 0)
+                    {
+                        progress?.Report(done);
+                    }
                 }
             }
             foreach(var line in masters)
             {
                 RenderMajorLine(projection, line);
+                done++; 
+                if (done % 100 == 0)
+                {
+                    progress?.Report(done);
+                }
             }
+            progress?.Report(done);
         }
 
         private void RenderLine(IProjectionArea projection, ContourLine line)

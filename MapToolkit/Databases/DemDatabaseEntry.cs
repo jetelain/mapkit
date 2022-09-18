@@ -32,9 +32,16 @@ namespace MapToolkit.Databases
                     Metadata.End.Longitude >= start.Longitude;
         }
 
-        public Task<IDemDataCell> Load(IDemStorage storage, IMemoryCache memoryCache)
+        public async Task<IDemDataCell> Load(IDemStorage storage, IMemoryCache cache)
         {
-            return memoryCache.GetOrCreateAsync(this, e => storage.Load(Path));
+            if (!cache.TryGetValue(this, out IDemDataCell result))
+            {
+                using var entry = cache.CreateEntry(this);
+                result = await storage.Load(Path).ConfigureAwait(false);
+                entry.Value = result;
+                entry.Size = result.SizeInBytes;
+            }
+            return result;
         }
 
         public IDemDataCell? PickData(IMemoryCache memoryCache)

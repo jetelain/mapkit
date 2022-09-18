@@ -32,6 +32,7 @@ namespace MapToolkit
 
         public double Longitude { get; }
 
+        [JsonIgnore]
         public double? Altitude => null;
 
         public bool Equals(Coordinates? other)
@@ -66,12 +67,13 @@ namespace MapToolkit
 
         internal double DistanceSquared(Coordinates coordinates)
         {
-            var dx = Latitude - coordinates.Latitude;
-            var dy = Longitude - coordinates.Longitude;
+            var dy = Latitude - coordinates.Latitude;
+            var dx = Longitude - coordinates.Longitude;
             return (dx * dx) + (dy * dy);
         }
 
         internal const double DefaultThreshold = 0.000_005; // Less than 1m at equator
+
         internal const double DefaultThresholdSquared = DefaultThreshold * DefaultThreshold;
 
         public bool AlmostEquals(Coordinates? other, double thresholdSqared = DefaultThresholdSquared)
@@ -105,9 +107,15 @@ namespace MapToolkit
         {
             return new Coordinates(c.Latitude + v.DeltaLat, c.Longitude + v.DeltaLon);
         }
+
         public static Coordinates operator -(Coordinates c, Vector v)
         {
             return new Coordinates(c.Latitude - v.DeltaLat, c.Longitude - v.DeltaLon);
+        }
+
+        public Coordinates Round(int digits)
+        {
+            return new Coordinates(Math.Round(Latitude, digits), Math.Round(Longitude, digits));
         }
     }
 }

@@ -34,7 +34,7 @@ namespace MapToolkit.Databases
         public async Task<IDemDataCell> Load(string path)
         {
             var uri = new Uri(client.BaseAddress, path);
-            var cacheFile = Path.Combine(localCache, uri.DnsSafeHost, uri.AbsolutePath.Substring(1).Replace('/', Path.PathSeparator));
+            var cacheFile = Path.Combine(localCache, uri.DnsSafeHost, uri.AbsolutePath.Substring(1).Replace('/', Path.DirectorySeparatorChar));
             if(!File.Exists(cacheFile))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(cacheFile));

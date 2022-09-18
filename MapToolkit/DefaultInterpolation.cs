@@ -37,7 +37,7 @@ namespace MapToolkit
             {
                 return points[0].Elevation;
             }
-
+            // FIXME: This is wrong
             var elevationWeighted = 0d;
             var totalDistances = 0d;
 

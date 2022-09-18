@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GeoJSON.Text.Geometry;
 
 namespace MapToolkit.Contours
 {
-    public class ContourLine
+    public sealed class ContourLine
     {
         internal ContourLine(ContourSegment segment)
         {
@@ -20,13 +19,20 @@ namespace MapToolkit.Contours
             Level = segment.Level;
         }
 
+        public ContourLine(IEnumerable<Coordinates> points, double level)
+        {
+            Points.AddRange(points);
+            Level = level;
+            UpdateIsClosed(Coordinates.DefaultThresholdSquared);
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <remarks>
-        /// Points are in trigonometric direction (counter clockwise) for hills.
+        /// Points are counter clockwise for hills.
         /// 
-        /// Points are in clockwise direction for basin.
+        /// Points are clockwise for basin.
         /// </remarks>
         public List<Coordinates> Points { get; } = new List<Coordinates>();
 
@@ -125,21 +131,6 @@ namespace MapToolkit.Contours
             }
         }
 
-        internal bool IsClockwise
-        {
-            get
-            {
-                var north = Points.IndexOf(Points.OrderByDescending(p => p.Latitude).First());
-                var east = Points.IndexOf(Points.OrderByDescending(p => p.Longitude).First());
-                var south = Points.IndexOf(Points.OrderBy(p => p.Latitude).First());
-                var west = Points.IndexOf(Points.OrderBy(p => p.Longitude).First());
-
-                var epos = (east - north) % Points.Count;
-                var spos = (south - north) % Points.Count;
-                var wpos = (west - north) % Points.Count;
-
-                return epos >= spos && spos >= wpos;
-            }
-        }
+        public bool IsCounterClockWise => Points.IsCounterClockWise();
     }
 }

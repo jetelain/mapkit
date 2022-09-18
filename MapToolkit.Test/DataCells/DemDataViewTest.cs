@@ -112,7 +112,7 @@ namespace MapToolkit.Test.DataCells
         }
 
         [Fact]
-        public void PixelIsPoint_ToDataCell()
+        public void PixelIsPoint_ToDataCell_SingleCell()
         {
             var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
                 { 6, 3, 0 },
@@ -145,5 +145,39 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(2, subCell.Data[1, 1]);
         }
 
+        [Fact]
+        public void PixelIsPoint_ToDataCell_MultipleCell()
+        {
+            var cell1 = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[5, 5] {
+                { 00, 01, 02, 03, 04 },
+                { 10, 11, 12, 13, 14 },
+                { 20, 21, 22, 23, 24 },
+                { 30, 31, 32, 33, 34 },
+                { 40, 41, 42, 43, 44 }
+            });
+
+            var cell2 = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 1), new Coordinates(1, 2), new short[5, 5] {
+                { 04, 05, 06, 07, 08 },
+                { 14, 15, 16, 17, 18 },
+                { 24, 25, 26, 27, 28 },
+                { 34, 35, 36, 37, 38 },
+                { 44, 45, 46, 47, 48 },
+            });
+
+            var merge = new DemDataView<short>(new[] { cell2, cell1 }, new Coordinates(0, 0.5), new Coordinates(1, 1.5)).ToDataCell();
+            Assert.Equal(new Coordinates(0, 0.5), merge.Start);
+            Assert.Equal(new Coordinates(1, 1.5), merge.End);
+            Assert.Equal(1, merge.SizeLon);
+            Assert.Equal(1, merge.SizeLat);
+            Assert.Equal(
+                new short[5, 5] {
+                    { 02, 03, 04, 05, 06 },
+                    { 12, 13, 14, 15, 16 },
+                    { 22, 23, 24, 25, 26 },
+                    { 32, 33, 34, 35, 36 },
+                    { 42, 43, 44, 45, 46 },
+                },
+                merge.Data);
+        }
     }
 }
