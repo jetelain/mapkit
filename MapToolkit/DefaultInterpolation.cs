@@ -37,10 +37,8 @@ namespace MapToolkit
             {
                 return points[0].Elevation;
             }
-            // FIXME: This is wrong
             var elevationWeighted = 0d;
             var totalDistances = 0d;
-
             foreach(var point in points)
             {
                 var distance = point.Coordinates.Distance(coordinates);
@@ -51,9 +49,9 @@ namespace MapToolkit
                     return point.Elevation;
                 }
                 elevationWeighted += point.Elevation / distance;
-                totalDistances += distance;
+                totalDistances += 1 / distance;
             }
-            return elevationWeighted * totalDistances;
+            return elevationWeighted / totalDistances;
         }
     }
 }
