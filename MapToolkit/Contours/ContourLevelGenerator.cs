@@ -6,16 +6,18 @@ namespace MapToolkit.Contours
     public class ContourLevelGenerator : IContourLevelGenerator
     {
         private readonly double step;
+        private readonly double strictMin;
 
-        public ContourLevelGenerator (double step = 10)
+        public ContourLevelGenerator (double strictMin = double.MinValue, double step = 10)
         {
+            this.strictMin = strictMin;
             this.step = step;
         }
 
         public IEnumerable<double> Levels(double min, double max)
         {
-            var start = Math.Ceiling(min / step) * step;
-            var end = Math.Ceiling(max / step) * step;
+            var start = Math.Max(strictMin, Math.Ceiling(min / step) * step);
+            var end = Math.Max(strictMin, Math.Ceiling(max / step) * step);
             if (start != end)
             {
                 for (var level = start; level <= end; level += step)
