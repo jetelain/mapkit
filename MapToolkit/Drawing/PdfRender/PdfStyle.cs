@@ -18,16 +18,7 @@ namespace MapToolkit.Drawing.PdfRender
         {
             if (pen != null)
             {
-                var brush = ToBrush(pen.Brush);
-                XPen xpen;
-                if (brush is XSolidBrush sb)
-                {
-                    xpen = new XPen(sb.Color, pen.Width * scaleLines);
-                }
-                else
-                {
-                    xpen = new XPen(ToBrush(pen.Brush), pen.Width * scaleLines);
-                }
+                var xpen = new XPen(GetColor(pen.Brush), pen.Width * scaleLines);
                 if (pen.Pattern != null)
                 {
                     xpen.DashPattern = pen.Pattern.Select(v => v / pen.Width).ToArray();
@@ -42,13 +33,19 @@ namespace MapToolkit.Drawing.PdfRender
             switch (fill)
             {
                 case SolidColorBrush solid:
-                    var c = solid.Color.ToPixel<Argb32>();
-                    return new XSolidBrush(XColor.FromArgb(c.A, c.R, c.G, c.B));
-                //case VectorBrush vector:
-                //    return new SixLabors.ImageSharp.Drawing.Processing.ImageBrush(ToImage(vector));
-                // TODO: find a workaround !
+                    return new XSolidBrush(GetColor(solid));
+                    //case VectorBrush vector:
+                    //    return new SixLabors.ImageSharp.Drawing.Processing.ImageBrush(ToImage(vector));
+                    // TODO: find a workaround !
             }
             return null;
+        }
+
+        private static XColor GetColor(SolidColorBrush solid)
+        {
+            var c = solid.Color.ToPixel<Argb32>();
+            var xc = XColor.FromArgb(c.A, c.R, c.G, c.B);
+            return xc;
         }
 
         public XBrush? Brush { get; }

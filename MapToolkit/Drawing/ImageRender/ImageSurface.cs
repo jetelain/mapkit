@@ -19,8 +19,6 @@ namespace MapToolkit.Drawing.ImageRender
             this.target = target;
         }
 
-        public double Scale => 1;
-
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             return new ImageStyle(fill, pen);
@@ -28,21 +26,7 @@ namespace MapToolkit.Drawing.ImageRender
 
         public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            FontFamily fontFamily;
-            var success = false;
-            foreach(var font in fontNames)
-            {
-                if (SystemFonts.Collection.TryGet(font, out fontFamily))
-                {
-                    success = true;
-                    break;
-                }
-            }
-            if (!success)
-            {
-                fontFamily = SystemFonts.Collection.Get("Arial");
-            }
-            return new ImageTextStyle(fill, pen, fontFamily.CreateFont((float)size, style), fillCoverPen, textAnchor);
+            return new ImageTextStyle(fill, pen, FontHelper.GetFont(fontNames, style, size), fillCoverPen, textAnchor);
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)

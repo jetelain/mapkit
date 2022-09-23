@@ -60,6 +60,21 @@ namespace MapToolkit.Contours
             progress?.Report(done);
         }
 
+        public void RenderSimpler(ContourGraph graph, IProjectionArea projection, Image? hillshade)
+        {
+            if (hillshade != null)
+            {
+                writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
+            }
+            foreach (var line in graph.Lines)
+            {
+                if (line.Level % 50 == 0)
+                {
+                    RenderLine(projection, line);
+                }
+            }
+        }
+
         private void RenderLine(IProjectionArea projection, ContourLine line)
         {
             writer.DrawPolyline(line.Points.Select(p => projection.Project(p)), style.MinorContourLine);
@@ -81,7 +96,7 @@ namespace MapToolkit.Contours
 
                 if (prev != null)
                 {
-                    var l = Math.Sqrt(Math.Pow(prev.X - p.X, 2) + Math.Pow(prev.Y - p.Y, 2)) / writer.Scale;
+                    var l = Math.Sqrt(Math.Pow(prev.X - p.X, 2) + Math.Pow(prev.Y - p.Y, 2)) / projection.Scale;
                     len += l;
                     reg += l;
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using MapToolkit.Drawing.MemoryRender;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using SixLabors.ImageSharp;
@@ -16,6 +17,48 @@ namespace MapToolkit.Drawing
             using (var surface = new SvgRender.SvgSurface(XmlWriter.Create(File.CreateText(file)), size, file))
             {
                 draw(surface);
+            }
+        }
+
+        public static void ToSvgTiled(string file, Vector size, Action<IDrawSurface> draw, Action<IDrawSurface>? drawSimpler = null)
+        {
+            var surface = new MemoryRender.MemorySurface();
+            draw(surface);
+
+            var surface2 = new MemoryRender.MemorySurface();
+            if (drawSimpler != null)
+            {
+                drawSimpler(surface2);
+            }
+            else
+            {
+                surface2 = surface;
+            }
+            SvgTileLevel(file, 4, surface, size);
+            SvgTileLevel(file, 3, surface.ToScale(0.5,0.5), size / 2);
+            SvgTileLevel(file, 2, surface2.ToScale(0.25,0.5), size / 4);
+            SvgTileLevel(file, 1, surface2.ToScale(0.125,0.5), size / 8);
+            SvgTileLevel(file, 0, surface2.ToScale(0.0625, 0.25), size / 16);
+        }
+
+        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size)
+        {
+            var chunks = 1 << zoomLevel;
+
+            var tileSize = size / chunks;
+
+            Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}"));
+
+            for (int x = 0; x < chunks; ++x)
+            {
+                Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}/{x}"));
+
+                for (int y = 0; y < chunks; ++y)
+                {
+                    var file = Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.svg");
+                    var pos = new Vector(tileSize.X * x, tileSize.Y * y);
+                    ToSvg(file, tileSize, t => new MemDrawClipped(surface, t, pos, pos + tileSize).Draw());
+                }
             }
         }
 

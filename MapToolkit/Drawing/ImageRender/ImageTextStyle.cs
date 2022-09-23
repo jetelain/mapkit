@@ -9,26 +9,8 @@ namespace MapToolkit.Drawing.ImageRender
         {
             Font = font;
             FillCoverPen = fillCoverPen;
-
-            switch (textAnchor)
-            {
-                case TextAnchor.CenterLeft:
-                    this.VerticalAlignment = VerticalAlignment.Center;
-                    this.HorizontalAlignment = HorizontalAlignment.Left;
-                    break;
-                case TextAnchor.CenterRight:
-                    this.VerticalAlignment = VerticalAlignment.Center;
-                    this.HorizontalAlignment = HorizontalAlignment.Right;
-                    break;
-                case TextAnchor.TopCenter:
-                    this.VerticalAlignment = VerticalAlignment.Bottom;
-                    this.HorizontalAlignment = HorizontalAlignment.Center;
-                    break;
-                case TextAnchor.BottomCenter:
-                    this.VerticalAlignment = VerticalAlignment.Top;
-                    this.HorizontalAlignment = HorizontalAlignment.Center;
-                    break;
-            }
+            VerticalAlignment = FontHelper.GetVerticalAlignment(textAnchor);
+            HorizontalAlignment = FontHelper.GetHorizontalAlignment(textAnchor);
         }
 
         public Font Font { get; }

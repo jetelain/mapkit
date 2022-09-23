@@ -9,5 +9,7 @@ namespace MapToolkit.Projections
         Vector Min { get; }
 
         Vector Size { get; }
+
+        double Scale { get; }
     }
 }

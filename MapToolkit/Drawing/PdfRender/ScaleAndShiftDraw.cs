@@ -14,8 +14,6 @@ namespace MapToolkit.Drawing.PdfRender
         private readonly double dx;
         private readonly double dy;
 
-        public double Scale => drawSurface.Scale;
-
         public ScaleAndShiftDraw(PdfSurface drawSurface, double scalePoints, double dx, double dy)
         {
             this.drawSurface = drawSurface;

@@ -41,6 +41,11 @@ namespace MapToolkit
 
         public double DeltaLat => Y;
 
+        internal double LengthSquared()
+        {
+            return (X * X) + (Y * Y);
+        }
+
         public bool Equals(Vector? other)
         {
             if (other != null)
@@ -74,7 +79,22 @@ namespace MapToolkit
         {
             return new Vector(v.X / f, v.Y / f);
         }
-
+        public static Vector operator /(Vector a, Vector b)
+        {
+            return new Vector(a.X / b.X, a.Y / b.Y);
+        }
+        public static Vector operator *(Vector a, Vector b)
+        {
+            return new Vector(a.X * b.X, a.Y * b.Y);
+        }
+        public static Vector operator +(Vector a, Vector b)
+        {
+            return new Vector(a.X + b.X, a.Y + b.Y);
+        }
+        public static Vector operator -(Vector a, Vector b)
+        {
+            return new Vector(a.X - b.X, a.Y - b.Y);
+        }
         public override string ToString()
         {
             return FormattableString.Invariant($"({X};{Y})");

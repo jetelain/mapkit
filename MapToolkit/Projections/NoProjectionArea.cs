@@ -11,7 +11,7 @@ namespace MapToolkit.Projections
         private readonly double minLon;
         private readonly double maxLat;
 
-        public NoProjectionArea(Coordinates min, Coordinates max, Vector size, int rounding = 0)
+        public NoProjectionArea(Coordinates min, Coordinates max, Vector size, int rounding = 0, double scale = 1)
         {
             Size = size;
             minLon = min.Longitude;
@@ -19,11 +19,14 @@ namespace MapToolkit.Projections
             latFactor = (max.Latitude - min.Latitude) / size.Y;
             lonFactor = (max.Longitude - min.Longitude) / size.X;
             this.rounding = rounding;
+            Scale = scale;
         }
 
         public Vector Min => Vector.Zero;
 
         public Vector Size { get; }
+
+        public double Scale { get; }
 
         public Vector Project(IPosition point)
         {

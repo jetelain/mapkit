@@ -1,0 +1,63 @@
+﻿using System.Collections.Generic;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+
+namespace MapToolkit.Drawing.MemoryRender
+{
+    internal class TranslateStylesSurface : IDrawSurface
+    {
+        private readonly IRemapStyle memDrawContext;
+        private readonly IDrawSurface s;
+
+        public TranslateStylesSurface(IRemapStyle memDrawContext, IDrawSurface s)
+        {
+            this.memDrawContext = memDrawContext;
+            this.s = s;
+        }
+
+        public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        {
+            s.DrawCircle(center, radius, memDrawContext.MapStyle((MemDrawStyle)style));
+        }
+
+        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+}

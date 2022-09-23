@@ -30,6 +30,8 @@ namespace MapToolkit.Projections
 
         public Vector Size { get; }
 
+        public double Scale => 1;
+
         public Vector Project(IPosition point)
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;

@@ -6,8 +6,6 @@ namespace MapToolkit.Drawing
 {
     public interface IDrawSurface
     {
-        double Scale { get; }
-
         IDrawStyle AllocateStyle(
             IBrush? fill,
             Pen? pen);

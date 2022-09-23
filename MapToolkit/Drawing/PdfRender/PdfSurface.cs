@@ -21,8 +21,6 @@ namespace MapToolkit.Drawing.PdfRender
             this.scaleLines = scaleLines;
         }
 
-        public double Scale => scaleLines;
-
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             return new PdfStyle(fill, pen, scaleLines);

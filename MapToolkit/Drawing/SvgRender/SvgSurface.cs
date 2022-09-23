@@ -26,8 +26,6 @@ namespace MapToolkit.Drawing.SvgRender
         private bool isWrittingStyle = false;
         private readonly StringBuilder styles = new StringBuilder();
 
-        public double Scale => 1;
-
         public SvgSurface(XmlWriter writer, Vector size, string? path = null)
         {
             this.writer = writer;
@@ -37,11 +35,16 @@ namespace MapToolkit.Drawing.SvgRender
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
-            var name = "s" + nextStyleId++;
+            var name = TakeStyleId();
             StartClass(name);
             Append(fill, pen);
             EndClass();
             return new SvgStyle(name);
+        }
+
+        private string TakeStyleId()
+        {
+            return "s" + (nextStyleId++).ToString("x");
         }
 
         private void EndClass()
@@ -74,7 +77,7 @@ namespace MapToolkit.Drawing.SvgRender
 
         public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
         {
-            var name = "s" + nextStyleId++;
+            var name = TakeStyleId();
             StartClass(name);
             Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
             Append(fill, fillCoverPen ? null : pen);
@@ -114,11 +117,11 @@ namespace MapToolkit.Drawing.SvgRender
             EndClass();
             if (fillCoverPen && pen != null)
             {
-                var bgName = "s" + nextStyleId++;
-                StartClass(bgName);
+                //var bgName = TakeStyleId();
+                StartClass(name + ".b");
                 Append(null, pen);
                 EndClass();
-                return new SvgTextStyle(name, name + " " + bgName);
+                return new SvgTextStyle(name, name + " b" /*+ bgName*/);
             }
             return new SvgTextStyle(name, null);
         }
@@ -127,7 +130,14 @@ namespace MapToolkit.Drawing.SvgRender
         {
             writer.WriteStartElement("svg", SvgXmlns);
             writer.WriteAttributeString("viewBox", FormattableString.Invariant($"0 0 {size.X} {size.Y}"));
-            writer.WriteString(Environment.NewLine);
+
+            writer.WriteStartElement("rect", SvgXmlns);
+            writer.WriteAttributeString("x", "0");
+            writer.WriteAttributeString("y", "0");
+            writer.WriteAttributeString("width", size.X.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("height", size.X.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("fill", "#fff");
+            writer.WriteEndElement();
         }
 
         private void EndSvg()
@@ -144,7 +154,6 @@ namespace MapToolkit.Drawing.SvgRender
                 writer.WriteStartElement("style", SvgXmlns);
                 writer.WriteString(styles.ToString());
                 writer.WriteEndElement();
-                writer.WriteString(Environment.NewLine);
                 styles.Clear();
             }
         }
@@ -182,7 +191,6 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("patternUnits", "userSpaceOnUse");
             vector.Draw(this);
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
             return $"url(#{id})";
         }
 
@@ -195,34 +203,32 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("r", radius.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         public void DrawImage(Image image, Vector pos, Vector size, double alpha)
         {
             FlushStyles();
             string href;
-            if ((image.Width > 250 || image.Height > 250) && path != null)
-            {
-                var target = Path.ChangeExtension(path, ".i"+(nextImageId++)+".png");
-                image.SaveAsPng(target);
-                href = Path.GetFileName(target);
-            }
-            else
-            {
+            //if ((image.Width > 250 || image.Height > 250) && path != null)
+            //{
+            //    var target = Path.ChangeExtension(path, ".i"+(nextImageId++)+".png");
+            //    image.SaveAsPng(target);
+            //    href = Path.GetFileName(target);
+            //}
+            //else
+            //{
                 var mem = new MemoryStream();
                 image.SaveAsPng(mem);
                 href = "data:image/png;base64," + Convert.ToBase64String(mem.ToArray());
-            }
+            //}
             writer.WriteStartElement("image", SvgXmlns);
-            writer.WriteAttributeString("x", pos.X.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("y", pos.Y.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("x", Math.Round(pos.X).ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("y", Math.Round(pos.Y).ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("width", size.X.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("height", size.Y.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("opacity", alpha.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("href", href);
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
@@ -232,7 +238,6 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
             writer.WriteAttributeString("d", GeneratePath(points, true));
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
@@ -243,7 +248,6 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
             writer.WriteAttributeString("d", GeneratePath(points, false));
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         private void KeepSharedStringBuilderLightweight()
@@ -252,24 +256,6 @@ namespace MapToolkit.Drawing.SvgRender
             {
                 sharedStringBuilder.Capacity = 1204;
             }
-        }
-
-        private string GeneratePoints(IEnumerable<Vector> points)
-        {
-            sharedStringBuilder.Clear();
-            KeepSharedStringBuilderLightweight();
-            foreach (var px in points)
-            {
-                if (sharedStringBuilder.Length == 0)
-                {
-                    sharedStringBuilder.Append(FormattableString.Invariant($"{px.X} {px.Y}"));
-                }
-                else
-                {
-                    sharedStringBuilder.Append(FormattableString.Invariant($" {px.X} {px.Y}"));
-                }
-            }
-            return sharedStringBuilder.ToString();
         }
 
         private string GeneratePath(IEnumerable<Vector> points, bool closed)
@@ -296,8 +282,9 @@ namespace MapToolkit.Drawing.SvgRender
         {
             Vector previous = Vector.Zero;
             bool first = true;
-            foreach (var px in points)
+            foreach (var p in points)
             {
+                var px = new Vector(Math.Round(p.X), Math.Round(p.Y));
                 if (first)
                 {
                     if (sharedStringBuilder.Length > 0)
@@ -350,7 +337,6 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteString(text);
             writer.WriteEndElement();
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         public void DrawText(Vector point, string text, IDrawTextStyle style)
@@ -362,19 +348,18 @@ namespace MapToolkit.Drawing.SvgRender
             {
                 writer.WriteStartElement("text", SvgXmlns);
                 writer.WriteAttributeString("class", sstyle.BgName);
-                writer.WriteAttributeString("x", point.X.ToString(CultureInfo.InvariantCulture));
-                writer.WriteAttributeString("y", point.Y.ToString(CultureInfo.InvariantCulture));
+                writer.WriteAttributeString("x", Math.Round(point.X).ToString(CultureInfo.InvariantCulture));
+                writer.WriteAttributeString("y", Math.Round(point.Y).ToString(CultureInfo.InvariantCulture));
                 writer.WriteString(text);
                 writer.WriteEndElement();
             }
 
             writer.WriteStartElement("text", SvgXmlns);
             writer.WriteAttributeString("class", sstyle.Name);
-            writer.WriteAttributeString("x", point.X.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("y", point.Y.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("x", Math.Round(point.X).ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("y", Math.Round(point.Y).ToString(CultureInfo.InvariantCulture));
             writer.WriteString(text);
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
 
         public void Dispose()
@@ -391,7 +376,6 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
             writer.WriteAttributeString("d", GeneratePathWithHoles(contour, holes));
             writer.WriteEndElement();
-            writer.WriteString(Environment.NewLine);
         }
     }
 }

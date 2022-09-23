@@ -1,17 +1,25 @@
 ﻿using System.Collections.Generic;
+using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing
 {
     public class Pen
     {
-        public Pen(IBrush brush, double width = 1, IEnumerable<double>? pattern = null)
+        public Pen(SolidColorBrush brush, double width = 1, IEnumerable<double>? pattern = null)
         {
             Brush = brush;
             Width = width;
             Pattern = pattern;
         }
 
-        public IBrush Brush { get; }
+        public Pen(Color color, double width = 1, IEnumerable<double>? pattern = null)
+        {
+            Brush = new SolidColorBrush(color);
+            Width = width;
+            Pattern = pattern;
+        }
+
+        public SolidColorBrush Brush { get; }
 
         public double Width { get; }
 
