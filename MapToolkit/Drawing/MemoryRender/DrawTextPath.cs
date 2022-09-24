@@ -63,7 +63,7 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public IEnumerable<IDrawOperation> Simplify()
         {
-            var path = DrawHelper.SimplifyOpen(Points);
+            var path = DrawHelper.SimplifyKeepLast(Points);
             if (path != null)
             {
                 yield return new DrawTextPath(path, Text, Style);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ClipperLib;
 using GeoJSON.Text.Geometry;
@@ -81,7 +82,7 @@ namespace MapToolkit
             return new IntPoint(pos.Longitude * scaleForClipper, pos.Latitude * scaleForClipper);
         }
 
-        internal static IEnumerable<Polygon> ToPolygons(this PolyTree result, int rounding = -1)
+        internal static List<Polygon> ToPolygons(this PolyTree result, int rounding = -1)
         {
             return result.Childs
                 .Select(c => new Polygon((new[] { ToLineStringClosed(c, rounding) })
@@ -115,6 +116,51 @@ namespace MapToolkit
             var result = new PolyTree();
             clipper.Execute(ClipType.ctXor, result);
             return result.ToPolygons(rounding);
+        }
+
+        public static MultiPolygon UnionToMultiPolygon(this IEnumerable<Polygon> polygons)
+        {
+            var withoutHoles = polygons.Where(p => p.Coordinates.Count == 1).ToList();
+            var withHoles = polygons.Where(p => p.Coordinates.Count > 1).ToList();
+            if (withoutHoles.Count > 0)
+            {
+                withoutHoles = UnionWithoutHoles(withoutHoles);
+                if (withHoles.Count == 0)
+                {
+                    return new MultiPolygon(withoutHoles);
+                }
+                withHoles.AddRange(withHoles);
+            }
+            // Naive way : merge two by two if bounding boxes overlaps
+            throw new NotImplementedException("TODO");
+        }
+
+        private static List<Polygon> UnionWithoutHoles(IEnumerable<Polygon> polygons)
+        {
+            var clipper = new Clipper();
+            foreach (var poly in polygons)
+            {
+                clipper.AddPath(poly.Coordinates[0].Coordinates.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+            }
+            var result = new PolyTree();
+            clipper.Execute(ClipType.ctUnion, result, PolyFillType.pftNonZero);
+            return ToPolygons(result);
+        }
+
+        public static IEnumerable<Polygon> Union(this Polygon subject, Polygon other)
+        {
+            var clipper = new Clipper();
+            foreach (var line in subject.Coordinates)
+            {
+                clipper.AddPath(line.Coordinates.Select(c => c.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+            }
+            foreach (var line in other.Coordinates)
+            {
+                clipper.AddPath(line.Coordinates.Select(c => c.ToIntPoint()).ToList(), PolyType.ptClip, true);
+            }
+            var result = new PolyTree();
+            clipper.Execute(ClipType.ctUnion, result);
+            return ToPolygons(result);
         }
     }
 }

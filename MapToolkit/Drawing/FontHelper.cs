@@ -33,6 +33,8 @@ namespace MapToolkit.Drawing
                     return VerticalAlignment.Bottom;
                 case TextAnchor.BottomCenter:
                     return VerticalAlignment.Top;
+                case TextAnchor.TopLeft:
+                    return VerticalAlignment.Top;
             }
             return VerticalAlignment.Top;
         }
@@ -49,6 +51,8 @@ namespace MapToolkit.Drawing
                     return HorizontalAlignment.Center;
                 case TextAnchor.BottomCenter:
                     return HorizontalAlignment.Center;
+                case TextAnchor.TopLeft:
+                    return HorizontalAlignment.Left;
             }
             return HorizontalAlignment.Left;
         }

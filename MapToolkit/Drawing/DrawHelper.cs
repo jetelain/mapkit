@@ -3,17 +3,18 @@ using System.Linq;
 
 namespace MapToolkit.Drawing
 {
-    internal class DrawHelper
+    public static class DrawHelper
     {
-        internal static List<Vector>? SimplifyClosed(IEnumerable<Vector> enumerable)
+        public static List<Vector>? SimplifyClosed(IEnumerable<Vector> enumerable, double lengthSquared = 9)
         {
-            var simplified = SimplifyOpen(enumerable);
+            var simplified = SimplifyKeepLast(enumerable, lengthSquared);
             if ( simplified != null )
             {
                 if (!simplified[0].Equals(simplified[simplified.Count-1]))
                 {
                     simplified.Add(simplified[0]);
                 }
+                // XXX: Add an area criteria
                 if (simplified.Count > 3)
                 {
                     return simplified;
@@ -22,7 +23,7 @@ namespace MapToolkit.Drawing
             return null;
         }
 
-        internal static IEnumerable<IEnumerable<Vector>>? SimplifyClosed(IEnumerable<IEnumerable<Vector>>? enumerable)
+        public static IEnumerable<IEnumerable<Vector>>? SimplifyClosed(IEnumerable<IEnumerable<Vector>>? enumerable, double lengthSquared = 9)
         {
             if(enumerable == null)
             {
@@ -31,7 +32,7 @@ namespace MapToolkit.Drawing
             var result = new List<IEnumerable<Vector>>();
             foreach(var item in enumerable)
             {
-                var simplified = SimplifyClosed(item);
+                var simplified = SimplifyClosed(item, lengthSquared);
                 if (simplified != null)
                 {
                     result.Add(simplified);
@@ -46,24 +47,34 @@ namespace MapToolkit.Drawing
             {
                 return SimplifyClosed(list);
             }
-            return SimplifyOpen(list);
+            return SimplifyKeepLast(list);
         }
 
-        internal static List<Vector>? SimplifyOpen(IEnumerable<Vector> enumerable)
+        public static List<Vector>? SimplifyKeepLast(IEnumerable<Vector> enumerable, double lengthSquared = 9)
         {
             var result = new List<Vector>();
+            Vector? last = null;
             foreach (var point in enumerable)
             {
-                if (result.Count == 0 || (result[result.Count - 1] - point).LengthSquared() > 9)
+                if (result.Count == 0 || (result[result.Count - 1] - point).LengthSquared() > lengthSquared)
                 {
                     result.Add(point);
+                    last = null;
+                }
+                else
+                {
+                    last = point;
                 }
             }
-            if (result.Count > 1)
+            if (result.Count == 1)
             {
-                return result;
+                return null;
             }
-            return null;
+            if (last != null)
+            {
+                result.Add(last);
+            }
+            return result;
         }
     }
 }

@@ -25,5 +25,23 @@ namespace MapToolkit.Drawing.PdfRender
         public Font? SixFont { get; }
         public VerticalAlignment VerticalAlignment { get; }
         public HorizontalAlignment HorizontalAlignment { get; }
+
+        public XStringFormat GetXStringFormats()
+        {
+            switch (TextAnchor)
+            {
+                case TextAnchor.TopCenter:
+                    return XStringFormats.TopCenter;
+                case TextAnchor.BottomCenter:
+                    return XStringFormats.BottomCenter;
+                case TextAnchor.CenterLeft:
+                    return XStringFormats.CenterLeft;
+                case TextAnchor.CenterRight:
+                    return XStringFormats.CenterRight;
+                case TextAnchor.TopLeft:
+                    return XStringFormats.TopLeft;
+            }
+            return XStringFormats.TopLeft;
+        }
     }
 }

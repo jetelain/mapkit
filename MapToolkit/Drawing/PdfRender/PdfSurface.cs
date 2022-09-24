@@ -7,6 +7,7 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace MapToolkit.Drawing.PdfRender
 {
@@ -15,10 +16,11 @@ namespace MapToolkit.Drawing.PdfRender
         private readonly XGraphics graphics;
         private readonly double scaleLines;
 
-        public PdfSurface(XGraphics graphics, double scaleLines = 1.0)
+        public PdfSurface(XGraphics graphics, Vector shift, double scaleLines = 1.0)
         {
             this.graphics = graphics;
             this.scaleLines = scaleLines;
+            graphics.TranslateTransform(shift.X, shift.Y);
         }
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
@@ -64,8 +66,14 @@ namespace MapToolkit.Drawing.PdfRender
 
         public void DrawImage(Image image, Vector pos, Vector size, double alpha)
         {
+            var rgba32 = image.CloneAs<Rgba32>();
+            if (alpha != 1.0)
+            {
+                var matrix = new ColorMatrix(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, (float)alpha, 0f, 0f, 0f, 0f);
+                rgba32.Mutate(i => i.Filter(matrix));
+            }
             graphics.DrawImage(
-                XImage.FromImageSource(ImageSharpImageSource<Rgba32>.FromImageSharpImage(image.CloneAs<Rgba32>(), PngFormat.Instance)),
+                XImage.FromImageSource(ImageSharpImageSource<Rgba32>.FromImageSharpImage(rgba32, PngFormat.Instance)),
                 pos.X,
                 pos.Y,
                 size.X,
@@ -132,7 +140,7 @@ namespace MapToolkit.Drawing.PdfRender
             }
             else
             {
-                graphics.DrawString(text, pstyle.Font, pstyle.Brush, new XPoint(point.X, point.Y), XStringFormats.TopLeft);
+                graphics.DrawString(text, pstyle.Font, pstyle.Brush, new XPoint(point.X, point.Y), pstyle.GetXStringFormats());
             }
         }
 

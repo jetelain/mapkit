@@ -40,7 +40,7 @@ namespace MapToolkit.Drawing.MemoryRender
             if ((Min.X >= context.ClipMin.X &&
                  Min.Y >= context.ClipMin.Y &&
                  Max.X <= context.ClipMax.X &&
-                 Max.Y <= context.ClipMax.Y) || Style.Fill is VectorBrush)
+                 Max.Y <= context.ClipMax.Y) /*|| Style.Fill is VectorBrush*/)
             {
                 if (Holes != null)
                 {

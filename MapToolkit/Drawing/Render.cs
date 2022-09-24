@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 using MapToolkit.Drawing.MemoryRender;
 using PdfSharpCore.Drawing;
@@ -49,17 +50,16 @@ namespace MapToolkit.Drawing
 
             Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}"));
 
-            for (int x = 0; x < chunks; ++x)
+            Parallel.For(0, chunks, x =>
             {
                 Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}/{x}"));
-
                 for (int y = 0; y < chunks; ++y)
                 {
                     var file = Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.svg");
                     var pos = new Vector(tileSize.X * x, tileSize.Y * y);
                     ToSvg(file, tileSize, t => new MemDrawClipped(surface, t, pos, pos + tileSize).Draw());
                 }
-            }
+            });
         }
 
         public static void ToPng(string file, Vector size, Action<IDrawSurface> draw)
@@ -118,16 +118,20 @@ namespace MapToolkit.Drawing
         }
         public static void ToPdf(string file, Vector size, Action<IDrawSurface> draw)
         {
-            // 300 dpi meens that 1px is 0.08466666666666666666666666666667 mm
-            // In PDF world 2.8346456692913389 pt = 1 mm
-            // So 1px sould be 0,24000000000000002686666666666667 pt to get 300 dpi, rounded to 0.24
             var document = new PdfDocument();
             var page = document.AddPage();
             page.Width = size.X;
             page.Height = size.Y;
-            draw(new PdfRender.PdfSurface(XGraphics.FromPdfPage(page), 0.24));
+            ToPdfPage(page, Vector.Zero, 0.24, draw);
             document.Save(file);
         }
 
+        public static void ToPdfPage(PdfPage page, Vector shift, double scaleLines, Action<IDrawSurface> draw)
+        {
+            using (var xgfx = XGraphics.FromPdfPage(page))
+            {
+                draw(new PdfRender.PdfSurface(xgfx, shift, scaleLines));
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@
         CenterLeft,
         CenterRight,
         TopCenter,
-        BottomCenter
+        BottomCenter,
+        TopLeft
     }
 }
