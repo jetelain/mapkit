@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -15,6 +16,11 @@ namespace MapToolkit.Drawing.MemoryRender
             this.s = s;
         }
 
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             throw new System.NotImplementedException();
@@ -25,9 +31,19 @@ namespace MapToolkit.Drawing.MemoryRender
             throw new System.NotImplementedException();
         }
 
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            s.DrawArc(center, radius, startAngle, sweepAngle, memDrawContext.MapStyle((MemDrawStyle)style));
+        }
+
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
         {
             s.DrawCircle(center, radius, memDrawContext.MapStyle((MemDrawStyle)style));
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            throw new NotImplementedException();
         }
 
         public void DrawImage(Image image, Vector pos, Vector size, double alpha)

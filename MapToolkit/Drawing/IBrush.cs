@@ -1,6 +1,8 @@
-﻿namespace MapToolkit.Drawing
+﻿using System;
+
+namespace MapToolkit.Drawing
 {
-    public interface IBrush
+    public interface IBrush : IEquatable<IBrush>
     {
     }
 }

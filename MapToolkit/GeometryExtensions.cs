@@ -162,5 +162,115 @@ namespace MapToolkit
             clipper.Execute(ClipType.ctUnion, result);
             return ToPolygons(result);
         }
+
+        public static bool IsPointInside(this Polygon polygon, IPosition pt)
+        {
+            if (polygon.Coordinates.Count == 0)
+            {
+                return false;
+            }
+            return polygon.Coordinates[0].Coordinates.IsPointInside(pt) 
+                && polygon.Coordinates.Skip(1).All(hole => !hole.Coordinates.IsPointInsideOrOnBoundary(pt));
+        }
+
+        public static bool IsPointInside(this LineString path, IPosition pt)
+        {
+            return path.IsClosed() && path.Coordinates.IsPointInside(pt);
+        }
+
+        public static bool IsPointInside(this IReadOnlyList<IPosition> path, IPosition pt)
+        {
+            return PointInPolygon(path, pt) == 1;
+        }
+
+
+        public static bool IsPointInsideOrOnBoundary(this Polygon polygon, IPosition pt)
+        {
+            if (polygon.Coordinates.Count == 0)
+            {
+                return false;
+            }
+            return polygon.Coordinates[0].Coordinates.IsPointInsideOrOnBoundary(pt)
+                && polygon.Coordinates.Skip(1).All(hole => !hole.Coordinates.IsPointInside(pt));
+        }
+
+        public static bool IsPointInsideOrOnBoundary(this LineString path, IPosition pt)
+        {
+            return path.IsClosed() && path.Coordinates.IsPointInsideOrOnBoundary(pt);
+        }
+
+        public static bool IsPointInsideOrOnBoundary(this IReadOnlyList<IPosition> path, IPosition pt)
+        {
+            return PointInPolygon(path, pt) != 0;
+        }
+
+
+        public static bool IsPointOnBoundary(this Polygon polygon, IPosition pt)
+        {
+            if (polygon.Coordinates.Count == 0)
+            {
+                return false;
+            }
+            return polygon.Coordinates.Any(l => l.Coordinates.IsPointOnBoundary(pt));
+        }
+
+        public static bool IsPointOnBoundary(this LineString path, IPosition pt)
+        {
+            return path.IsClosed() && path.Coordinates.IsPointOnBoundary(pt);
+        }
+
+        public static bool IsPointOnBoundary(this IReadOnlyList<IPosition> path, IPosition pt)
+        {
+            return PointInPolygon(path, pt) == -1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="pt"></param>
+        /// <returns>0 if false, +1 if true, -1 if pt ON polygon boundary</returns>
+        public static int PointInPolygon(IReadOnlyList<IPosition> path, IPosition pt)
+        {
+            //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
+            //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
+            int result = 0, cnt = path.Count;
+            if (cnt < 3) return 0;
+            var ip = path[0];
+            for (int i = 1; i <= cnt; ++i)
+            {
+                var ipNext = (i == cnt ? path[0] : path[i]);
+                if (ipNext.Latitude == pt.Latitude)
+                {
+                    if ((ipNext.Longitude == pt.Longitude) || (ip.Latitude == pt.Latitude && ((ipNext.Longitude > pt.Longitude) == (ip.Longitude < pt.Longitude))))
+                        return -1;
+                }
+                if ((ip.Latitude < pt.Latitude) != (ipNext.Latitude < pt.Latitude))
+                {
+                    if (ip.Longitude >= pt.Longitude)
+                    {
+                        if (ipNext.Longitude > pt.Longitude) result = 1 - result;
+                        else
+                        {
+                            double d = (double)(ip.Longitude - pt.Longitude) * (ipNext.Latitude - pt.Latitude) - (double)(ipNext.Longitude - pt.Longitude) * (ip.Latitude - pt.Latitude);
+                            if (d == 0) return -1;
+                            else if ((d > 0) == (ipNext.Latitude > ip.Latitude)) result = 1 - result;
+                        }
+                    }
+                    else
+                    {
+                        if (ipNext.Longitude > pt.Longitude)
+                        {
+                            double d = (double)(ip.Longitude - pt.Longitude) * (ipNext.Latitude - pt.Latitude) - (double)(ipNext.Longitude - pt.Longitude) * (ip.Latitude - pt.Latitude);
+                            if (d == 0) return -1;
+                            else if ((d > 0) == (ipNext.Latitude > ip.Latitude)) result = 1 - result;
+                        }
+                    }
+                }
+                ip = ipNext;
+            }
+            return result;
+        }
+
     }
 }

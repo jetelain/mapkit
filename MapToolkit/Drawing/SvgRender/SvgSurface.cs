@@ -22,7 +22,7 @@ namespace MapToolkit.Drawing.SvgRender
         private int nextStyleId = 0;
         private int nextBrushId = 0;
         private int nextImageId = 0;
-
+        private readonly int rounding = 1;
         private bool isWrittingStyle = false;
         private readonly StringBuilder styles = new StringBuilder();
 
@@ -31,6 +31,11 @@ namespace MapToolkit.Drawing.SvgRender
             this.writer = writer;
             this.path = path;
             StartSvg(size);
+        }
+
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            return new SvgIcon(size, draw);
         }
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
@@ -222,13 +227,23 @@ namespace MapToolkit.Drawing.SvgRender
                 href = "data:image/png;base64," + Convert.ToBase64String(mem.ToArray());
             //}
             writer.WriteStartElement("image", SvgXmlns);
-            writer.WriteAttributeString("x", Math.Round(pos.X).ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("y", Math.Round(pos.Y).ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("x", ToString(pos.X));
+            writer.WriteAttributeString("y", ToString(pos.Y));
             writer.WriteAttributeString("width", size.X.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("height", size.Y.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("opacity", alpha.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("href", href);
             writer.WriteEndElement();
+        }
+
+        private string ToString(double value)
+        {
+            var str = value.ToString("0.0", CultureInfo.InvariantCulture);
+            if (str.EndsWith(".0"))
+            {
+                return str.Substring(0, str.Length - 2);
+            }
+            return str;
         }
 
         public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
@@ -284,19 +299,19 @@ namespace MapToolkit.Drawing.SvgRender
             bool first = true;
             foreach (var p in points)
             {
-                var px = new Vector(Math.Round(p.X), Math.Round(p.Y));
+                var px = new Vector(Math.Round(p.X, rounding), Math.Round(p.Y, rounding));
                 if (first)
                 {
                     if (sharedStringBuilder.Length > 0)
                     {
                         sharedStringBuilder.Append(' ');
                     }
-                    sharedStringBuilder.Append(FormattableString.Invariant($"M{px.X},{px.Y}"));
+                    sharedStringBuilder.Append(FormattableString.Invariant($"M{ToString(px.X)},{ToString(px.Y)}"));
                     first = false;
                 }
                 else
                 {
-                    sharedStringBuilder.Append(FormattableString.Invariant($" l{px.X - previous.X},{px.Y - previous.Y}"));
+                    sharedStringBuilder.Append(FormattableString.Invariant($" l{ToString(px.X - previous.X)},{ToString(px.Y - previous.Y)}"));
                 }
                 previous = px;
             }
@@ -348,16 +363,16 @@ namespace MapToolkit.Drawing.SvgRender
             {
                 writer.WriteStartElement("text", SvgXmlns);
                 writer.WriteAttributeString("class", sstyle.BgName);
-                writer.WriteAttributeString("x", Math.Round(point.X).ToString(CultureInfo.InvariantCulture));
-                writer.WriteAttributeString("y", Math.Round(point.Y).ToString(CultureInfo.InvariantCulture));
+                writer.WriteAttributeString("x", ToString(point.X));
+                writer.WriteAttributeString("y", ToString(point.Y));
                 writer.WriteString(text);
                 writer.WriteEndElement();
             }
 
             writer.WriteStartElement("text", SvgXmlns);
             writer.WriteAttributeString("class", sstyle.Name);
-            writer.WriteAttributeString("x", Math.Round(point.X).ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("y", Math.Round(point.Y).ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("x", ToString(point.X));
+            writer.WriteAttributeString("y", ToString(point.Y));
             writer.WriteString(text);
             writer.WriteEndElement();
         }
@@ -376,6 +391,31 @@ namespace MapToolkit.Drawing.SvgRender
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
             writer.WriteAttributeString("d", GeneratePathWithHoles(contour, holes));
             writer.WriteEndElement();
+        }
+
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            // Source : https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
+            var start = PolarToCartesian(center, radius, startAngle + sweepAngle);
+            var end = PolarToCartesian(center, radius, startAngle);
+            var largeArcFlag = sweepAngle <= 180 ? "0" : "1";
+            writer.WriteStartElement("path", SvgXmlns);
+            writer.WriteAttributeString("class", ((SvgStyle)style).Name);
+            writer.WriteAttributeString("d", FormattableString.Invariant($"M {start.X} {start.Y} A {radius} {radius} 0 {largeArcFlag} 0 {end.X} {end.Y}"));
+            writer.WriteEndElement();
+        }
+
+        private static Vector PolarToCartesian(Vector center, float radius, float angleInDegrees)
+        {
+            var angleInRadians = angleInDegrees * Math.PI / 180.0;
+            return new Vector(center.X + (radius * Math.Cos(angleInRadians)), center.Y + (radius * Math.Sin(angleInRadians)));
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            var sicon = (SvgIcon)icon;
+            var top = center - (sicon.Size / 2);
+            sicon.Draw(new PdfRender.ScaleAndShiftDraw(this, 1.0, top.X, top.Y));
         }
     }
 }

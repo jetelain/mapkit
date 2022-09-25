@@ -14,6 +14,6 @@ namespace MapToolkit.Drawing.MemoryRender
 
         IDrawOperation Scale(MemDrawScale context);
 
-        IEnumerable<IDrawOperation> Simplify();
+        IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9);
     }
 }

@@ -53,9 +53,9 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawPolyline(Points.Select(p => p * context.Scale).ToList(), context.MapStyle(Style));
         }
 
-        public IEnumerable<IDrawOperation> Simplify()
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
-            var line = DrawHelper.Simplify(Points);
+            var line = DrawHelper.Simplify(Points, lengthSquared);
             if (line != null)
             {
                 yield return new DrawPolyline(line, Style);

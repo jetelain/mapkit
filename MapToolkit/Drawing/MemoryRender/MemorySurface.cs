@@ -11,9 +11,25 @@ namespace MapToolkit.Drawing.MemoryRender
     {
         internal List<IDrawOperation> Operations { get; } = new List<IDrawOperation>();
 
-        internal List<MemDrawStyle> Styles { get; } = new List<MemDrawStyle>();
+        internal List<MemDrawStyle> Styles { get; }
 
-        internal List<MemDrawTextStyle> TextStyles { get; } = new List<MemDrawTextStyle>();
+        internal List<MemDrawTextStyle> TextStyles { get; }
+
+        internal List<MemDrawIcon> Icons { get; }
+
+        public MemorySurface()
+        {        
+            Styles = new List<MemDrawStyle>();
+            TextStyles = new List<MemDrawTextStyle>();
+            Icons = new List<MemDrawIcon>();
+        }
+
+        private MemorySurface(MemorySurface other)
+        {
+            Styles = other.Styles;
+            TextStyles = other.TextStyles;
+            Icons = other.Icons;
+        }
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
@@ -27,6 +43,20 @@ namespace MapToolkit.Drawing.MemoryRender
             var textstyle = new MemDrawTextStyle(fontNames, style, size, fill, pen, fillCoverPen, textAnchor);
             TextStyles.Add(textstyle);
             return textstyle;
+        }
+
+        internal List<IDrawOperation> DrawAttachedSurface(Action<IDrawSurface> draw)
+        {
+            var sub = new MemorySurface(this);
+            draw(sub);
+            return sub.Operations;
+        }
+
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            var icon = new MemDrawIcon(size, DrawAttachedSurface(draw));
+            Icons.Add(icon);
+            return icon;
         }
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
@@ -64,17 +94,18 @@ namespace MapToolkit.Drawing.MemoryRender
             Operations.Add(new DrawTextPath(points.ToList(), text, (MemDrawTextStyle)style));
         }
 
-        public MemorySurface ToScale(double scale, double penScale)
+        public MemorySurface ToScale(double scale, double penScale, double lengthSquared = 9)
         {
-            return new MemDrawScale(this, scale, penScale).ToMemorySurface();
+            return new MemDrawScale(this, scale, penScale).ToMemorySurface(lengthSquared);
         }
 
-        public MemorySurface ToSimplified()
+        public MemorySurface ToSimplified(double lengthSquared = 9)
         {
             var target = new MemorySurface();
             target.Styles.AddRange(Styles);
             target.TextStyles.AddRange(TextStyles);
-            target.Operations.AddRange(Operations.SelectMany(o => o.Simplify()));
+            target.Icons.AddRange(Icons);
+            target.Operations.AddRange(Operations.SelectMany(o => o.Simplify(lengthSquared)));
             return target;
         }
 
@@ -85,6 +116,16 @@ namespace MapToolkit.Drawing.MemoryRender
             {
                 op.Draw(context);
             }
+        }
+
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            Operations.Add(new DrawArc(center, radius, startAngle, sweepAngle, (MemDrawStyle)style));
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            Operations.Add(new DrawIcon(center, (MemDrawIcon)icon));
         }
     }
 }

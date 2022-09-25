@@ -23,6 +23,11 @@ namespace MapToolkit.Drawing.PdfRender
             graphics.TranslateTransform(shift.X, shift.Y);
         }
 
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            return new PdfIcon(size * scaleLines, draw);
+        }
+
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
             return new PdfStyle(fill, pen, scaleLines);
@@ -47,8 +52,9 @@ namespace MapToolkit.Drawing.PdfRender
             return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, xstyle), fillCoverPen, textAnchor, style);
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector center, float r, IDrawStyle style)
         {
+            var radius = r * scaleLines;
             var pstyle = (PdfStyle)style;
             if (pstyle.Pen != null && pstyle.Brush != null)
             {
@@ -206,5 +212,19 @@ namespace MapToolkit.Drawing.PdfRender
             graphics.Restore(state);
         }
 
+        public void DrawArc(Vector center, float r, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            var radius = r * scaleLines;
+            var pstyle = (PdfStyle)style;
+
+            graphics.DrawArc(pstyle.Pen, center.X - radius, center.Y - radius, radius * 2, radius * 2, startAngle, sweepAngle);
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            var picon = (PdfIcon)icon;
+            var top = center - (picon.Size / 2);
+            picon.Draw(new ScaleAndShiftDraw(this, scaleLines, top.X, top.Y));
+        }
     }
 }

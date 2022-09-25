@@ -80,12 +80,12 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawPolygon(Contour.Select(c => c * context.Scale).ToList(), Holes?.Select(h => h.Select(p => p * context.Scale))?.ToList(), context.MapStyle(Style));
         }
 
-        public IEnumerable<IDrawOperation> Simplify()
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
-            var contour = DrawHelper.SimplifyClosed(Contour);
+            var contour = DrawHelper.SimplifyClosed(Contour, lengthSquared);
             if (contour != null)
             {
-                yield return new DrawPolygon(contour, DrawHelper.SimplifyClosed(Holes), Style);
+                yield return new DrawPolygon(contour, DrawHelper.SimplifyClosed(Holes, lengthSquared), Style);
             }
         }
     }

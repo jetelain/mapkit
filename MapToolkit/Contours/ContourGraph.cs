@@ -374,5 +374,7 @@ namespace MapToolkit.Contours
             var points = c.Contour.Select(c => new Coordinates(c, rounding));
             return new LineString(points.Concat(points.Take(1)).ToList());
         }
+
+
     }
 }

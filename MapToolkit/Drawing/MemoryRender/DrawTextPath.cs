@@ -61,9 +61,9 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawTextPath(Points.Select(p => p * context.Scale).ToList(), Text, context.MapTextStyle(Style));
         }
 
-        public IEnumerable<IDrawOperation> Simplify()
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
-            var path = DrawHelper.SimplifyKeepLast(Points);
+            var path = DrawHelper.SimplifyKeepLast(Points, lengthSquared);
             if (path != null)
             {
                 yield return new DrawTextPath(path, Text, Style);

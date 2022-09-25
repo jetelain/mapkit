@@ -41,7 +41,7 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawText(Point * context.Scale, Text, context.MapTextStyle(Style));
         }
 
-        public IEnumerable<IDrawOperation> Simplify()
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
             yield return this;
         }

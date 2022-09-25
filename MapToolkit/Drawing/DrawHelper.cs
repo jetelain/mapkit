@@ -41,13 +41,13 @@ namespace MapToolkit.Drawing
             return result;
         }
 
-        internal static List<Vector>? Simplify(List<Vector> list)
+        internal static List<Vector>? Simplify(List<Vector> list, double lengthSquared = 9)
         {
             if (list.Count > 2 && list[0].Equals(list[list.Count - 1]))
             {
-                return SimplifyClosed(list);
+                return SimplifyClosed(list, lengthSquared);
             }
-            return SimplifyKeepLast(list);
+            return SimplifyKeepLast(list, lengthSquared);
         }
 
         public static List<Vector>? SimplifyKeepLast(IEnumerable<Vector> enumerable, double lengthSquared = 9)

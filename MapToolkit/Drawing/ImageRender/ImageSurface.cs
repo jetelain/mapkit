@@ -29,6 +29,11 @@ namespace MapToolkit.Drawing.ImageRender
             return new ImageTextStyle(fill, pen, FontHelper.GetFont(fontNames, style, size), fillCoverPen, textAnchor);
         }
 
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            return new ImageIcon(size, draw);
+        }
+
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
@@ -133,6 +138,23 @@ namespace MapToolkit.Drawing.ImageRender
             {
                 target.Draw(istyle.Pen, path);
             }
+        }
+
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            var istyle = (ImageStyle)style;
+            if (istyle.Pen != null)
+            {
+                var pb = new PathBuilder();
+                pb.AddArc(new PointF((float)center.X, (float)center.Y), radius, radius, 0, startAngle, sweepAngle);
+                target.Draw(istyle.Pen, pb.Build());
+            }
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            var iicon = (ImageIcon)icon;
+            target.DrawImage(iicon.Image, new Point( (int)(center.X - (iicon.Image.Width / 2)), (int)(center.Y - (iicon.Image.Height / 2))), 1);
         }
     }
 }

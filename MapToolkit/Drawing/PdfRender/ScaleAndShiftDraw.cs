@@ -9,17 +9,22 @@ namespace MapToolkit.Drawing.PdfRender
 {
     internal sealed class ScaleAndShiftDraw : IDrawSurface
     {
-        private readonly PdfSurface drawSurface;
+        private readonly IDrawSurface drawSurface;
         private readonly double scalePoints;
         private readonly double dx;
         private readonly double dy;
 
-        public ScaleAndShiftDraw(PdfSurface drawSurface, double scalePoints, double dx, double dy)
+        public ScaleAndShiftDraw(IDrawSurface drawSurface, double scalePoints, double dx, double dy)
         {
             this.drawSurface = drawSurface;
             this.scalePoints = scalePoints;
             this.dx = dx;
             this.dy = dy;
+        }
+
+        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        {
+            return drawSurface.AllocateIcon(size, draw);
         }
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
@@ -34,7 +39,7 @@ namespace MapToolkit.Drawing.PdfRender
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
         {
-            drawSurface.DrawCircle(Transform(center), (float)(radius * scalePoints), style);
+            drawSurface.DrawCircle(Transform(center), /*(float)(*/radius /** scalePoints)*/, style);
         }
 
         private Vector Transform(Vector center)
@@ -75,6 +80,16 @@ namespace MapToolkit.Drawing.PdfRender
         public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
         {
             throw new NotSupportedException();
+        }
+
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        {
+            drawSurface.DrawArc(Transform(center), /*(float)(*/radius /** scalePoints)*/, startAngle, sweepAngle, style);
+        }
+
+        public void DrawIcon(Vector center, IDrawIcon icon)
+        {
+            drawSurface.DrawIcon(Transform(center), icon);
         }
     }
 }

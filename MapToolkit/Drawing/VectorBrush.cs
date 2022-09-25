@@ -13,5 +13,20 @@ namespace MapToolkit.Drawing
         public float Width { get; }
         public float Height { get; }
         public Action<IDrawSurface> Draw { get; }
+
+        public bool Equals(IBrush? other)
+        {
+            return other == this;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as VectorBrush);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

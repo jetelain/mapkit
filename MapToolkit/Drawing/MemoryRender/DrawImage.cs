@@ -81,7 +81,7 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawImage(Image.Clone(i => i.Resize((int)(Image.Width * context.Scale), (int)(Image.Height * context.Scale))), Pos * context.Scale, Size * context.Scale, Alpha);
         }
 
-        public IEnumerable<IDrawOperation> Simplify()
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
             yield return this;
         }
