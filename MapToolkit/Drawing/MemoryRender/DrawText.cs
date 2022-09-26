@@ -9,36 +9,36 @@ namespace MapToolkit.Drawing.MemoryRender
         {
             Point = point;
             Text = text;
-            Style = style;
+            TextStyle = style;
 
             var to = new TextOptions(style.Font);
             to.VerticalAlignment = style.VerticalAlignment;
             to.HorizontalAlignment = style.HorizontalAlignment;
 
-            var measure = TextMeasurer.Measure(Text, to);
-            Min = new Vector(point.X - 2, point.Y - 2);
-            Max = new Vector(point.X + measure.Width + 2, point.Y + measure.Height + 2);
+            var measure = TextMeasurer.MeasureBounds(Text, to);
+            Min = new Vector(point.X + measure.X, point.Y + measure.Y);
+            Max = new Vector(point.X + measure.X + measure.Width * 1.25, point.Y + measure.Y + measure.Height * 1.25); // 25% margin due to different raster engines
         }
 
         public Vector Point { get; }
         public string Text { get; }
-        public MemDrawTextStyle Style { get; }
+        public MemDrawTextStyle TextStyle { get; }
         public Vector Min { get; }
         public Vector Max { get; }
 
         public void Draw(MemDrawContext context)
         {
-            context.Target.DrawText(Point, Text, context.MapTextStyle(Style));
+            context.Target.DrawText(Point, Text, context.MapTextStyle(TextStyle));
         }
 
         public void DrawClipped(MemDrawClipped context)
         {
-            context.Target.DrawText(context.Translate(Point), Text, context.MapTextStyle(Style));
+            context.Target.DrawText(context.Translate(Point), Text, context.MapTextStyle(TextStyle));
         }
 
         public IDrawOperation Scale(MemDrawScale context)
         {
-            return new DrawText(Point * context.Scale, Text, context.MapTextStyle(Style));
+            return new DrawText(Point * context.Scale, Text, context.MapTextStyle(TextStyle));
         }
 
         public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)

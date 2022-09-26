@@ -60,13 +60,13 @@ namespace MapToolkit.Drawing.MemoryRender
             var x2 = context.ClipMin.X + posX + (cropW * Size.X / Image.Width);
             if (x2 > context.ClipMax.X)
             {
-                cropW = Math.Min((int)Math.Floor((context.ClipMax.X - posX - context.ClipMin.X) * Image.Width / Size.X), Image.Width - cropX);
+                cropW = Math.Min((int)Math.Ceiling((context.ClipMax.X - posX - context.ClipMin.X) * Image.Width / Size.X), Image.Width - cropX);
             }
 
             var y2 = context.ClipMin.Y + posY + (cropH * Size.Y / Image.Height);
             if (y2 > context.ClipMax.Y)
             {
-                cropH = Math.Min((int)Math.Floor((context.ClipMax.Y - posY - context.ClipMin.Y) * Image.Height / Size.Y), Image.Height - cropY);
+                cropH = Math.Min((int)Math.Ceiling((context.ClipMax.Y - posY - context.ClipMin.Y) * Image.Height / Size.Y), Image.Height - cropY);
             }
 
             var posW = (cropW * Size.X / Image.Width);

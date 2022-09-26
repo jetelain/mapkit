@@ -38,13 +38,20 @@ namespace MapToolkit.Drawing.SvgRender
             return new SvgIcon(size, draw);
         }
 
+        private readonly Dictionary<Tuple<IBrush?, Pen?>, SvgStyle> xstyles = new Dictionary<Tuple<IBrush?, Pen?>, SvgStyle>();
+
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
-            var name = TakeStyleId();
-            StartClass(name);
-            Append(fill, pen);
-            EndClass();
-            return new SvgStyle(name);
+            var key = new Tuple<IBrush?, Pen?>(fill, pen);
+            if (!xstyles.TryGetValue(key, out var svgStyle))
+            {
+                var name = TakeStyleId();
+                StartClass(name);
+                Append(fill, pen);
+                EndClass();
+                xstyles.Add(key, svgStyle = new SvgStyle(name));
+            }
+            return svgStyle;
         }
 
         private string TakeStyleId()
@@ -122,11 +129,12 @@ namespace MapToolkit.Drawing.SvgRender
             EndClass();
             if (fillCoverPen && pen != null)
             {
-                //var bgName = TakeStyleId();
-                StartClass(name + ".b");
-                Append(null, pen);
-                EndClass();
-                return new SvgTextStyle(name, name + " b" /*+ bgName*/);
+                ////var bgName = TakeStyleId();
+                //StartClass(name + ".b");
+                //Append(null, pen);
+                //EndClass();
+                //return new SvgTextStyle(name, name + " b" /*+ bgName*/);
+                return new SvgTextStyle(name, name + " " + ((SvgStyle)AllocateStyle(null, pen)).Name);
             }
             return new SvgTextStyle(name, null);
         }
@@ -188,13 +196,14 @@ namespace MapToolkit.Drawing.SvgRender
 
         private string Serialize(VectorBrush vector)
         {
+            var icon = (SvgIcon)vector.Icon;
             var id = "b" + nextBrushId++;
             writer.WriteStartElement("pattern", SvgXmlns);
             writer.WriteAttributeString("id", id);
-            writer.WriteAttributeString("height", vector.Height.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("width", vector.Width.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("height", icon.Size.Y.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("width", icon.Size.X.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("patternUnits", "userSpaceOnUse");
-            vector.Draw(this);
+            icon.Draw(this);
             writer.WriteEndElement();
             return $"url(#{id})";
         }

@@ -12,7 +12,7 @@ namespace MapToolkit.Drawing.MemoryRender
         {
             Points = points;
             Text = text;
-            Style = style;
+            TextStyle = style;
 
             var first = points.First();
             var last = points.Last();
@@ -40,7 +40,7 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public string Text { get; }
 
-        public MemDrawTextStyle Style { get; }
+        public MemDrawTextStyle TextStyle { get; }
 
         public Vector Min { get; }
 
@@ -48,17 +48,17 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public void Draw(MemDrawContext context)
         {
-            context.Target.DrawTextPath(Points, Text, context.MapTextStyle(Style));
+            context.Target.DrawTextPath(Points, Text, context.MapTextStyle(TextStyle));
         }
 
         public void DrawClipped(MemDrawClipped context)
         {
-            context.Target.DrawTextPath(Points.Select(context.Translate), Text, context.MapTextStyle(Style));
+            context.Target.DrawTextPath(Points.Select(context.Translate), Text, context.MapTextStyle(TextStyle));
         }
 
         public IDrawOperation Scale(MemDrawScale context)
         {
-            return new DrawTextPath(Points.Select(p => p * context.Scale).ToList(), Text, context.MapTextStyle(Style));
+            return new DrawTextPath(Points.Select(p => p * context.Scale).ToList(), Text, context.MapTextStyle(TextStyle));
         }
 
         public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
@@ -66,7 +66,7 @@ namespace MapToolkit.Drawing.MemoryRender
             var path = DrawHelper.SimplifyKeepLast(Points, lengthSquared);
             if (path != null)
             {
-                yield return new DrawTextPath(path, Text, Style);
+                yield return new DrawTextPath(path, Text, TextStyle);
             }
         }
     }

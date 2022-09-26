@@ -40,9 +40,7 @@ namespace MapToolkit.Drawing.ImageRender
 
         private Image ToImage(VectorBrush vector)
         {
-            var image = new Image<Rgba32>((int)vector.Width, (int)vector.Height);
-            image.Mutate(p => vector.Draw(new ImageSurface(p)));
-            return image;
+            return ((ImageIcon)vector.Icon).Image;
         }
 
         public SixLabors.ImageSharp.Drawing.Processing.IBrush? Brush { get; set; }

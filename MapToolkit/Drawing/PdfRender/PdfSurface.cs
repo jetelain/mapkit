@@ -200,13 +200,15 @@ namespace MapToolkit.Drawing.PdfRender
             var minY = contour.Min(p => p.Y);
             var maxX = contour.Max(p => p.X);
             var maxY = contour.Max(p => p.Y);
-            var w = vbrush.Width * scaleLines;
-            var h = vbrush.Height * scaleLines;
+
+            var icon = (PdfIcon)vbrush.Icon;
+            var w = icon.Size.X;
+            var h = icon.Size.Y;
             for (var x = minX; x < maxX; x += w)
             {
                 for(var y = minY; y < maxY; y += h)
                 {
-                    vbrush.Draw(new ScaleAndShiftDraw(this, scaleLines, x, y));
+                    icon.Draw(new ScaleAndShiftDraw(this, scaleLines, x, y));
                 }
             }
             graphics.Restore(state);

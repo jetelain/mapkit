@@ -14,15 +14,10 @@ namespace MapToolkit.Drawing.MemoryRender
         {
             Target = target;
             Source = source;
-            foreach (var s in source.Styles)
-            {
-                styles[s] = target.AllocateStyle(Map(s.Fill), s.Pen);
-            }
-            textStyles = source.TextStyles.ToDictionary(s => s, s => target.AllocateTextStyle(s.FontNames, s.Style, s.Size, Map(s.Fill), s.Pen, s.FillCoverPen, s.TextAnchor));
-            foreach (var s in source.Icons)
-            {
-                icons[s] = target.AllocateIcon(s.Size, w => s.Draw(w, this));
-            }
+
+            // SVG Prefer pre-allocated styles
+            source.Styles.ForEach(s => MapStyle(s));
+            source.TextStyles.ForEach(s => MapTextStyle(s));
         }
 
         internal MemDrawContext(MemDrawContext other, IDrawSurface target)
@@ -34,16 +29,11 @@ namespace MapToolkit.Drawing.MemoryRender
             textStyles = other.textStyles;
         }
 
-        internal IDrawIcon MapIcon(MemDrawIcon icon)
-        {
-            return icons[icon];
-        }
-
         private IBrush? Map(IBrush? fill)
         {
             if (fill is VectorBrush vector)
             {
-                return new VectorBrush(vector.Width, vector.Height, s => vector.Draw(new TranslateStylesSurface(this, s)));
+                return new VectorBrush(MapIcon((MemDrawIcon)vector.Icon));
             }
             return fill;
         }
@@ -52,15 +42,32 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public MemorySurface Source { get; }
 
-
         public IDrawStyle MapStyle(MemDrawStyle style)
         {
-            return styles[style];
+            if (!styles.TryGetValue(style, out var mapped))
+            {
+                styles.Add(style, mapped = Target.AllocateStyle(Map(style.Fill), style.Pen));
+            }
+            return mapped;
         }
 
-        internal IDrawTextStyle MapTextStyle(MemDrawTextStyle style)
+        public IDrawTextStyle MapTextStyle(MemDrawTextStyle textStyle)
         {
-            return textStyles[style];
+            if (!textStyles.TryGetValue(textStyle, out var mapped))
+            {
+                textStyles.Add(textStyle, mapped = Target.AllocateTextStyle(textStyle.FontNames, textStyle.Style, textStyle.Size, Map(textStyle.Fill), textStyle.Pen, textStyle.FillCoverPen, textStyle.TextAnchor));
+            }
+            return mapped;
         }
+
+        public IDrawIcon MapIcon(MemDrawIcon icon)
+        {
+            if (!icons.TryGetValue(icon, out var mapped))
+            {
+                icons.Add(icon, mapped = Target.AllocateIcon(icon.Size, w => icon.Draw(w, this)));
+            }
+            return mapped;
+        }
+
     }
 }

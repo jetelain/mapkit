@@ -4,15 +4,23 @@ namespace MapToolkit.Drawing
 {
     public sealed class VectorBrush : IBrush
     {
-        public VectorBrush(float width, float height, Action<IDrawSurface> draw)
+        public VectorBrush(IDrawIcon icon)
         {
-            Width = width;
-            Height = height;
-            Draw = draw;
+            Icon = icon;
         }
-        public float Width { get; }
-        public float Height { get; }
-        public Action<IDrawSurface> Draw { get; }
+
+        public VectorBrush(IDrawSurface target, float width, float height, Action<IDrawSurface> draw)
+        {
+            Icon = target.AllocateIcon(new Vector(width, height), draw);
+            //Width = width;
+            //Height = height;
+            //Draw = draw;
+        }
+
+        public IDrawIcon Icon { get; }
+        //public float Width { get; }
+        //public float Height { get; }
+        //public Action<IDrawSurface> Draw { get; }
 
         public bool Equals(IBrush? other)
         {
