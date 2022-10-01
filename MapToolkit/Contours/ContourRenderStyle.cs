@@ -14,8 +14,8 @@ namespace MapToolkit.Contours
                 new SolidColorBrush(Color.ParseHex("B29A94")),
                 new Pen(new SolidColorBrush(Color.ParseHex("FFFFFFCC")), 3),
                 true);
-            MinorContourLine = writer.AllocateStyle(null, new Pen(new SolidColorBrush(Color.ParseHex("D4C5BF")), 2));
-            MajorContourLine = writer.AllocateStyle(null, new Pen(new SolidColorBrush(Color.ParseHex("B29A94")), 2));
+            MinorContourLine = writer.AllocatePenStyle("D4C5BF", 2);
+            MajorContourLine = writer.AllocatePenStyle("B29A94", 2);
         }
 
         public IDrawTextStyle MajorContourText { get; }

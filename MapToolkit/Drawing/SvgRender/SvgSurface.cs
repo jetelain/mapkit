@@ -91,7 +91,7 @@ namespace MapToolkit.Drawing.SvgRender
         {
             var name = TakeStyleId();
             StartClass(name);
-            Append("font", FormattableString.Invariant($"{size}pt {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
+            Append("font", FormattableString.Invariant($"{size}px {string.Join(',', fontNames.Select(f => f.Contains(' ') ? '"' + f + '"' : f))}"));
             Append(fill, fillCoverPen ? null : pen);
             switch (textAnchor)
             {
@@ -103,12 +103,14 @@ namespace MapToolkit.Drawing.SvgRender
                     Append("text-anchor", "end");
                     break;
                 case TextAnchor.TopCenter:
-                    Append("dominant-baseline", "auto");
+                    Append("dominant-baseline", "hanging");
                     Append("text-anchor", "middle");
                     break;
                 case TextAnchor.BottomCenter:
-                    Append("dominant-baseline", "hanging");
                     Append("text-anchor", "middle");
+                    break;
+                case TextAnchor.TopLeft:
+                    Append("dominant-baseline", "hanging");
                     break;
                 default:
                     break;

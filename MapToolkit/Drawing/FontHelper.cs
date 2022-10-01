@@ -30,9 +30,9 @@ namespace MapToolkit.Drawing
                 case TextAnchor.CenterRight:
                     return VerticalAlignment.Center;
                 case TextAnchor.TopCenter:
-                    return VerticalAlignment.Bottom;
-                case TextAnchor.BottomCenter:
                     return VerticalAlignment.Top;
+                case TextAnchor.BottomCenter:
+                    return VerticalAlignment.Bottom;
                 case TextAnchor.TopLeft:
                     return VerticalAlignment.Top;
             }
