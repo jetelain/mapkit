@@ -14,23 +14,22 @@ namespace MapToolkit.Drawing.PdfRender
     internal class PdfSurface : IDrawSurface
     {
         private readonly XGraphics graphics;
-        private readonly double scaleLines;
+        private readonly double pixelSize;
 
-        public PdfSurface(XGraphics graphics, Vector shift, double scaleLines = 1.0)
+        public PdfSurface(XGraphics graphics, double pixelSize = 0.24)
         {
             this.graphics = graphics;
-            this.scaleLines = scaleLines;
-            graphics.TranslateTransform(shift.X, shift.Y);
+            this.pixelSize = pixelSize;
         }
 
         public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
         {
-            return new PdfIcon(size * scaleLines, draw);
+            return new PdfIcon(size, draw);
         }
 
         public IDrawStyle AllocateStyle(IBrush? fill, Pen? pen)
         {
-            return new PdfStyle(fill, pen, scaleLines);
+            return new PdfStyle(fill, pen, pixelSize);
         }
 
         public IDrawTextStyle AllocateTextStyle(string[] fontNames, FontStyle style, double size, IBrush? fill, Pen? pen, bool fillCoverPen = false, TextAnchor textAnchor = TextAnchor.CenterLeft)
@@ -49,24 +48,23 @@ namespace MapToolkit.Drawing.PdfRender
                     break;
             }
 
-            return new PdfTextStyle(fill, pen, scaleLines, new XFont(fontNames[0], size * scaleLines, xstyle), fillCoverPen, textAnchor, style);
+            return new PdfTextStyle(fill, pen, pixelSize, new XFont(fontNames[0], size * pixelSize, xstyle), fillCoverPen, textAnchor, style);
         }
 
-        public void DrawCircle(Vector center, float r, IDrawStyle style)
+        public void DrawCircle(Vector center, float radius, IDrawStyle style)
         {
-            var radius = r * scaleLines;
             var pstyle = (PdfStyle)style;
             if (pstyle.Pen != null && pstyle.Brush != null)
             {
-                graphics.DrawEllipse(pstyle.Pen, pstyle.Brush, center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                graphics.DrawEllipse(pstyle.Pen, pstyle.Brush, (center.X - radius) * pixelSize, (center.Y - radius) * pixelSize, radius * 2 * pixelSize, radius * 2 * pixelSize);
             }
             else if (pstyle.Pen != null)
             {
-                graphics.DrawEllipse(pstyle.Pen, center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                graphics.DrawEllipse(pstyle.Pen, (center.X - radius) * pixelSize, (center.Y - radius) * pixelSize, radius * 2 * pixelSize, radius * 2 * pixelSize);
             }
             else if (pstyle.Brush != null)
             {
-                graphics.DrawEllipse(pstyle.Brush, center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                graphics.DrawEllipse(pstyle.Brush, (center.X - radius) * pixelSize, (center.Y - radius) * pixelSize, radius * 2 * pixelSize, radius * 2 * pixelSize);
             }
         }
 
@@ -80,10 +78,10 @@ namespace MapToolkit.Drawing.PdfRender
             }
             graphics.DrawImage(
                 XImage.FromImageSource(ImageSharpImageSource<Rgba32>.FromImageSharpImage(rgba32, PngFormat.Instance)),
-                pos.X,
-                pos.Y,
-                size.X,
-                size.Y);
+                pos.X * pixelSize,
+                pos.Y * pixelSize,
+                size.X * pixelSize,
+                size.Y * pixelSize);
         }
 
         public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
@@ -94,7 +92,7 @@ namespace MapToolkit.Drawing.PdfRender
                 DrawPolygon(points, Enumerable.Empty<IEnumerable<Vector>>(), pstyle);
                 return;
             }
-            var xpoints = points.Select(p => new XPoint(p.X, p.Y)).ToArray();
+            var xpoints = points.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray();
             if (pstyle.Pen != null && pstyle.Brush != null)
             {
                 graphics.DrawPolygon(pstyle.Pen, pstyle.Brush, xpoints, XFillMode.Alternate);
@@ -112,7 +110,7 @@ namespace MapToolkit.Drawing.PdfRender
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
-            var xpoints = points.Select(p => new XPoint(p.X, p.Y)).ToArray();
+            var xpoints = points.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray();
             graphics.DrawLines(pstyle.Pen, xpoints);
         }
 
@@ -122,7 +120,7 @@ namespace MapToolkit.Drawing.PdfRender
 
             if (pstyle.SixFont != null)
             {
-                var result = new PdfGlyphRender(point.X, point.Y);
+                var result = new PdfGlyphRender(point.X * pixelSize, point.Y * pixelSize);
                 var textRender = new TextRenderer(result);
                 var to = new TextOptions(pstyle.SixFont);
                 to.VerticalAlignment = pstyle.VerticalAlignment;
@@ -146,7 +144,7 @@ namespace MapToolkit.Drawing.PdfRender
             }
             else
             {
-                graphics.DrawString(text, pstyle.Font, pstyle.Brush, new XPoint(point.X, point.Y), pstyle.GetXStringFormats());
+                graphics.DrawString(text, pstyle.Font, pstyle.Brush, new XPoint(point.X * pixelSize, point.Y * pixelSize), pstyle.GetXStringFormats());
             }
         }
 
@@ -156,7 +154,7 @@ namespace MapToolkit.Drawing.PdfRender
             var last = points.Last();
             var state = graphics.Save();
 
-            graphics.RotateAtTransform(Math.Atan2(last.Y - first.Y, last.X - first.X) * 180.0 / Math.PI, new XPoint(first.X, first.Y));
+            graphics.RotateAtTransform(Math.Atan2(last.Y - first.Y, last.X - first.X) * 180.0 / Math.PI, new XPoint(first.X * pixelSize, first.Y * pixelSize));
 
             DrawText(first, text, style);
 
@@ -167,11 +165,11 @@ namespace MapToolkit.Drawing.PdfRender
         {
             var pstyle = (PdfStyle)style;
             var pb = new XGraphicsPath();
-            pb.AddLines(contour.Select(p => new XPoint(p.X, p.Y)).ToArray());
+            pb.AddLines(contour.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray());
             pb.CloseFigure();
             foreach (var hole in holes)
             {
-                pb.AddLines(hole.Select(p => new XPoint(p.X, p.Y)).ToArray());
+                pb.AddLines(hole.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray());
                 pb.CloseFigure();
             }
             if (pstyle.VectorBrush != null)
@@ -208,25 +206,30 @@ namespace MapToolkit.Drawing.PdfRender
             {
                 for(var y = minY; y < maxY; y += h)
                 {
-                    icon.Draw(new ScaleAndShiftDraw(this, scaleLines, x, y));
+                    icon.Draw(new TranslateDraw(this, x, y));
                 }
             }
             graphics.Restore(state);
         }
 
-        public void DrawArc(Vector center, float r, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
-            var radius = r * scaleLines;
             var pstyle = (PdfStyle)style;
 
-            graphics.DrawArc(pstyle.Pen, center.X - radius, center.Y - radius, radius * 2, radius * 2, startAngle, sweepAngle);
+            graphics.DrawArc(pstyle.Pen, 
+                (center.X - radius) * pixelSize,
+                (center.Y - radius) * pixelSize, 
+                radius * 2 * pixelSize, 
+                radius * 2 * pixelSize, 
+                startAngle, 
+                sweepAngle);
         }
 
         public void DrawIcon(Vector center, IDrawIcon icon)
         {
             var picon = (PdfIcon)icon;
             var top = center - (picon.Size / 2);
-            picon.Draw(new ScaleAndShiftDraw(this, scaleLines, top.X, top.Y));
+            picon.Draw(new TranslateDraw(this, top.X, top.Y));
         }
     }
 }

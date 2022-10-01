@@ -424,7 +424,7 @@ namespace MapToolkit.Drawing.SvgRender
         {
             var sicon = (SvgIcon)icon;
             var top = center - (sicon.Size / 2);
-            sicon.Draw(new PdfRender.ScaleAndShiftDraw(this, 1.0, top.X, top.Y));
+            sicon.Draw(new TranslateDraw(this, top.X, top.Y));
         }
     }
 }

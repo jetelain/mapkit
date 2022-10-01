@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using MapToolkit.Drawing.MemoryRender;
+using MapToolkit.Drawing.PdfRender;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using SixLabors.ImageSharp;
@@ -71,6 +72,11 @@ namespace MapToolkit.Drawing
             }
         }
 
+        public static void ToImage(IImageProcessingContext target, Action<IDrawSurface> draw)
+        {
+            draw(new ImageRender.ImageSurface(target));
+        }
+
         public static void ToPngTiled(string targetDirectory, int tileSize, Vector size,  Action<IDrawSurface> draw)
         {
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
@@ -116,22 +122,24 @@ namespace MapToolkit.Drawing
                 }
             }
         }
-        public static void ToPdf(string file, Vector size, Action<IDrawSurface> draw)
+
+        public static void ToPdf(string file, Vector sizeInPixels, Action<IDrawSurface> draw)
         {
             var document = new PdfDocument();
             var page = document.AddPage();
-            page.Width = size.X;
-            page.Height = size.Y;
-            ToPdfPage(page, Vector.Zero, 0.24, draw);
+            page.Width = sizeInPixels.X * PaperSize.OnePixelAt300Dpi;
+            page.Height = sizeInPixels.Y * PaperSize.OnePixelAt300Dpi;
+            using (var xgfx = XGraphics.FromPdfPage(page))
+            {
+                draw(new PdfRender.PdfSurface(xgfx, PaperSize.OnePixelAt300Dpi));
+            }
+
             document.Save(file);
         }
 
-        public static void ToPdfPage(PdfPage page, Vector shift, double scaleLines, Action<IDrawSurface> draw)
+        public static void ToPdfGraphics(XGraphics xgfx, double pixelSize, Action<IDrawSurface> draw)
         {
-            using (var xgfx = XGraphics.FromPdfPage(page))
-            {
-                draw(new PdfRender.PdfSurface(xgfx, shift, scaleLines));
-            }
+            draw(new PdfRender.PdfSurface(xgfx, pixelSize));
         }
     }
 }

@@ -72,7 +72,13 @@ namespace MapToolkit.DataCells
                 Start.Longitude + (Math.Floor((coordinates.Longitude - Start.Longitude) / PixelSizeLon) * PixelSizeLon));
         }
 
+        public RasterMapping Crop(Coordinates wantedStart, Coordinates wantedEnd)
+        {
+            return Create(RasterType, PinToGridFloor(wantedStart).Round(12), PinToGridCeiling(wantedEnd).Round(12), PixelSizeLat, PixelSizeLon);
+        }
+
         internal abstract CellCoordinates CoordinatesToIndexClosest(Coordinates coordinates);
+
         internal abstract Coordinates IndexToCoordinates(int lat, int lon);
     }
 }

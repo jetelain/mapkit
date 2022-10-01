@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.PdfRender
+namespace MapToolkit.Drawing
 {
-    internal sealed class ScaleAndShiftDraw : IDrawSurface
+    internal sealed class TranslateDraw : IDrawSurface
     {
         private readonly IDrawSurface drawSurface;
-        private readonly double scalePoints;
         private readonly double dx;
         private readonly double dy;
 
-        public ScaleAndShiftDraw(IDrawSurface drawSurface, double scalePoints, double dx, double dy)
+        public TranslateDraw(IDrawSurface drawSurface, double dx, double dy)
         {
             this.drawSurface = drawSurface;
-            this.scalePoints = scalePoints;
             this.dx = dx;
             this.dy = dy;
         }
@@ -39,57 +36,52 @@ namespace MapToolkit.Drawing.PdfRender
 
         public void DrawCircle(Vector center, float radius, IDrawStyle style)
         {
-            drawSurface.DrawCircle(Transform(center), /*(float)(*/radius /** scalePoints)*/, style);
+            drawSurface.DrawCircle(Translate(center), radius, style);
         }
 
-        private Vector Transform(Vector center)
+        private Vector Translate(Vector p)
         {
-            return new Vector(dx + center.X * scalePoints, dy + center.Y * scalePoints);
-        }
-
-        private Vector ScaleSize(Vector size)
-        {
-            return new Vector(size.X * scalePoints, size.Y * scalePoints);
+            return new Vector(dx + p.X, dy + p.Y);
         }
 
         public void DrawImage(Image image, Vector pos, Vector size, double alpha)
         {
-            drawSurface.DrawImage(image, Transform(pos), ScaleSize(size), alpha);
+            drawSurface.DrawImage(image, Translate(pos), size, alpha);
         }
 
         public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
         {
-            drawSurface.DrawPolygon(contour.Select(Transform), style);
+            drawSurface.DrawPolygon(contour.Select(Translate), style);
         }
 
         public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
         {
-            drawSurface.DrawPolygon(contour.Select(Transform), holes.Select(h => h.Select(Transform)), style);
+            drawSurface.DrawPolygon(contour.Select(Translate), holes.Select(h => h.Select(Translate)), style);
         }
 
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
         {
-            drawSurface.DrawPolygon(points.Select(Transform), style);
+            drawSurface.DrawPolygon(points.Select(Translate), style);
         }
 
         public void DrawText(Vector point, string text, IDrawTextStyle style)
         {
-            throw new NotSupportedException();
+            drawSurface.DrawText(Translate(point), text, style);
         }
 
         public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
         {
-            throw new NotSupportedException();
+            drawSurface.DrawTextPath(points.Select(Translate), text, style);
         }
 
         public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
-            drawSurface.DrawArc(Transform(center), /*(float)(*/radius /** scalePoints)*/, startAngle, sweepAngle, style);
+            drawSurface.DrawArc(Translate(center), radius, startAngle, sweepAngle, style);
         }
 
         public void DrawIcon(Vector center, IDrawIcon icon)
         {
-            drawSurface.DrawIcon(Transform(center), icon);
+            drawSurface.DrawIcon(Translate(center), icon);
         }
     }
 }
