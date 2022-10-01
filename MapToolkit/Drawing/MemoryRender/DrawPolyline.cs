@@ -55,8 +55,8 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
-            var line = DrawHelper.Simplify(Points, lengthSquared);
-            if (line != null)
+            var line = LevelOfDetailHelper.Simplify(Points, lengthSquared);
+            if (line.Count > 1)
             {
                 yield return new DrawPolyline(line, Style);
             }

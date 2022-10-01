@@ -94,7 +94,7 @@ namespace MapToolkit.Drawing.MemoryRender
             Operations.Add(new DrawTextPath(points.ToList(), text, (MemDrawTextStyle)style));
         }
 
-        public MemorySurface ToScale(double scale, double penScale, double lengthSquared = 9)
+        public MemorySurface ToScale(double scale, double penScale, double lengthSquared = 4)
         {
             return new MemDrawScale(this, scale, penScale).ToMemorySurface(lengthSquared);
         }
