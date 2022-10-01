@@ -96,7 +96,7 @@ namespace MapToolkit.Contours
 
                 if (prev != null)
                 {
-                    var l = Math.Sqrt(Math.Pow(prev.X - p.X, 2) + Math.Pow(prev.Y - p.Y, 2)) / projection.Scale;
+                    var l = Math.Sqrt(Math.Pow(prev.X - p.X, 2) + Math.Pow(prev.Y - p.Y, 2)); // It's pixels
                     len += l;
                     reg += l;
                 }
