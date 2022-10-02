@@ -74,5 +74,15 @@ namespace MapToolkit.GeodeticSystems
             var x = Math.Pow(Math.Sin((bLat - aLat) / 2.0), 2.0) + Math.Cos(aLat) * Math.Cos(bLat) * Math.Pow(Math.Sin((bLon - aLon) / 2.0), 2.0);
             return R * (2.0 * Math.Atan2(Math.Sqrt(x), Math.Sqrt(1.0 - x)));
         }
+
+        public static double Heading(Coordinates a, Coordinates b)
+        {
+            var aLat = a.Latitude * MathConstants.PIDiv180;
+            var aLon = a.Longitude * MathConstants.PIDiv180;
+            var bLat = b.Latitude * MathConstants.PIDiv180;
+            var bLon = b.Longitude * MathConstants.PIDiv180;
+            var dL = bLon - aLon;
+            return Math.Atan2(Math.Cos(bLat) * Math.Sin(dL), Math.Cos(aLat) * Math.Sin(bLat) - Math.Sin(aLat) * Math.Cos(bLat) * Math.Cos(dL));
+        }
     }
 }

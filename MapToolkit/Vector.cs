@@ -33,12 +33,16 @@ namespace MapToolkit
             return new Vector(x, y);
         }
 
+        [JsonPropertyName("y")]
         public double Y { get; }
 
+        [JsonPropertyName("x")]
         public double X { get; }
 
+        [JsonIgnore]
         public double DeltaLon => X;
 
+        [JsonIgnore]
         public double DeltaLat => Y;
 
         internal double LengthSquared()

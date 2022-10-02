@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace MapToolkit.Utils
 {
@@ -19,18 +20,12 @@ namespace MapToolkit.Utils
         {
             this.progress = progress;
             this.total = total;
-            this.step = step;
+            this.step = Math.Max(1, step);
         }
 
         public void AddOne()
         {
-            done++;
-            Report();
-        }
-
-        private void Report()
-        {
-            if (progress != null && done % step == 0)
+            if (progress != null && Interlocked.Increment(ref done) % step == 0)
             {
                 progress.Report(done * 100.0 / total);
             }
@@ -38,8 +33,10 @@ namespace MapToolkit.Utils
 
         public void Add(int add)
         {
-            done += add;
-            Report();
+            if (progress != null && Interlocked.Add(ref done, add) % step == 0 && total != 0)
+            {
+                progress.Report(done * 100.0 / total);
+            }
         }
 
         public void Dispose()

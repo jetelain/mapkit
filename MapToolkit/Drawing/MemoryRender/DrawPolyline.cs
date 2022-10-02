@@ -53,10 +53,10 @@ namespace MapToolkit.Drawing.MemoryRender
             return new DrawPolyline(Points.Select(p => p * context.Scale).ToList(), context.MapStyle(Style));
         }
 
-        public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
+        public IEnumerable<IDrawOperation> Simplify(double lengthSquared)
         {
-            var line = LevelOfDetailHelper.Simplify(Points, lengthSquared);
-            if (line.Count > 1)
+            var line = LevelOfDetailHelper.SimplifyDistances(Points, lengthSquared);
+            if (line.Count > 0)
             {
                 yield return new DrawPolyline(line, Style);
             }

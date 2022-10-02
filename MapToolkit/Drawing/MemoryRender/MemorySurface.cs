@@ -99,7 +99,7 @@ namespace MapToolkit.Drawing.MemoryRender
             return new MemDrawScale(this, scale, penScale).ToMemorySurface(lengthSquared);
         }
 
-        public MemorySurface ToSimplified(double lengthSquared = 9)
+        public MemorySurface ToSimplified(double lengthSquared = 4)
         {
             var target = new MemorySurface();
             target.Styles.AddRange(Styles);

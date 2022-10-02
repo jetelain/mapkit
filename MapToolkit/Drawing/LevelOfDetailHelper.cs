@@ -28,6 +28,7 @@ namespace MapToolkit.Drawing
         }
 
         public static List<T> SimplifyAnglesAndDistances<T>(List<T> points, Func<T, T, double> distance, double distanceThreshold, Func<T, T, double> angle, double thresholdInRadians = Math.PI / 36) // 5°
+            where T : notnull
         {
             var result = points;
             if (points.Count > 2)
@@ -37,7 +38,7 @@ namespace MapToolkit.Drawing
                 {
                     result = SimplifyAngles(result, angle, thresholdInRadians);
                     count = result.Count;
-                    result = SimplifyDistances(result, distance, distanceThreshold);
+                    result = SimplifyDistancesNoFilter(result, distance, distanceThreshold);
                 } while (count != result.Count && result.Count > 2);
             }
             if (result.Count == 2 && distance(result[0], result[1]) < distanceThreshold)
@@ -48,6 +49,7 @@ namespace MapToolkit.Drawing
         }
 
         public static List<T> SimplifyAngles<T>(IReadOnlyList<T> points, Func<T,T,double> angle, double angleThreshold = Math.PI / 36) // 5°
+            where T : notnull
         {
             var result = new List<T>() { points[0] };
             var i = 1;
@@ -68,7 +70,8 @@ namespace MapToolkit.Drawing
             return result;
         }
 
-        public static List<T> SimplifyDistances<T>(IReadOnlyList<T> points, Func<T, T, double> distance, double distanceThreshold)
+        private static List<T> SimplifyDistancesNoFilter<T>(IReadOnlyList<T> points, Func<T, T, double> distance, double distanceThreshold)
+            where T : notnull
         {
             var result = new List<T>() { points[0] };
             var i = 1;
@@ -88,7 +91,18 @@ namespace MapToolkit.Drawing
             return result;
         }
 
-        public static List<Vector> SimplifyClosed(IEnumerable<Vector> enumerable, double lengthSquared)
+        public static List<T> SimplifyDistances<T>(IReadOnlyList<T> points, Func<T, T, double> distance, double distanceThreshold)
+            where T : notnull
+        {
+            var result = SimplifyDistancesNoFilter(points, distance, distanceThreshold);
+            if (result.Count == 2 && distance(result[0], result[1]) < distanceThreshold)
+            {
+                return new List<T>();
+            }
+            return result;
+        }
+
+        public static List<Vector> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector> enumerable, double lengthSquared)
         {
             var simplified = SimplifyAnglesAndDistances(enumerable.ToList(), lengthSquared);
             if (simplified.Count > 3)
@@ -98,7 +112,7 @@ namespace MapToolkit.Drawing
             return new List<Vector>();
         }
 
-        public static IEnumerable<IEnumerable<Vector>>? SimplifyClosed(IEnumerable<IEnumerable<Vector>>? enumerable, double lengthSquared)
+        public static IEnumerable<IEnumerable<Vector>>? SimplifyAnglesAndDistancesClosed(IEnumerable<IEnumerable<Vector>>? enumerable, double lengthSquared)
         {
             if(enumerable == null)
             {
@@ -116,13 +130,9 @@ namespace MapToolkit.Drawing
             return result;
         }
 
-        internal static List<Vector> Simplify(List<Vector> list, double lengthSquared)
+        internal static List<Vector> SimplifyDistances(List<Vector> list, double lengthSquared)
         {
-            if (list.Count > 2 && list[0].Equals(list[list.Count - 1]))
-            {
-                return SimplifyClosed(list, lengthSquared);
-            }
-            return SimplifyAnglesAndDistances(list, lengthSquared);
+            return SimplifyDistances(list, DistanceSquared, lengthSquared);
         }
 
     }

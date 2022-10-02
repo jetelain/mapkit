@@ -1,24 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MapToolkit.DataCells;
+using MapToolkit.Utils;
 
 namespace MapToolkit.Contours
 {
     public static class ContourMaximaMinima
     {
-        public static List<DemDataPoint> FindMinima(IDemDataView cell, IEnumerable<ContourLine> lines)
+        public static List<DemDataPoint> FindMinima(IDemDataView cell, IEnumerable<ContourLine> lines, IProgress<double>? progress = null)
         {
-            return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && !l.IsCounterClockWise), -1, cell);
+            return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && !l.IsCounterClockWise), -1, cell, progress);
         }
 
-        public static List<DemDataPoint> FindMaxima(IDemDataView cell, IEnumerable<ContourLine> lines)
+        public static List<DemDataPoint> FindMaxima(IDemDataView cell, IEnumerable<ContourLine> lines, IProgress<double>? progress = null)
         {
-            return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && l.IsCounterClockWise), 1, cell);
+            return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && l.IsCounterClockWise), 1, cell, progress);
         }
 
-        private static List<DemDataPoint> FindMinimaOrMaxima(IEnumerable<ContourLine> source, int factor, IDemDataView cell)
+        private static List<DemDataPoint> FindMinimaOrMaxima(IEnumerable<ContourLine> source, int factor, IDemDataView cell, IProgress<double>? progress)
         {
             var list = new List<ContourLine?>(source);
+            var rel = new BasicProgress(new RelativeProgress(progress, 0, 0.5), list.Count);
             for (var i = 0; i < list.Count; ++i)
             {
                 var line = list[i];
@@ -30,8 +33,10 @@ namespace MapToolkit.Contours
                         list[i] = null;
                     }
                 }
+                rel.AddOne();
             }
             var result = new List<DemDataPoint>();
+            rel = new BasicProgress(new RelativeProgress(progress, 50, 0.5), list.Where(l => l != null).Count());
             foreach (var line in list.Where(l => l != null).Cast<ContourLine>())
             {
                 var min = new Coordinates(line.Points.Min(l => l.Latitude), line.Points.Min(l => l.Longitude));
@@ -55,6 +60,7 @@ namespace MapToolkit.Contours
                     var longitude = identitcal.Average(p => p.Coordinates.Longitude);
                     result.Add(new DemDataPoint(new Coordinates(latitude, longitude), elevation));
                 }
+                rel.AddOne();
             }
             return result;
         }

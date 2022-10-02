@@ -72,7 +72,7 @@ namespace MapToolkit.Drawing.MemoryRender
             return mapped;
         }
 
-        public MemorySurface ToMemorySurface(double lengthSquared = 9)
+        public MemorySurface ToMemorySurface(double lengthSquared)
         {
             var target = new MemorySurface();
             target.Operations.AddRange(source.Operations.SelectMany(o => o.Scale(this).Simplify(lengthSquared)));

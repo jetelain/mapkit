@@ -4,9 +4,12 @@ using System.Threading.Tasks;
 using System.Xml;
 using MapToolkit.Drawing.MemoryRender;
 using MapToolkit.Drawing.PdfRender;
+using MapToolkit.Utils;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -22,53 +25,142 @@ namespace MapToolkit.Drawing
             }
         }
 
-        public static void ToSvgTiled(string file, Vector size, Action<IDrawSurface> draw, Action<IDrawSurface>? drawSimpler = null)
+        public static TilingInfos ToSvgTiled(string file, Vector size, bool generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
         {
-            var surface = new MemoryRender.MemorySurface();
-            draw(surface);
+            var maxZoom = MaxZoom(size);
+            var count = Count(maxZoom, Math.Max(0, maxZoom - 6));
+            var rel = new BasicProgress(progress, count, 2);
 
-            var surface2 = new MemoryRender.MemorySurface();
-            if (drawSimpler != null)
+            var lod1 = new MemorySurface();
+            drawLod1(lod1);
+
+            SvgTileLevel(file, maxZoom, lod1, size, rel, generateWebpFallback);
+
+            if (maxZoom > 0)
             {
-                drawSimpler(surface2);
+                SvgTileLevel(file, maxZoom - 1, lod1.ToScale(0.5, 0.5), size / 2, rel, generateWebpFallback);
             }
-            else
+            if (maxZoom > 1)
             {
-                surface2 = surface;
+                var lod2 = GetLod(drawLod2, lod1);
+                SvgTileLevel(file, maxZoom - 2, lod2.ToScale(0.25, 0.5), size / 4, rel, generateWebpFallback);
+
+                if (maxZoom > 2)
+                {
+                    SvgTileLevel(file, maxZoom - 3, lod2.ToScale(0.125, 0.5), size / 8, rel, generateWebpFallback);
+                }
+                if (maxZoom > 3)
+                { 
+                    SvgTileLevel(file, maxZoom - 4, lod2.ToScale(0.0625, 0.25), size / 16, rel, generateWebpFallback);
+                }
+                if (maxZoom > 4)
+                {
+                    var lod3 = GetLod(drawLod3, lod2);
+                    SvgTileLevel(file, maxZoom - 5, lod3.ToScale(0.03125, 0.25), size / 32, rel, generateWebpFallback);
+
+                    if (maxZoom > 5)
+                    {
+                        SvgTileLevel(file, maxZoom - 6, lod3.ToScale(0.015625, 0.25), size / 64, rel, generateWebpFallback);
+                    }
+                }
             }
-            SvgTileLevel(file, 4, surface, size);
-            SvgTileLevel(file, 3, surface.ToScale(0.5,0.5), size / 2);
-            SvgTileLevel(file, 2, surface2.ToScale(0.25,0.5), size / 4);
-            SvgTileLevel(file, 1, surface2.ToScale(0.125,0.5), size / 8);
-            SvgTileLevel(file, 0, surface2.ToScale(0.0625, 0.25), size / 16);
+            return new TilingInfos()
+            {
+                MaxZoom = maxZoom,
+                MinZoom = Math.Max(0, maxZoom - 6),
+                TileSize = size / (1 << maxZoom),
+                TilePattern = "{z}/{x}/{y}.svg"
+            };
         }
 
-        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size)
+        private static MemorySurface GetLod(Action<IDrawSurface>? drawSimpler, MemorySurface xlod)
+        {
+            if (drawSimpler != null)
+            {
+                var lod = new MemoryRender.MemorySurface();
+                drawSimpler(lod);
+                return lod;
+            }
+            return xlod;
+        }
+
+        private static int MaxZoom(Vector size, int maxTileSize = 800)
+        {
+            var sizeL = Math.Max(size.X, size.Y);
+            var zoomLevel = 0;
+            while (sizeL / (1 << zoomLevel) > maxTileSize)
+            {
+                zoomLevel++;
+            }
+            return zoomLevel;
+        }
+
+        private static int Count(int maxZoom, int minZoom)
+        {
+            var count = 0;
+            while (maxZoom >= minZoom)
+            {
+                count += (1 << maxZoom) * (1 << maxZoom);
+                maxZoom--;
+            }
+            return count;
+        }
+
+        private static WebpEncoder WebpEncoder90 = new WebpEncoder() 
+        { 
+            FileFormat = WebpFileFormatType.Lossy,
+            Quality = 90, 
+            Method = WebpEncodingMethod.BestQuality,
+            TransparentColorMode = WebpTransparentColorMode.Clear 
+        };
+
+        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size, BasicProgress rel, bool generateWebpFallback)
         {
             var chunks = 1 << zoomLevel;
-
             var tileSize = size / chunks;
-
-            Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}"));
 
             Parallel.For(0, chunks, x =>
             {
+                using var image = generateWebpFallback ? new Image<Rgba32>((int)tileSize.X, (int)tileSize.Y) : null;
+
                 Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}/{x}"));
+
                 for (int y = 0; y < chunks; ++y)
                 {
                     var file = Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.svg");
                     var pos = new Vector(tileSize.X * x, tileSize.Y * y);
+
                     ToSvg(file, tileSize, t => new MemDrawClipped(surface, t, pos, pos + tileSize).Draw());
+
+                    if (generateWebpFallback)
+                    {
+                        image.Mutate(p =>
+                        {
+                            p.Clear(Color.White);
+                            new MemDrawClipped(surface, new ImageRender.ImageSurface(p), pos, pos + tileSize).Draw();
+                        });
+                        image.SaveAsWebp(Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.webp"), WebpEncoder90);
+                    }
+                    rel.AddOne();
                 }
             });
         }
 
         public static void ToPng(string file, Vector size, Action<IDrawSurface> draw)
         {
-            using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255,255,255,255)))
+            using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
                 image.Mutate(p => draw(new ImageRender.ImageSurface(p)));
                 image.SaveAsPng(file);
+            }
+        }
+
+        public static void ToImage(string file, Vector size, Action<IDrawSurface> draw)
+        {
+            using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
+            {
+                image.Mutate(p => draw(new ImageRender.ImageSurface(p)));
+                image.Save(file);
             }
         }
 
@@ -77,29 +169,21 @@ namespace MapToolkit.Drawing
             draw(new ImageRender.ImageSurface(target));
         }
 
-        public static void ToPngTiled(string targetDirectory, int tileSize, Vector size,  Action<IDrawSurface> draw)
+        public static TilingInfos ToPngTiled(string targetDirectory, Vector size,  Action<IDrawSurface> draw)
         {
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
                 image.Mutate(p => draw(new ImageRender.ImageSurface(p)));
-                PngTiles(image, targetDirectory, tileSize);
+                return PngTiles(image, targetDirectory);
             }
         }
 
-        private static int GetMaxZoom(int width, int tileSize)
+        private static TilingInfos PngTiles(Image fullImage, string targetDirectory)
         {
-            var zoomLevel = 0;
-            while (width >= tileSize)
-            {
-                width /= 2;
-                zoomLevel++;
-            }
-            return zoomLevel;
-        }
-
-        private static void PngTiles(Image fullImage, string targetDirectory, int tileSize)
-        {
-            var zoomLevel = GetMaxZoom(fullImage.Width, tileSize);
+            var size = new Vector(fullImage.Width, fullImage.Height);
+            var maxZoom = MaxZoom(new Vector(fullImage.Width, fullImage.Height));
+            var tileSize = fullImage.Width / (1 << maxZoom);
+            var zoomLevel = maxZoom;
 
             while (fullImage.Width >= tileSize)
             {
@@ -107,7 +191,16 @@ namespace MapToolkit.Drawing
                 fullImage.Mutate(i => i.Resize(fullImage.Width / 2, fullImage.Height / 2));
                 zoomLevel--;
             }
+
+            return new TilingInfos()
+            {
+                MaxZoom = maxZoom,
+                TileSize = new Vector(tileSize, tileSize),
+                MinZoom = 0,
+                TilePattern = "{z}/{x}/{y}.png"
+            };
         }
+
         private static void PngTilesAtZoomLevel(Image fullImage, string targetDirectory, int tileSize, int zoomLevel)
         {
             var bounds = fullImage.Bounds();

@@ -82,10 +82,10 @@ namespace MapToolkit.Drawing.MemoryRender
 
         public IEnumerable<IDrawOperation> Simplify(double lengthSquared = 9)
         {
-            var contour = LevelOfDetailHelper.SimplifyClosed(Contour, lengthSquared);
+            var contour = LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(Contour, lengthSquared);
             if (contour.Count > 3)
             {
-                yield return new DrawPolygon(contour, LevelOfDetailHelper.SimplifyClosed(Holes, lengthSquared), Style);
+                yield return new DrawPolygon(contour, LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(Holes, lengthSquared), Style);
             }
         }
     }
