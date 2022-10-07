@@ -112,6 +112,10 @@ namespace MapToolkit
         {
             return new Coordinates(c.Latitude - v.DeltaLat, c.Longitude - v.DeltaLon);
         }
+        public static Vector operator -(Coordinates a, Coordinates b)
+        {
+            return Vector.FromLatLonDelta(a.Latitude - b.Latitude, a.Longitude - b.Longitude);
+        }
 
         public Coordinates Round(int digits)
         {

@@ -235,36 +235,47 @@ namespace MapToolkit.Contours
         }
 #endif
 
-        public IEnumerable<Polygon> ToPolygons(int rounding = -1, IProgress<double>? progress = null)
+        public IEnumerable<Polygon> ToPolygons(IProgress<double>? progress = null)
         {
-            return linesByLevel.SelectMany(l => ToPolygons(l.Value, rounding, progress)).ToList();
+            return linesByLevel.SelectMany(l => ToPolygons(l.Value, progress)).ToList();
         }
 
-        private IEnumerable<Polygon> ToPolygons(List<ContourLine> value, int rounding, IProgress<double>? progress)
+        private IEnumerable<Polygon> ToPolygons(List<ContourLine> value, IProgress<double>? progress)
         {
-            // FIXME : Very naive implementation that assumes that :
-            // - outside world is lower
-            // - polygons around hills
-            var clipper = new Clipper(progress);
-            foreach (var line in value)
+            var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
+            var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
+            var poly = new List<Polygon>();
+            var i = 0;
+            foreach(var o in outer)
             {
-                if (line.IsClosed && line.Points.Count > 3)
+                var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
+                var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
+                var l = new List<LineString>();
+                var holes = inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList();
+                l.Add(ToLineString2(o));
+                l.AddRange(NonOverlaping(holes).Select(ToLineString2));
+                poly.Add(new Polygon(l));
+                i++;
+                if ( i % 100 == 0)
                 {
-                    if (line.IsCounterClockWise)
-                    {
-                        clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
-                    }
-                    else
-                    {
-                        clipper.AddPath(line.Points.Select(p => p.ToIntPoint()).ToList(), PolyType.ptClip, true);
-                    }
+                    progress?.Report(i * 100.0 / outer.Count);
                 }
             }
-            var result = new PolyTree();
-            clipper.Execute(ClipType.ctXor, result, PolyFillType.pftNonZero);
-            return result.Childs
-                .Select(c => new Polygon((new[] { ToLineString(c, rounding) })
-                             .Concat(c.Childs.Select(h => ToLineString(h, rounding))))).ToList();
+            return poly;
+        }
+
+        private List<ContourLine> NonOverlaping(List<ContourLine> holes)
+        {
+            if (holes.Count < 2)
+            {
+                return holes;
+            }
+            return holes.Where(h1 => !holes.Any(h2 => h2 != h1 && h1.Points.IsPointInside(h2.Points[0]))).ToList();
+        }
+
+        private static LineString ToLineString2(ContourLine o)
+        {
+            return new LineString(o.Points.Take(o.Points.Count - 1).Concat(o.Points.Take(1)));
         }
 
         private static void CloseLines(IEnumerable<ContourLine> value, Coordinates edgeSW, Coordinates edgeNE)
@@ -369,9 +380,9 @@ namespace MapToolkit.Contours
             }
         }
 
-        private static LineString ToLineString(PolyNode c, int rounding)
+        private static LineString ToLineString(PolyNode c)
         {
-            var points = c.Contour.Select(c => new Coordinates(c, rounding));
+            var points = c.Contour.Select(c => new Coordinates(c));
             return new LineString(points.Concat(points.Take(1)).ToList());
         }
 

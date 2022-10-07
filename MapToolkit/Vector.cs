@@ -23,12 +23,12 @@ namespace MapToolkit
             X = floatVector.X;
         }
 
-        public static Vector FromLatLonDelta(float lat, float lon)
+        public static Vector FromLatLonDelta(double lat, double lon)
         {
             return new Vector(lon, lat);
         }
 
-        public static Vector FromXYDelta(float x, float y)
+        public static Vector FromXYDelta(double x, double y)
         {
             return new Vector(x, y);
         }
@@ -68,6 +68,11 @@ namespace MapToolkit
         public override int GetHashCode()
         {
             return Y.GetHashCode() ^ X.GetHashCode();
+        }
+
+        public double Atan2()
+        {
+            return Math.Atan2(Y, X);
         }
 
         public Vector2 ToFloat()

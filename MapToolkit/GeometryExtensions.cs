@@ -34,23 +34,45 @@ namespace MapToolkit
             AddCropClip(min, max, clipper);
             var result = new PolyTree();
             clipper.Execute(ClipType.ctIntersection, result);
-            return new MultiPolygon(result.Childs
-                .Select(c => new Polygon((new[] { ToLineStringClosed(c) })
-                             .Concat(c.Childs.Select(h => ToLineStringClosed(h))))).ToList());
+
+            return new MultiPolygon(result.ToPolygons());
         }
 
         internal static bool IsCounterClockWise<T>(this List<T> points) where T : IPosition
         {
-            var north = points.IndexOf(points.OrderByDescending(p => p.Latitude).First());
-            var east = points.IndexOf(points.OrderByDescending(p => p.Longitude).First());
-            var south = points.IndexOf(points.OrderBy(p => p.Latitude).First());
-            var west = points.IndexOf(points.OrderBy(p => p.Longitude).First());
+            //var north = points.IndexOf(points.OrderByDescending(p => p.Latitude).First());
+            //var east = points.IndexOf(points.OrderByDescending(p => p.Longitude).First());
+            //var south = points.IndexOf(points.OrderBy(p => p.Latitude).First());
+            //var west = points.IndexOf(points.OrderBy(p => p.Longitude).First());
 
-            var epos = (east - north) % points.Count;
-            var spos = (south - north) % points.Count;
-            var wpos = (west - north) % points.Count;
+            //var epos = (east - north) % points.Count;
+            //var spos = (south - north) % points.Count;
+            //var wpos = (west - north) % points.Count;
 
-            return epos >= spos && spos >= wpos;
+            //return epos >= spos && spos >= wpos;
+            return GetSignedArea(points) > 0;
+        }
+
+        private static double GetSignedArea<T>(this List<T> points) where T : IPosition
+        {
+            if (points.Count < 3)
+                return 0;
+
+            int i;
+            double area = 0;
+
+            for (i = 0; i < points.Count; i++)
+            {
+                int j = (i + 1) % points.Count;
+
+                var vi = points[i];
+                var vj = points[j];
+
+                area += vi.Longitude * vj.Latitude;
+                area -= vi.Latitude * vj.Longitude;
+            }
+            area /= 2.0f;
+            return area;
         }
 
         private static void AddCropClip(Coordinates min, Coordinates max, Clipper clipper)

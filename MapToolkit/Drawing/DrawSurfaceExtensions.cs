@@ -19,6 +19,12 @@ namespace MapToolkit.Drawing
         public static IDrawStyle AllocatePenStyle(this IDrawSurface surface, string hexColor, double width = 1, IEnumerable<double>? pattern = null)
             => surface.AllocateStyle(null, new Pen(Color.ParseHex(hexColor), width, pattern));
 
+        public static IDrawStyle AllocateStyle(this IDrawSurface surface, Color fillColor, Color penColor, double width = 1, IEnumerable<double>? pattern = null)
+            => surface.AllocateStyle(new SolidColorBrush(fillColor), new Pen(penColor, width, pattern));
+
+        public static IDrawStyle AllocateStyle(this IDrawSurface surface, string fillHexColor, string penHexColor, double width = 1, IEnumerable<double>? pattern = null)
+            => surface.AllocateStyle(new SolidColorBrush(Color.ParseHex(fillHexColor)), new Pen(Color.ParseHex(penHexColor), width, pattern));
+
         public static void DrawRectangle(this IDrawSurface surface, Vector topLeft, Vector bottomRight, IDrawStyle style)
         {
             surface.DrawPolygon(new[] {
