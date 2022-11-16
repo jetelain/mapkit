@@ -144,6 +144,10 @@ namespace MapToolkit
         {
             var withoutHoles = polygons.Where(p => p.Coordinates.Count == 1).ToList();
             var withHoles = polygons.Where(p => p.Coordinates.Count > 1).ToList();
+            if (withoutHoles.Count == 0 && withHoles.Count == 0)
+            {
+                return new MultiPolygon(new List<Polygon>());
+            }
             if (withoutHoles.Count > 0)
             {
                 withoutHoles = UnionWithoutHoles(withoutHoles);
