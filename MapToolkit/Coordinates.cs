@@ -9,6 +9,8 @@ namespace MapToolkit
     {
         internal const double ScaleForClipper = 2_000_000d;
 
+        public static readonly Coordinates Zero = new Coordinates(0, 0);
+
         [JsonConstructor]
         public Coordinates(double latitude, double longitude)
         {

@@ -6,21 +6,21 @@ using System.Text;
 
 namespace MapToolkit.DataCells.FileFormats
 {
-    internal class EsriAsciiHelper
+    public static class EsriAsciiHelper
     {
         public const string Extension = ".asc";
 
-        public static DemDataCellMetadata LoadDataCellMetadata(string filepath)
+        internal static DemDataCellMetadata LoadDataCellMetadata(string filepath)
         {
             return CompressionHelper.Read(filepath, stream => LoadDataCellMetadata(new StreamReader(stream, Encoding.UTF8, false, 4096, true), out _));
         }
 
-        public static DemDataCellBase<float> LoadDataCell(string filepath, IProgress<double>? progress = null)
+        internal static DemDataCellBase<float> LoadDataCell(string filepath, IProgress<double>? progress = null)
         {
             return CompressionHelper.Read(filepath, stream => LoadDataCell(new StreamReader(stream, Encoding.UTF8, false, 10240, true), progress));
         }
 
-        private static DemDataCellBase<float> LoadDataCell(StreamReader streamReader, IProgress<double>? progress = null)
+        public static DemDataCellBase<float> LoadDataCell(TextReader streamReader, IProgress<double>? progress = null)
         {
             var metadata = LoadDataCellMetadata(streamReader, out var nodata);
             var data = new float[metadata.PointsLat, metadata.PointsLon];
@@ -54,7 +54,7 @@ namespace MapToolkit.DataCells.FileFormats
                                 progress.Report(read * 100.0 / total);
                             }
                         }
-                        
+
                     }
                 }
                 else
@@ -65,7 +65,7 @@ namespace MapToolkit.DataCells.FileFormats
             return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, data);
         }
 
-        private static DemDataCellMetadata LoadDataCellMetadata(StreamReader stream, out float nodata)
+        private static DemDataCellMetadata LoadDataCellMetadata(TextReader stream, out float nodata)
         {
             var header = Enumerable.Range(0, 6)
                 .Select(_ => stream.ReadLine() ?? string.Empty)
@@ -121,9 +121,64 @@ namespace MapToolkit.DataCells.FileFormats
                 throw new IOException("Missing xllcenter or xllcorner");
             }
 
-            var end = DemDataCellMetadata.EndFromResolution(start, type,  nrowsNum, ncolsNum, cellsizeNum, cellsizeNum);
+            var end = DemDataCellMetadata.EndFromResolution(start, type, nrowsNum, ncolsNum, cellsizeNum, cellsizeNum);
 
             return new DemDataCellMetadata(type, start, end, nrowsNum, ncolsNum);
         }
+
+        public static void SaveDataCell(TextWriter writer, DemDataCellBase<float> dataCell, string nodata = "-9999", IProgress<double>? progress = null)
+        {
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+            if (dataCell == null)
+            {
+                throw new ArgumentNullException(nameof(dataCell));
+            }
+            if (string.IsNullOrEmpty(nodata))
+            {
+                throw new ArgumentNullException(nameof(nodata));
+            }
+            writer.WriteLine(FormattableString.Invariant($"ncols         {dataCell.PointsLon}"));
+            writer.WriteLine(FormattableString.Invariant($"nrows         {dataCell.PointsLat}"));
+            if (dataCell.RasterType == DemRasterType.PixelIsArea)
+            {
+                writer.WriteLine(FormattableString.Invariant($"xllcenter     {dataCell.Start.Longitude}"));
+                writer.WriteLine(FormattableString.Invariant($"yllcenter     {dataCell.Start.Latitude}"));
+            }
+            else 
+            {
+                writer.WriteLine(FormattableString.Invariant($"xllcorner     {dataCell.Start.Longitude}"));
+                writer.WriteLine(FormattableString.Invariant($"yllcorner     {dataCell.Start.Latitude}"));
+            }
+            writer.WriteLine(FormattableString.Invariant($"cellsize      {dataCell.PixelSizeLat}"));
+            writer.WriteLine(FormattableString.Invariant($"NODATA_value  {nodata}"));
+            for (int lat = dataCell.PointsLat - 1; lat >= 0; lat--)
+            {
+                for (int lon = 0; lon < dataCell.PointsLon; lon++)
+                {
+                    if ( lon > 0 )
+                    {
+                        writer.Write(" ");
+                    }
+                    var value = dataCell.Data[lat, lon];
+                    if (float.IsNaN(value))
+                    {
+                        writer.Write(nodata);
+                    }
+                    else
+                    {
+                        writer.Write(dataCell.Data[lat, lon].ToString("0.00", CultureInfo.InvariantCulture));
+                    }
+                }
+                writer.WriteLine();
+                if (progress != null)
+                {
+                    progress.Report((dataCell.PointsLat - lat) / dataCell.PointsLat);
+                }
+            }
+        }
+
     }
 }
