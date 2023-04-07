@@ -27,8 +27,8 @@ namespace MapToolkit.Drawing
 
         public static TilingInfos ToSvgTiled(string file, Vector size, bool generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
         {
-            var maxZoom = MaxZoom(size);
-            var count = Count(maxZoom, Math.Max(0, maxZoom - 6));
+            var maxZoom = ImageTiler.MaxZoom(size);
+            var count = ImageTiler.Count(maxZoom, Math.Max(0, maxZoom - 6));
             var rel = new BasicProgress(progress, count, 2);
 
             var lod1 = new MemorySurface();
@@ -84,27 +84,6 @@ namespace MapToolkit.Drawing
             return xlod;
         }
 
-        private static int MaxZoom(Vector size, int maxTileSize = 800)
-        {
-            var sizeL = Math.Max(size.X, size.Y);
-            var zoomLevel = 0;
-            while (sizeL / (1 << zoomLevel) > maxTileSize)
-            {
-                zoomLevel++;
-            }
-            return zoomLevel;
-        }
-
-        private static int Count(int maxZoom, int minZoom)
-        {
-            var count = 0;
-            while (maxZoom >= minZoom)
-            {
-                count += (1 << maxZoom) * (1 << maxZoom);
-                maxZoom--;
-            }
-            return count;
-        }
 
         private static WebpEncoder WebpEncoder90 = new WebpEncoder() 
         { 
@@ -174,45 +153,7 @@ namespace MapToolkit.Drawing
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
                 image.Mutate(p => draw(new ImageRender.ImageSurface(p)));
-                return PngTiles(image, targetDirectory);
-            }
-        }
-
-        private static TilingInfos PngTiles(Image fullImage, string targetDirectory)
-        {
-            var size = new Vector(fullImage.Width, fullImage.Height);
-            var maxZoom = MaxZoom(new Vector(fullImage.Width, fullImage.Height));
-            var tileSize = fullImage.Width / (1 << maxZoom);
-            var zoomLevel = maxZoom;
-
-            while (fullImage.Width >= tileSize)
-            {
-                PngTilesAtZoomLevel(fullImage, targetDirectory, tileSize, zoomLevel);
-                fullImage.Mutate(i => i.Resize(fullImage.Width / 2, fullImage.Height / 2));
-                zoomLevel--;
-            }
-
-            return new TilingInfos()
-            {
-                MaxZoom = maxZoom,
-                TileSize = new Vector(tileSize, tileSize),
-                MinZoom = 0,
-                TilePattern = "{z}/{x}/{y}.png"
-            };
-        }
-
-        private static void PngTilesAtZoomLevel(Image fullImage, string targetDirectory, int tileSize, int zoomLevel)
-        {
-            var bounds = fullImage.Bounds();
-            for (int x = 0; x < bounds.Width; x += tileSize)
-            {
-                for (int y = 0; y < bounds.Height; y += tileSize)
-                {
-                    var tile = fullImage.Clone(i => i.Crop(new Rectangle(x, y, tileSize, tileSize)));
-                    var file = Path.Combine(targetDirectory, $"{zoomLevel}/{x / tileSize}/{y / tileSize}.png");
-                    Directory.CreateDirectory(Path.GetDirectoryName(file));
-                    tile.SaveAsPng(file);
-                }
+                return ImageTiler.DefaultToPng(image, targetDirectory);
             }
         }
 
