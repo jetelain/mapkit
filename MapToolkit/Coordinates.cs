@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Text.Json.Serialization;
 using ClipperLib;
 using GeoJSON.Text.Geometry;
@@ -29,6 +30,22 @@ namespace MapToolkit
                 Longitude = Math.Round(Longitude, rounding);
             }
         }
+
+        public static Coordinates FromXY(double x, double y)
+        {
+            return new Coordinates(y, x);
+        }
+
+        public static Coordinates FromXY(Vector2 vector)
+        {
+            return new Coordinates(vector.Y, vector.X);
+        }
+
+        public static Coordinates FromLatLon(double lat, double lon)
+        {
+            return new Coordinates(lat, lon);
+        }
+
 
         public double Latitude { get; }
 

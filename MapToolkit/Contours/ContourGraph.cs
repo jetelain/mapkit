@@ -264,6 +264,35 @@ namespace MapToolkit.Contours
             return poly;
         }
 
+        public IEnumerable<Polygon> ToPolygonsReverse(IProgress<double>? progress = null)
+        {
+            return linesByLevel.SelectMany(l => ToPolygonsReverse(l.Value, progress)).ToList();
+        }
+
+        private IEnumerable<Polygon> ToPolygonsReverse(List<ContourLine> value, IProgress<double>? progress)
+        {
+            var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
+            var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
+            var poly = new List<Polygon>();
+            var i = 0;
+            foreach (var o in outer)
+            {
+                var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
+                var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
+                var l = new List<LineString>();
+                var holes = inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList();
+                l.Add(ToLineString2(o));
+                l.AddRange(NonOverlaping(holes).Select(ToLineString2));
+                poly.Add(new Polygon(l));
+                i++;
+                if (i % 100 == 0)
+                {
+                    progress?.Report(i * 100.0 / outer.Count);
+                }
+            }
+            return poly;
+        }
+
         private List<ContourLine> NonOverlaping(List<ContourLine> holes)
         {
             if (holes.Count < 2)
