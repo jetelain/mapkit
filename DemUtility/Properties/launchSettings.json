@@ -1,21 +1,20 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "environmentVariables": {},
-      "distributionName": ""
-    },
     "Repack STRM": {
       "commandName": "Project",
-      "commandLineArgs": "repack -s E:\\Carto\\SRTMv3 -t c:\\temp\\SRTMv3 -m 10"
+      "commandLineArgs": "repack -k -s E:\\Carto\\SRTMv3 -t c:\\temp\\SRTMv3 -m 10"
     },
     "Repack AW3D30": {
       "commandName": "Project",
-      "commandLineArgs": "repack -s E:\\Carto\\AW3D30 -t c:\\temp\\AW3D30 -m 10"
+      "commandLineArgs": "repack -k -s E:\\Carto\\AW3D30 -t c:\\temp\\AW3D30 -m 10"
     },
     "Index STRM": {
       "commandName": "Project",
       "commandLineArgs": "index -p C:\\temp\\SRTMv3"
+    },
+    "Index AW3D30": {
+      "commandName": "Project",
+      "commandLineArgs": "index -p C:\\temp\\AW3D30"
     }
   }
 }

@@ -25,6 +25,9 @@ namespace DemUtility
 
         [Option('m', "max-cpu", Required = false, HelpText = "Number of CPU Cores that can be used for process.")]
         public int MaxCPU { get; set; } = -1;
+
+        [Option('k', "keep", Required = false, HelpText = "Keep existing files.")]
+        public bool Keep { get; set; }
     }
 
     [Verb("index", HelpText = "Build index.")]
@@ -104,8 +107,12 @@ namespace DemUtility
                     Parallel.ForEach(demFiles, parallel, file =>
                     {
                         var filename = CompressionHelper.GetFileName(Path.GetFileName(file)) + CompressionHelper.GetExtension(opts.TargetCompression);
-                        CompressionHelper.Write(Path.Combine(opts.Target, filename), opts.TargetCompression, 
-                            output => CompressionHelper.Read(file, input => input.CopyTo(output)));
+                        var target = Path.Combine(opts.Target, filename);
+                        if (!opts.Keep || !File.Exists(target))
+                        {
+                            CompressionHelper.Write(target, opts.TargetCompression,
+                                output => CompressionHelper.Read(file, input => input.CopyTo(output)));
+                        }
                         report.ReportOneDone();
                     });
                 }
@@ -125,10 +132,14 @@ namespace DemUtility
                                 if (entry.Name.EndsWith("_DSM.tif", StringComparison.OrdinalIgnoreCase))
                                 {
                                     var filename = entry.Name + CompressionHelper.GetExtension(opts.TargetCompression);
-                                    using(var input = entry.Open())
+                                    var target = Path.Combine(opts.Target, filename);
+                                    if (!opts.Keep || !File.Exists(target))
                                     {
-                                        CompressionHelper.Write(Path.Combine(opts.Target, filename), opts.TargetCompression,
-                                            output => input.CopyTo(output));
+                                        using (var input = entry.Open())
+                                        {
+                                            CompressionHelper.Write(target, opts.TargetCompression,
+                                                output => input.CopyTo(output));
+                                        }
                                     }
                                 }
                             }

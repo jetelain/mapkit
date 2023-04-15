@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace DemUtility
 {
@@ -32,7 +33,7 @@ namespace DemUtility
 
         public void ReportOneDone()
         {
-            ++lastDone;
+            Interlocked.Increment(ref lastDone);
             DrawDone(lastDone);
         }
 
