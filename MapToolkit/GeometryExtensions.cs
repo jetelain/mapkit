@@ -106,10 +106,16 @@ namespace MapToolkit
 
         internal static List<Polygon> ToPolygons(this PolyTree result, int rounding = -1)
         {
-            return result.Childs
-                .Select(c => new Polygon((new[] { ToLineStringClosed(c, rounding) })
-                             .Concat(c.Childs.Select(h => ToLineStringClosed(h, rounding))))).ToList();
+            return FromPolyTreeNode(result, rounding).ToList();
         }
+
+        private static IEnumerable<Polygon> FromPolyTreeNode(PolyNode result, int rounding = -1)
+        {
+            return result.Childs
+                .Select(c => new Polygon((new[] { ToLineStringClosed(c, rounding) }).Concat(c.Childs.Select(h => ToLineStringClosed(h, rounding)))))
+                .Concat(result.Childs.SelectMany(c => c.Childs).SelectMany(c => FromPolyTreeNode(c, rounding)));
+        }
+
 
         /// <summary>
         /// Subtract <paramref name="clip"/> polygons from <paramref name="subject"/> and returns the result.
