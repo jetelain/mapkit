@@ -256,8 +256,12 @@ namespace MapToolkit.DataCells
 
         public override IEnumerable<DemDataPoint> GetPointsOnParallel(int lat, int startLon, int count)
         {
-            var lonEnd = startLon + count;
-            for (var lon = startLon; lon < lonEnd; ++lon)
+            if (lat < 0 || lat >= Data.GetLength(0))
+            {
+                yield break;
+            }
+            var lonEnd = Math.Min(startLon + count, Data.GetLength(1));
+            for (var lon = Math.Max(0, startLon); lon < lonEnd; ++lon)
             {
                 yield return new DemDataPoint(
                     new Coordinates(Start.Latitude + (lat * PixelSizeLat),
