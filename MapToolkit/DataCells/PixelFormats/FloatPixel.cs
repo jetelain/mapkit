@@ -32,5 +32,10 @@ namespace MapToolkit.DataCells.PixelFormats
         {
             return visitor.Visit(cell);
         }
+
+        public override float FromDouble(double value)
+        {
+            return (float)value;
+        }
     }
 }

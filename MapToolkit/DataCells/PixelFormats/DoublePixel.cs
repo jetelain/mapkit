@@ -32,5 +32,10 @@ namespace MapToolkit.DataCells.PixelFormats
         {
             return visitor.Visit(cell);
         }
+
+        public override double FromDouble(double value)
+        {
+            return value;
+        }
     }
 }

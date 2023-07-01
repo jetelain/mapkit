@@ -78,7 +78,7 @@ namespace MapToolkit.DataCells
         {
             using (var reader = new BinaryReader(stream))
             {
-                return LoadMetadata(stream);
+                return LoadMetadata(reader);
             }
         }
 

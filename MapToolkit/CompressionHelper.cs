@@ -50,7 +50,7 @@ namespace MapToolkit
             {
                 return filename.Substring(0, filename.Length - ExtensionZip.Length);
             }
-            return filename.ToLowerInvariant();
+            return filename;
         }
 
         internal static T ReadSeekable<T>(string filename, Func<Stream, T> load)

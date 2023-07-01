@@ -36,5 +36,14 @@ namespace MapToolkit.DataCells.PixelFormats
         {
             return visitor.Visit(cell);
         }
+
+        public override ushort FromDouble(double value)
+        {
+            if(double.IsNaN(value))
+            {
+                return NoValue;
+            }
+            return (ushort)value;
+        }
     }
 }

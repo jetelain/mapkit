@@ -14,6 +14,8 @@ namespace MapToolkit.DataCells.PixelFormats
 
         public abstract double ToDouble(T value);
 
+        public abstract T FromDouble(double value);
+
         public abstract U Accept<U>(IDemDataCellVisitor<U> visitor, DemDataCellPixelIsArea<T> cell);
 
         public abstract U Accept<U>(IDemDataCellVisitor<U> visitor, DemDataCellPixelIsPoint<T> cell);

@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using MapToolkit.DataCells.PixelFormats;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace MapToolkit.DataCells
 {
@@ -122,6 +118,26 @@ namespace MapToolkit.DataCells
             return converted;
         }
 
+        public void FillVoidsFrom(Func<Coordinates,double> getElevation)
+        {
+            for (var localLat = 0; localLat < PointsLat; localLat++)
+            {
+                var localLon = 0;
+                foreach (var dataPoint in GetPointsOnParallel(localLat, 0, PointsLon))
+                {
+                    if (double.IsNaN(dataPoint.Elevation))
+                    {
+                        var otherValue = getElevation(dataPoint.Coordinates);
+                        if (!double.IsNaN(otherValue))
+                        {
+                            Data[localLat, localLon] = PixelFormat.FromDouble(otherValue);
+                        }
+                    }
+                    localLon++;
+                }
+            }
+        }
+
         public byte[] ToBytes()
         {
             var stream = new MemoryStream();
@@ -216,51 +232,5 @@ namespace MapToolkit.DataCells
         }
 
         public abstract DemDataCellBase<TOtherPixel> ConvertToBase<TOtherPixel>() where TOtherPixel : unmanaged;
-
-
-#if DEBUG
-        internal void SavePreview(string path)
-        {
-            var min = double.MaxValue;
-            var max = double.MinValue;
-
-            for (int y = 0; y < PointsLat; y++)
-            {
-                for (int x = 0; x < PointsLon; x++)
-                {
-                    max = Math.Max(PixelFormat.ToDouble(Data[y, x]), max);
-                    min = Math.Min(PixelFormat.ToDouble(Data[y, x]), min);
-                }
-            }
-
-            var legend = new[]
-            {
-                new { E = min, Color = Color.LightBlue.ToPixel<Rgb24>().ToScaledVector4() },
-                new { E = min + (max - min) * 0.10, Color = Color.DarkGreen.ToPixel<Rgb24>().ToScaledVector4() },
-                new { E = min + (max - min) * 0.15, Color = Color.Green.ToPixel<Rgb24>().ToScaledVector4() },
-                new { E = min + (max - min) * 0.40, Color = Color.Yellow.ToPixel<Rgb24>().ToScaledVector4() },
-                new { E = min + (max - min) * 0.70, Color = Color.Red.ToPixel<Rgb24>().ToScaledVector4() },
-                new { E = max, Color = Color.Maroon.ToPixel<Rgb24>().ToScaledVector4() }
-            };
-
-            using (var img = new Image<Rgb24>(PointsLon, PointsLat))
-            {
-                for (int y = 0; y < PointsLat; y++)
-                {
-                    for (int x = 0; x < PointsLon; x++)
-                    {
-                        var elevation = PixelFormat.ToDouble(Data[y, x]);
-                        var before = legend.Where(e => e.E <= elevation).Last();
-                        var after = legend.FirstOrDefault(e => e.E > elevation) ?? legend.Last();
-                        var scale = (float)((elevation - before.E) / (after.E - before.E));
-                        Rgb24 rgb = new Rgb24();
-                        rgb.FromScaledVector4(Vector4.Lerp(before.Color, after.Color, scale));
-                        img[x, PointsLat - y - 1] = rgb;
-                    }
-                }
-                img.Save(path);
-            }
-        }
-#endif
     }
 }

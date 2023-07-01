@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClipperLib;
 using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
 
@@ -408,13 +407,5 @@ namespace MapToolkit.Contours
                 LookEast(edgeSW, edgeNE, notClosed, line, northWest, depth + 1);
             }
         }
-
-        private static LineString ToLineString(PolyNode c)
-        {
-            var points = c.Contour.Select(c => new Coordinates(c));
-            return new LineString(points.Concat(points.Take(1)).ToList());
-        }
-
-
     }
 }
