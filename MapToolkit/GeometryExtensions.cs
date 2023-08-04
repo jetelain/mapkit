@@ -38,7 +38,7 @@ namespace MapToolkit
             return new MultiPolygon(result.ToPolygons());
         }
 
-        internal static bool IsCounterClockWise<T>(this List<T> points) where T : IPosition
+        public static bool IsCounterClockWise<T>(this List<T> points) where T : IPosition
         {
             //var north = points.IndexOf(points.OrderByDescending(p => p.Latitude).First());
             //var east = points.IndexOf(points.OrderByDescending(p => p.Longitude).First());
