@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using MapToolkit.DataCells;
+using System;
 
 namespace MapToolkit.Databases
 {
@@ -52,6 +53,12 @@ namespace MapToolkit.Databases
         public void UnLoad(IMemoryCache memoryCache)
         {
             memoryCache.Remove(this);
+        }
+
+        internal double GetCoverageSurface(Coordinates start, Coordinates end)
+        {
+            return Math.Max(0,Math.Min(end.Latitude, Metadata.End.Latitude) - Math.Max(start.Latitude, Metadata.Start.Latitude)) *
+                Math.Max(0, Math.Min(end.Longitude, Metadata.End.Longitude) - Math.Max(start.Longitude, Metadata.Start.Longitude));
         }
     }
 }

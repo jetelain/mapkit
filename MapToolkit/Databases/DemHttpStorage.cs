@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
@@ -44,7 +43,7 @@ namespace MapToolkit.Databases
                 {
                     using (var cache = File.Create(cacheFile))
                     {
-                        await input.CopyToAsync(cache);
+                        await input.CopyToAsync(cache).ConfigureAwait(false);
                     }
                 }
             }
@@ -55,9 +54,7 @@ namespace MapToolkit.Databases
         {
             using (var input = await client.GetStreamAsync("index.json").ConfigureAwait(false))
             {
-#pragma warning disable CS8603 // DeserializeAsync wont return null
-                return await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input);
-#pragma warning restore CS8603 
+                return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input).ConfigureAwait(false))!;
             }
         }
     }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using MapToolkit.DataCells;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MapToolkit.Databases
 {
@@ -49,19 +48,19 @@ namespace MapToolkit.Databases
                 entry.UnLoad(cache);
             }
             entries.Clear();
-            entries.AddRange((await storage.ReadIndex()).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata)));
+            entries.AddRange((await storage.ReadIndex().ConfigureAwait(false)).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata)));
         }
 
         private async Task EnsureIndexIsLoadedAsync()
         {
             if (entries.Count == 0)
             {
-                await semaphoreSlim.WaitAsync();
+                await semaphoreSlim.WaitAsync().ConfigureAwait(false);
                 try
                 {
                     if (entries.Count == 0)
                     {
-                        await LoadIndexInternal();
+                        await LoadIndexInternal().ConfigureAwait(false);
                     }
                 }
                 finally
@@ -88,7 +87,29 @@ namespace MapToolkit.Databases
         {
             var cells = await GetDataCellsAsync(start, end).ConfigureAwait(false);
             var converted = cells.Select(c => c.To<TPixel>()).ToList();
+            if (converted.Count == 0)
+            {
+                throw new ArgumentException($"Requested area {start}->{end} is not convered by database.");
+            }
             return new DemDataView<TPixel>(converted, start, end);
+        }
+
+        public async Task<bool> HasData(Coordinates start, Coordinates end)
+        {
+            await EnsureIndexIsLoadedAsync().ConfigureAwait(false);
+            return entries.Any(e => e.Overlaps(start, end));
+        }
+
+        public async Task<bool> HasFullData(Coordinates start, Coordinates end)
+        {
+            await EnsureIndexIsLoadedAsync().ConfigureAwait(false);
+            var surface = (end - start).Surface();
+            var coverage = 0d;
+            foreach(var entry in entries.Where(e => e.Overlaps(start, end)))
+            {
+                coverage += entry.GetCoverageSurface(start, end);
+            }
+            return (surface - coverage) <= 0.000_000_000_1;
         }
 
         public double GetElevation(Coordinates coordinates, IInterpolation interpolation)

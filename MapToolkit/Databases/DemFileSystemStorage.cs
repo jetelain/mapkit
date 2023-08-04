@@ -24,9 +24,7 @@ namespace MapToolkit.Databases
             {
                 using (var input = File.OpenRead(indexFile))
                 {
-#pragma warning disable CS8603 // DeserializeAsync wont return null
-                    return await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input);
-#pragma warning restore CS8603 
+                    return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input).ConfigureAwait(false))!;
                 }
             }
             return BuildIndex();

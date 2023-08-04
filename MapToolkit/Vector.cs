@@ -50,6 +50,11 @@ namespace MapToolkit
             return (X * X) + (Y * Y);
         }
 
+        internal double Surface()
+        {
+            return X * Y;
+        }
+
         public bool Equals(Vector? other)
         {
             if (other != null)
