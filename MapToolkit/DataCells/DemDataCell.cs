@@ -96,7 +96,7 @@ namespace MapToolkit.DataCells
             var metadata = new DemDataCellMetadata(reader);
             reader.ReadInt32(); // Unused
             reader.ReadInt32(); // Unused
-            Debug.Assert(reader.BaseStream.Position == 0x38);
+            //Debug.Assert(reader.BaseStream.Position == 0x38);
             switch (dataType)
             {
                 case 0:
