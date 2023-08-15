@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json.Serialization;
 using ClipperLib;
@@ -6,6 +7,7 @@ using GeoJSON.Text.Geometry;
 
 namespace MapToolkit
 {
+    [DebuggerDisplay("({Latitude};{Longitude})")]
     public class Coordinates : IEquatable<Coordinates>, IPosition
     {
         internal const double ScaleForClipper = 2_000_000d;

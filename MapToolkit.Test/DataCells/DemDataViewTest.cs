@@ -6,6 +6,22 @@ namespace MapToolkit.Test.DataCells
 {
     public class DemDataViewTest
     {
+        private static void AssertEqual(IDemDataView expected, IDemDataView actual)
+        {
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.End, actual.End);
+            Assert.Equal(expected.PointsLat, actual.PointsLat);
+            Assert.Equal(expected.PointsLon, actual.PointsLon);
+            Assert.Equal(expected.PixelSizeLat, actual.PixelSizeLat);
+            Assert.Equal(expected.PixelSizeLon, actual.PixelSizeLon);
+            for (int lat = 0; lat < actual.PointsLat; ++lat)
+            {
+                Assert.Equal(
+                    expected.GetPointsOnParallel(lat, 0, actual.PointsLon).ToList(),
+                    actual.GetPointsOnParallel(lat, 0, actual.PointsLon).ToList());
+            }
+        }
+
         [Fact]
         public void PixelIsPoint_GetPointsOnParallel()
         {
@@ -15,9 +31,13 @@ namespace MapToolkit.Test.DataCells
                 { 4, 7, 2 }
             });
 
+            AssertEqual(dataCell, dataCell.CreateView(dataCell.Start, dataCell.End));
+
             var view = dataCell.CreateView(new Coordinates(0, 0), new Coordinates(0.5, 0.5));
             Assert.Equal(2, view.PointsLat);
             Assert.Equal(2, view.PointsLon);
+            Assert.Equal(0.5, view.PixelSizeLat);
+            Assert.Equal(0.5, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0, 0), view.Start);
             Assert.Equal(new Coordinates(0.5, 0.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -28,6 +48,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0), new Coordinates(1, 0.5));
             Assert.Equal(2, view.PointsLat);
             Assert.Equal(2, view.PointsLon);
+            Assert.Equal(0.5, view.PixelSizeLat);
+            Assert.Equal(0.5, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0), view.Start);
             Assert.Equal(new Coordinates(1, 0.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -38,6 +60,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0.5), new Coordinates(1, 1));
             Assert.Equal(2, view.PointsLat);
             Assert.Equal(2, view.PointsLon);
+            Assert.Equal(0.5, view.PixelSizeLat);
+            Assert.Equal(0.5, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0.5), view.Start);
             Assert.Equal(new Coordinates(1, 1), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -48,6 +72,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0.5), new Coordinates(1.5, 1.5));
             Assert.Equal(3, view.PointsLat);
             Assert.Equal(3, view.PointsLon);
+            Assert.Equal(0.5, view.PixelSizeLat);
+            Assert.Equal(0.5, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0.5), view.Start);
             Assert.Equal(new Coordinates(1.5, 1.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -67,9 +93,13 @@ namespace MapToolkit.Test.DataCells
                 { 3, 1, 8, 9 }
             });
 
+            AssertEqual(dataCell, dataCell.CreateView(dataCell.Start, dataCell.End));
+
             var view = dataCell.CreateView(new Coordinates(0, 0), new Coordinates(0.5, 0.5));
             Assert.Equal(2, view.PointsLat);
-            Assert.Equal(2, view.PointsLon);
+            Assert.Equal(2, view.PointsLon); 
+            Assert.Equal(0.25, view.PixelSizeLat);
+            Assert.Equal(0.25, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0, 0), view.Start);
             Assert.Equal(new Coordinates(0.5, 0.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -80,6 +110,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0), new Coordinates(1, 0.5));
             Assert.Equal(2, view.PointsLat);
             Assert.Equal(2, view.PointsLon);
+            Assert.Equal(0.25, view.PixelSizeLat);
+            Assert.Equal(0.25, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0), view.Start);
             Assert.Equal(new Coordinates(1, 0.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -90,6 +122,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0.5), new Coordinates(1, 1));
             Assert.Equal(2, view.PointsLat);
             Assert.Equal(2, view.PointsLon);
+            Assert.Equal(0.25, view.PixelSizeLat);
+            Assert.Equal(0.25, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0.5), view.Start);
             Assert.Equal(new Coordinates(1, 1), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -100,6 +134,8 @@ namespace MapToolkit.Test.DataCells
             view = dataCell.CreateView(new Coordinates(0.5, 0.5), new Coordinates(1.5, 1.5));
             Assert.Equal(4, view.PointsLat);
             Assert.Equal(4, view.PointsLon);
+            Assert.Equal(0.25, view.PixelSizeLat);
+            Assert.Equal(0.25, view.PixelSizeLon);
             Assert.Equal(new Coordinates(0.5, 0.5), view.Start);
             Assert.Equal(new Coordinates(1.5, 1.5), view.End);
             Assert.Equal(new List<DemDataPoint>() {
@@ -123,6 +159,8 @@ namespace MapToolkit.Test.DataCells
             var subCell = dataCell.CreateView(new Coordinates(0, 0), new Coordinates(0.5, 0.5)).ToDataCell();
             Assert.Equal(new Coordinates(0, 0), subCell.Start);
             Assert.Equal(new Coordinates(0.5, 0.5), subCell.End);
+            Assert.Equal(0.5, subCell.PixelSizeLat);
+            Assert.Equal(0.5, subCell.PixelSizeLon);
             Assert.Equal(0.5, subCell.SizeLon);
             Assert.Equal(0.5, subCell.SizeLat);
             Assert.Equal(2, subCell.PointsLat);
@@ -134,7 +172,9 @@ namespace MapToolkit.Test.DataCells
 
             subCell = dataCell.CreateView(new Coordinates(0.5, 0.5), new Coordinates(1, 1)).ToDataCell();
             Assert.Equal(new Coordinates(0.5, 0.5), subCell.Start);
-            Assert.Equal(new Coordinates(1, 1), subCell.End);
+            Assert.Equal(new Coordinates(1, 1), subCell.End); 
+            Assert.Equal(0.5, subCell.PixelSizeLat);
+            Assert.Equal(0.5, subCell.PixelSizeLon);
             Assert.Equal(0.5, subCell.SizeLon);
             Assert.Equal(0.5, subCell.SizeLat);
             Assert.Equal(2, subCell.PointsLat);
@@ -169,6 +209,8 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(new Coordinates(1, 1.5), merge.End);
             Assert.Equal(1, merge.SizeLon);
             Assert.Equal(1, merge.SizeLat);
+            Assert.Equal(0.25, merge.PixelSizeLat);
+            Assert.Equal(0.25, merge.PixelSizeLon);
             Assert.Equal(
                 new short[5, 5] {
                     { 02, 03, 04, 05, 06 },

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using GeoJSON.Text.Geometry;
 
 namespace MapToolkit
 {
+    [DebuggerDisplay("{Coordinates} => {Elevation}")]
     public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition
     {
         public DemDataPoint(Coordinates coordinates, double elevation)
