@@ -1,4 +1,6 @@
-﻿namespace MapToolkit.DataCells
+﻿using System;
+
+namespace MapToolkit.DataCells
 {
     public sealed class RasterPixelIsArea : RasterMapping
     {
@@ -11,7 +13,7 @@
         }
 
         internal RasterPixelIsArea(Coordinates start, Coordinates end, double pixelSizeLat, double pixelSizeLon)
-            : this(start, end, (int)((end.Latitude - start.Latitude) / pixelSizeLat), (int)((end.Longitude - start.Longitude) / pixelSizeLon))
+            : this(start, end, (int)Math.Round((end.Latitude - start.Latitude) / pixelSizeLat), (int)Math.Round((end.Longitude - start.Longitude) / pixelSizeLon))
         {
             PixelSizeLat = pixelSizeLat;
             PixelSizeLon = pixelSizeLon;
@@ -29,8 +31,8 @@
         internal override CellCoordinates CoordinatesToIndexClosest(Coordinates coordinates)
         {
             return new CellCoordinates(
-                (int)((coordinates.Latitude - Start.Latitude) / PixelSizeLat),
-                (int)((coordinates.Longitude - Start.Longitude) / PixelSizeLon));
+                (int)Math.Floor((coordinates.Latitude - StartAsPoint.Latitude) / PixelSizeLat) + 1,
+                (int)Math.Floor((coordinates.Longitude - StartAsPoint.Longitude) / PixelSizeLon) + 1);
         }
 
         internal override Coordinates IndexToCoordinates(int lat, int lon)

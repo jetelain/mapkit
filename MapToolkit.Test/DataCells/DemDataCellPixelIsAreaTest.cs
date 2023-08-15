@@ -45,6 +45,17 @@ namespace MapToolkit.Test.DataCells
         }
 
         [Fact]
+        public void GetLocalElevation()
+        {
+            var dataCell = new DemDataCellPixelIsArea<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[2, 2] {
+                { 6, 3 },
+                { 5, 8 },
+            });
+
+            Assert.Equal(5.5, dataCell.GetLocalElevation(new Coordinates(0.5, 0.5), DefaultInterpolation.Instance));
+        }
+
+        [Fact]
         public void GetPointsOnParallel()
         {
             var dataCell = new DemDataCellPixelIsArea<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[2, 2] {

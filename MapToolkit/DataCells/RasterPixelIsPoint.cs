@@ -11,7 +11,7 @@ namespace MapToolkit.DataCells
             PixelSizeLon = SizeLon / (PointsLon - 1);
         }
         internal RasterPixelIsPoint(Coordinates start, Coordinates end, double pixelSizeLat, double pixelSizeLon)
-           : base(start, end, (int)((end.Latitude - start.Latitude) / pixelSizeLat) + 1, (int)((end.Longitude - start.Longitude) / pixelSizeLon) + 1)
+           : base(start, end, (int)Math.Round((end.Latitude - start.Latitude) / pixelSizeLat) + 1, (int)Math.Round((end.Longitude - start.Longitude) / pixelSizeLon) + 1)
         {
             PixelSizeLat = pixelSizeLat;
             PixelSizeLon = pixelSizeLon;
