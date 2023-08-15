@@ -40,11 +40,11 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(0, p.Longitude);
 
             p = raster.CoordinatesToIndexClosest(new Coordinates(0.5, 0));
-            Assert.Equal(1, p.Latitude); // XXX: why is this correct ???
+            Assert.Equal(1, p.Latitude);
             Assert.Equal(0, p.Longitude);
 
             p = raster.CoordinatesToIndexClosest(new Coordinates(1, 0));
-            Assert.Equal(2, p.Latitude); // XXX: why is this correct ???
+            Assert.Equal(2, p.Latitude);
             Assert.Equal(0, p.Longitude);
 
             p = raster.CoordinatesToIndexClosest(new Coordinates(1.5, 0));
