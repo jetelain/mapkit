@@ -50,6 +50,20 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(2, dataCell.GetRawElevation(new Coordinates(1.0, 1.0)));
         }
 
+        [Fact]
+        public void GetLocalElevation()
+        {
+            var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
+                { 6, 3, 0 },
+                { 5, 8, 4 },
+                { 4, 7, 2 }
+            });
+
+            Assert.Equal(5.50, dataCell.GetLocalElevation(new Coordinates(0.25, 0.25), DefaultInterpolation.Instance));
+            Assert.Equal(6.00, dataCell.GetLocalElevation(new Coordinates(0.75, 0.25), DefaultInterpolation.Instance));
+            Assert.Equal(3.75, dataCell.GetLocalElevation(new Coordinates(0.25, 0.75), DefaultInterpolation.Instance));
+            Assert.Equal(5.25, dataCell.GetLocalElevation(new Coordinates(0.75, 0.75), DefaultInterpolation.Instance));
+        }
 
         [Fact]
         public void GetPointsOnParallel()
