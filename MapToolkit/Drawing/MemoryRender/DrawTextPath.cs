@@ -23,7 +23,7 @@ namespace MapToolkit.Drawing.MemoryRender
             to.VerticalAlignment = style.VerticalAlignment;
             to.HorizontalAlignment = style.HorizontalAlignment;
 
-            var measure = TextMeasurer.Measure(Text, to);
+            var measure = TextMeasurer.MeasureSize(Text, to);
 
             var measurePoints = new[] {
                 new Vector2((float)first.X, (float)first.Y),

@@ -13,20 +13,20 @@ namespace MapToolkit.Drawing.ImageRender
             Pen = ToPen(pen);
         }
 
-        private SixLabors.ImageSharp.Drawing.Processing.IPen? ToPen(Pen? pen)
+        private SixLabors.ImageSharp.Drawing.Processing.Pen? ToPen(Pen? pen)
         {
             if (pen != null)
             {
                 if (pen.Pattern != null)
                 {
-                    return new SixLabors.ImageSharp.Drawing.Processing.Pen(ToBrush(pen.Brush), (float)pen.Width, pen.Pattern.Select(v => (float)(v/pen.Width)).ToArray());
+                    return new SixLabors.ImageSharp.Drawing.Processing.PatternPen(ToBrush(pen.Brush), (float)pen.Width, pen.Pattern.Select(v => (float)(v/pen.Width)).ToArray());
                 }
-                return new SixLabors.ImageSharp.Drawing.Processing.Pen(ToBrush(pen.Brush), (float)pen.Width);
+                return new SixLabors.ImageSharp.Drawing.Processing.SolidPen(ToBrush(pen.Brush), (float)pen.Width);
             }
             return null;
         }
 
-        private SixLabors.ImageSharp.Drawing.Processing.IBrush? ToBrush(IBrush? fill)
+        private SixLabors.ImageSharp.Drawing.Processing.Brush? ToBrush(IBrush? fill)
         {
             switch (fill)
             {
@@ -43,7 +43,7 @@ namespace MapToolkit.Drawing.ImageRender
             return ((ImageIcon)vector.Icon).Image;
         }
 
-        public SixLabors.ImageSharp.Drawing.Processing.IBrush? Brush { get; set; }
-        public SixLabors.ImageSharp.Drawing.Processing.IPen? Pen { get; set; }
+        public SixLabors.ImageSharp.Drawing.Processing.Brush? Brush { get; set; }
+        public SixLabors.ImageSharp.Drawing.Processing.Pen? Pen { get; set; }
     }
 }

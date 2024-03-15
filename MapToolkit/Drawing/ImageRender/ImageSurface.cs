@@ -78,7 +78,7 @@ namespace MapToolkit.Drawing.ImageRender
             var ipoints = points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray();
             if (istyle.Pen != null)
             {
-                target.DrawLines(istyle.Pen, ipoints);
+                target.DrawLine(istyle.Pen, ipoints);
             }
         }
 
@@ -86,7 +86,7 @@ namespace MapToolkit.Drawing.ImageRender
         {
             var istyle = (ImageTextStyle)style;
 
-            var to = new TextOptions(istyle.Font);
+            var to = new RichTextOptions(istyle.Font);
             to.Origin = new PointF((float)point.X, (float)point.Y);
             to.VerticalAlignment = istyle.VerticalAlignment;
             to.HorizontalAlignment = istyle.HorizontalAlignment;

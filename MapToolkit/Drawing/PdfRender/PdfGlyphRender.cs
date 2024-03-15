@@ -29,11 +29,11 @@ namespace MapToolkit.Drawing.PdfRender
         {
         }
 
-        public void BeginText(FontRectangle bounds)
+        public void BeginText(in FontRectangle bounds)
         {
         }
 
-        public bool BeginGlyph(FontRectangle bounds, GlyphRendererParameters paramaters)
+        public bool BeginGlyph(in FontRectangle bounds, in GlyphRendererParameters paramaters)
         {
             currentPath = new XGraphicsPath();
             return true;
@@ -91,5 +91,14 @@ namespace MapToolkit.Drawing.PdfRender
             currentPoint = point;
         }
 
+        public TextDecorations EnabledDecorations()
+        {
+            return TextDecorations.None;
+        }
+
+        public void SetDecoration(TextDecorations textDecorations, Vector2 start, Vector2 end, float thickness)
+        {
+
+        }
     }
 }

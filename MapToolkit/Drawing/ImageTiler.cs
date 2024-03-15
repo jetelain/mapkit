@@ -72,7 +72,7 @@ namespace MapToolkit.Drawing
 
         private static void GenerateTilesAtZoomLevel(Image fullImage, string targetDirectory, int tileSize, int zoomLevel, Action<Image,string> save, string ext)
         {
-            var bounds = fullImage.Bounds();
+            var bounds = fullImage.Bounds;
             for (int x = 0; x < bounds.Width; x += tileSize)
             {
                 for (int y = 0; y < bounds.Height; y += tileSize)
