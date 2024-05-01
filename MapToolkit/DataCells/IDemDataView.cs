@@ -12,5 +12,7 @@ namespace MapToolkit.DataCells
         IEnumerable<DemDataPoint> GetPointsOnParallel(int lat, int lon, int count);
 
         IDemDataView CreateView(Coordinates start, Coordinates end);
+
+        double GetLocalElevation(Coordinates coordinates, IInterpolation interpolation);
     }
 }

@@ -15,11 +15,11 @@ namespace MapToolkit.DataCells
             PixelSizeLon = SizeLon / (PointsLon - 1);
         }
 
-        public DemDataCellPixelIsPoint(Coordinates start, Vector pixelSize, TPixel[,] data) // TODO: TEST !!!
-            : this(start, start + (pixelSize * new Vector(data.GetLength(0) - 1, data.GetLength(1) - 1)), data)
+        public DemDataCellPixelIsPoint(Coordinates start, Vector pixelSize, TPixel[,] data)
+            : this(start, start + (pixelSize * new Vector(data.GetLength(1) - 1, data.GetLength(0) - 1)), data)
         {
-            Debug.Assert(PixelSizeLat == pixelSize.Y);
-            Debug.Assert(PixelSizeLon == pixelSize.X);
+            Debug.Assert(Math.Abs(PixelSizeLat-pixelSize.DeltaLat) < 0.0000001);
+            Debug.Assert(Math.Abs(PixelSizeLon-pixelSize.DeltaLon) < 0.0000001);
         }
 
         public override DemRasterType RasterType => DemRasterType.PixelIsPoint;

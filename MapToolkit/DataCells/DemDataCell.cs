@@ -166,6 +166,22 @@ namespace MapToolkit.DataCells
             }
         }
 
+        internal static DemDataCellBase<T> Create<T>(Coordinates start, Vector pixelSize, DemRasterType type, T[,] data)
+            where T : unmanaged
+        {
+            switch (type)
+            {
+                default:
+                case DemRasterType.Unknown:
+                case DemRasterType.PixelIsArea:
+                    return new DemDataCellPixelIsArea<T>(start, pixelSize, data);
+
+                case DemRasterType.PixelIsPoint:
+                    return new DemDataCellPixelIsPoint<T>(start, pixelSize, data);
+            }
+        }
+
+
         internal const int MagicNumber = 0x57d15a3c;
 
         internal static byte GetDataTypeCode(Type t)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MapToolkit.Databases;
 
 namespace MapToolkit.DataCells
 {
@@ -81,7 +82,7 @@ namespace MapToolkit.DataCells
         {
             var lon = startLon;
             var endLon = startLon + count;
-            foreach (var cell in cellsData.Where(c => c.lat <= lat && lat <= c.endLat && c.endLon >= startLon && c.lon <= endLon).OrderBy(c => c.lon))
+            foreach (var cell in cellsData.Where(c => c.lat <= lat && lat < c.endLat && c.endLon > startLon && c.lon <= endLon).OrderBy(c => c.lon))
             {
                 int deltaLon = cell.lon - lon;
                 if (deltaLon < 0)
@@ -146,6 +147,20 @@ namespace MapToolkit.DataCells
         public IDemDataView CreateView(Coordinates start, Coordinates end)
         {
             return new DemDataView<TPixel>(cellsData.Select(c => c.cell), start, end); // Filter cells
+        }
+
+        public double GetLocalElevation(Coordinates coordinates, IInterpolation interpolation)
+        {
+            var cells = cellsData.Where(c => coordinates.IsInSquare(c.cell.Start, c.cell.End)).Select(c => c.cell).Cast<IDemDataCell>().ToList();
+            if (cells.Count == 0)
+            {
+                return double.NaN;
+            }
+            if (cells.Count == 1)
+            {
+                return cells[0].GetLocalElevation(coordinates, interpolation);
+            }
+            return DemDatabase.GetElevationWithMultipleCells(coordinates, interpolation, cells);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MapToolkit.DataCells
 {
@@ -14,6 +15,13 @@ namespace MapToolkit.DataCells
             PixelSizeLat = SizeLat / PointsLat;
             PixelSizeLon = SizeLon / PointsLon;
             points = AsPixelIsPoint();
+        }
+
+        public DemDataCellPixelIsArea(Coordinates start, Vector pixelSize, TPixel[,] data)
+            : this(start, start + (pixelSize * new Vector(data.GetLength(1), data.GetLength(0))), data)
+        {
+            Debug.Assert(Math.Abs(PixelSizeLat - pixelSize.DeltaLat) < 0.0000001);
+            Debug.Assert(Math.Abs(PixelSizeLon - pixelSize.DeltaLon) < 0.0000001);
         }
 
         public override DemRasterType RasterType => DemRasterType.PixelIsArea;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MapToolkit.DataCells.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -51,12 +52,78 @@ namespace MapToolkit.DataCells
             return ToImage(view, DemLegend.CreateRelative(view));
         }
 
+        public static Image<Rgb24> ToImage(this IDemDataView view)
+        {
+            return ToImage(view, DemLegend.CreateAbsolute());
+        }
+
         public static void SaveImagePreview(this IDemDataView view, string path)
         {
             using (var img = view.ToImageWithRelativeLegend())
             {
                 img.Save(path);
             }
+        }
+
+        public static void SaveImagePreviewAbsolute(this IDemDataView view, string path)
+        {
+            using (var img = view.ToImage())
+            {
+                img.Save(path);
+            }
+        }
+
+        public static DemDataCellPixelIsArea<TPixel> ToPixelIsArea<TPixel>(this IDemDataView view, Vector pixelSize, IInterpolation interpolation)
+            where TPixel : unmanaged
+        {
+            return ToPixelIsArea<TPixel>(view, view.Start, view.End, pixelSize, interpolation);
+        }
+
+        public static DemDataCellPixelIsArea<TPixel> ToPixelIsArea<TPixel>(this IDemDataView view, Coordinates start, Coordinates end, Vector pixelSize, IInterpolation interpolation)
+            where TPixel : unmanaged
+        {
+            var tpixel = DemPixels.Get<TPixel>();
+            var size = end - start;
+            var latCount = (int)Math.Round(size.DeltaLat / pixelSize.DeltaLat);
+            var lonCount = (int)Math.Round(size.DeltaLon / pixelSize.DeltaLon);
+            var hpixel = pixelSize / 2;
+            var data = new TPixel[latCount, lonCount];
+            Parallel.For(0, latCount, (int latIndex) =>
+            {
+                for (var lonIndex = 0; lonIndex < lonCount; lonIndex++)
+                {
+                    data[latIndex, lonIndex] = tpixel.FromDouble(view.GetLocalElevation(start + hpixel + Vector.FromLatLonDelta(
+                        pixelSize.DeltaLat * latIndex,
+                        pixelSize.DeltaLon * lonIndex), interpolation));
+                }
+            });
+            return new DemDataCellPixelIsArea<TPixel>(start, pixelSize, data);
+        }
+
+        public static DemDataCellPixelIsPoint<TPixel> ToPixelIsPoint<TPixel>(this IDemDataView view, Vector pixelSize, IInterpolation interpolation)
+            where TPixel : unmanaged
+        {
+            return ToPixelIsPoint<TPixel>(view, view.Start, view.End, pixelSize, interpolation);
+        }
+
+        public static DemDataCellPixelIsPoint<TPixel> ToPixelIsPoint<TPixel>(this IDemDataView view, Coordinates start, Coordinates end, Vector pixelSize, IInterpolation interpolation)
+            where TPixel : unmanaged
+        {
+            var tpixel = DemPixels.Get<TPixel>();
+            var size = end - start;
+            var latCount = (int)Math.Round(size.DeltaLat / pixelSize.DeltaLat)+1;
+            var lonCount = (int)Math.Round(size.DeltaLon / pixelSize.DeltaLon)+1;
+            var data = new TPixel[latCount, lonCount];
+            Parallel.For(0, latCount, (int latIndex) =>
+            {
+                for (var lonIndex = 0; lonIndex < lonCount; lonIndex++)
+                {
+                    data[latIndex, lonIndex] = tpixel.FromDouble(view.GetLocalElevation(start + Vector.FromLatLonDelta(
+                        pixelSize.DeltaLat * latIndex,
+                        pixelSize.DeltaLon * lonIndex), interpolation));
+                }
+            });
+            return new DemDataCellPixelIsPoint<TPixel>(start, pixelSize, data);
         }
     }
 }

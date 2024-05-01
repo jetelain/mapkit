@@ -152,7 +152,7 @@ namespace MapToolkit.Databases
             return GetElevationWithMultipleCells(coordinates, interpolation, datas);
         }
 
-        private static double GetElevationWithMultipleCells(Coordinates coordinates, IInterpolation interpolation, List<IDemDataCell> datas)
+        internal static double GetElevationWithMultipleCells(Coordinates coordinates, IInterpolation interpolation, List<IDemDataCell> datas)
         {
             var local = datas.FirstOrDefault(d => d.IsLocal(coordinates));
             if (local != null)
