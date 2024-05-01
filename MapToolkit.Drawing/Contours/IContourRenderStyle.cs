@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MapToolkit.Drawing;
 
-namespace MapToolkit.Contours
+namespace MapToolkit.Drawing.Contours
 {
     public interface IContourRenderStyle
     {
