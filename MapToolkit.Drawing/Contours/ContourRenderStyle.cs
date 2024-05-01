@@ -1,7 +1,7 @@
 ﻿using MapToolkit.Drawing;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Contours
+namespace MapToolkit.Drawing.Contours
 {
     public class ContourRenderStyle : IContourRenderStyle
     {
