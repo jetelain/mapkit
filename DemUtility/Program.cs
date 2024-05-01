@@ -8,6 +8,7 @@ using CommandLine;
 using MapToolkit;
 using MapToolkit.Databases;
 using MapToolkit.DataCells;
+using MapToolkit.DataCells.FileFormats;
 
 namespace DemUtility
 {
@@ -37,18 +38,136 @@ namespace DemUtility
         public string? Source { get; set; }
     }
 
+    internal abstract class BoxBase
+    {
+        [Option('p', "path", Required = true, HelpText = "Database directory or URL.")]
+        public string? Source { get; set; }
+
+        [Option("lat1", Required = true)]
+        public double Lat1 { get; set; }
+
+        [Option("lat2", Required = true)]
+        public double Lat2 { get; set; }
+
+        [Option("lon1", Required = true)]
+        public double Lon1 { get; set; }
+
+        [Option("lon2", Required = true)]
+        public double Lon2 { get; set; }
+    }
+
+    [Verb("image", HelpText = "Generate an image for a portion of a database")]
+    internal class ImageOptions : BoxBase
+    {
+        [Option('t', "target", Required = true, HelpText = "Target PNG file.")]
+        public string? Target { get; set; }
+    }
+
+    [Verb("export", HelpText = "Export data from a database into an other file format.")]
+    internal class ExportOptions : BoxBase
+    {
+        [Option('t', "target", Required = true, HelpText = "Target file.")]
+        public string? Target { get; set; }
+
+        [Option('f', "format", HelpText = "Target file format.")]
+        public string? Format { get; set; }
+    }
+
     internal class Program
     {
-        static int Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            return CommandLine.Parser.Default.ParseArguments<RepackOptions, IndexOptions>(args)
+            return await CommandLine.Parser.Default.ParseArguments<RepackOptions, IndexOptions, ImageOptions, ExportOptions>(args)
               .MapResult(
                 (RepackOptions opts) => Repack(opts),
                 (IndexOptions opts) => Index(opts),
-                errs => 1);
+                (ImageOptions opts) => Image(opts),
+                (ExportOptions opts) => Export(opts),
+                errs => Task.FromResult(1));
         }
 
-        private static int Index(IndexOptions opts)
+        private static async Task<int> Export(ExportOptions opts)
+        {
+            if (string.IsNullOrEmpty(opts.Target))
+            {
+                throw new ArgumentNullException();
+            }
+            var extension = Path.GetExtension(opts.Target);
+            if (!string.IsNullOrEmpty(opts.Format))
+            {
+                extension = "." + opts.Format;
+            }
+            switch(extension.ToLowerInvariant())
+            {
+                case EsriAsciiHelper.Extension:
+                    using (var writer = File.CreateText(opts.Target))
+                    {
+                        EsriAsciiHelper.SaveDataCell(writer, (await GetView<float>(opts)).ToDataCell());
+                    }
+                    break;
+                case ".xyz":
+                    using (var writer = File.CreateText(opts.Target))
+                    {
+                        WriteXyz(writer, (await GetView<double>(opts)).ToDataCell());
+                    }
+                    break;
+            }
+
+            return 0;
+        }
+
+        private static void WriteXyz(StreamWriter writer, DemDataCellBase<double> view)
+        {
+            for(int lat = 0; lat < view.PointsLat; lat++)
+            {
+                int lon = 0;
+                foreach (var point in view.GetPointsOnParallel(lat, 0, view.PointsLon))
+                {
+                    if (!double.IsNaN(point.Elevation))
+                    {
+                        writer.WriteLine(FormattableString.Invariant($"{point.Coordinates.Longitude}\t{point.Coordinates.Latitude}\t{point.Elevation}"));
+                    }
+                    lon++;
+                }
+            }
+        }
+
+        private static async Task<int> Image(ImageOptions opts)
+        {
+            if (string.IsNullOrEmpty(opts.Source))
+            {
+                throw new ArgumentNullException();
+            }
+            if (string.IsNullOrEmpty(opts.Target))
+            {
+                throw new ArgumentNullException();
+            }
+            DemDataView<double> view = await GetView<double>(opts);
+            view.ToDataCell().SaveImagePreviewAbsolute(opts.Target);
+            return 0;
+        }
+
+        private static async Task<DemDataView<TPixel>> GetView<TPixel>(BoxBase opts) where TPixel : unmanaged
+        {
+            if (string.IsNullOrEmpty(opts.Source))
+            {
+                throw new ArgumentNullException();
+            }
+            var source = new DemDatabase(GetStorage(opts.Source));
+            var view = await source.CreateView<TPixel>(new Coordinates(opts.Lat1, opts.Lon1), new Coordinates(opts.Lat2, opts.Lon2));
+            return view;
+        }
+
+        private static IDemStorage GetStorage(string source)
+        {
+            if (source.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || source.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
+            {
+                return new DemHttpStorage(new Uri(source));
+            }
+            return new DemFileSystemStorage(source);
+        }
+
+        private static Task<int> Index(IndexOptions opts)
         {
             if (string.IsNullOrEmpty(opts.Source))
             {
@@ -60,10 +179,10 @@ namespace DemUtility
             {
                 JsonSerializer.Serialize(file, index);
             }
-            return 0;
+            return Task.FromResult(0);
         }
 
-        private static int Repack(RepackOptions opts)
+        private static Task<int> Repack(RepackOptions opts)
         {
             if (string.IsNullOrEmpty(opts.Source))
             {
@@ -148,7 +267,7 @@ namespace DemUtility
                     });
                 }
             }
-            return 0;
+            return Task.FromResult(0);
         }
     }
 }

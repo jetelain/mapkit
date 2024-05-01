@@ -15,6 +15,26 @@
     "Index AW3D30": {
       "commandName": "Project",
       "commandLineArgs": "index -p C:\\temp\\AW3D30"
+    },
+    "Repack STRM15": {
+      "commandName": "Project",
+      "commandLineArgs": "repack -s C:\\temp\\SRTM15Plus -t C:\\temp\\SRTM15PlusZ 10"
+    },
+    "Index STRM15": {
+      "commandName": "Project",
+      "commandLineArgs": "index -p C:\\temp\\SRTM15PlusZ"
+    },
+    "Profil 1": {
+      "commandName": "Project",
+      "commandLineArgs": "image -p https://dem.pmad.net/SRTM15Plus/ --lat1 38 --lat2 41 --lon1 24 --lon2 27 -t c:\\temp\\image.png"
+    },
+    "Profil 2": {
+      "commandName": "Project",
+      "commandLineArgs": "image -p https://dem.pmad.net/SRTM1/ --lat1 38 --lat2 41 --lon1 24 --lon2 27 -t c:\\temp\\image2.png"
+    },
+    "Profil 3": {
+      "commandName": "Project",
+      "commandLineArgs": "export -p https://dem.pmad.net/SRTM15Plus/ --lat1 38 --lat2 41 --lon1 24 --lon2 27 -t c:\\temp\\image.xyz"
     }
   }
 }
