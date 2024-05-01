@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MapToolkit.Drawing;
+﻿using MapToolkit.Contours;
 using MapToolkit.Projections;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Contours
+namespace MapToolkit.Drawing.Contours
 {
     public class ContourRender
     {

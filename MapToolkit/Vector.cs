@@ -45,7 +45,7 @@ namespace MapToolkit
         [JsonIgnore]
         public double DeltaLat => Y;
 
-        internal double LengthSquared()
+        public double LengthSquared()
         {
             return (X * X) + (Y * Y);
         }
