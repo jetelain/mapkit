@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MapToolkit.DataCells;
 
 namespace MapToolkit.Test.DataCells
@@ -63,6 +60,21 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(6.00, dataCell.GetLocalElevation(new Coordinates(0.75, 0.25), DefaultInterpolation.Instance));
             Assert.Equal(3.75, dataCell.GetLocalElevation(new Coordinates(0.25, 0.75), DefaultInterpolation.Instance));
             Assert.Equal(5.25, dataCell.GetLocalElevation(new Coordinates(0.75, 0.75), DefaultInterpolation.Instance));
+        }
+
+        [Fact]
+        public void GetLocalElevation_OutOfRange()
+        {
+            var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
+                { 6, 3, 0 },
+                { 5, 8, 4 },
+                { 4, 7, 2 }
+            });
+
+            Assert.True(double.IsNaN(dataCell.GetLocalElevation(new Coordinates(1.5, 1.5), DefaultInterpolation.Instance)));
+            Assert.True(double.IsNaN(dataCell.GetLocalElevation(new Coordinates(-0.5, -0.5), DefaultInterpolation.Instance)));
+            Assert.Equal(2, dataCell.GetLocalElevation(new Coordinates(1.25, 1.25), DefaultInterpolation.Instance));
+            Assert.Equal(6, dataCell.GetLocalElevation(new Coordinates(-0.25, -0.25), DefaultInterpolation.Instance));
         }
 
         [Fact]
@@ -149,6 +161,119 @@ namespace MapToolkit.Test.DataCells
             Assert.Equal(4, subCell.Data[0, 1]);
             Assert.Equal(7, subCell.Data[1, 0]);
             Assert.Equal(2, subCell.Data[1, 1]);
+        }
+
+        [Fact]
+        public void GetNearbyElevation()
+        {
+            var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
+                { 6, 3, 0 },
+                { 5, 8, 4 },
+                { 4, 7, 2 }
+            });
+
+            // x
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   |
+            //   +---+---+
+            var dataPoints = dataCell.GetNearbyElevation(new Coordinates(-0.25, -0.25));
+            Assert.Equal(new DemDataPoint(new Coordinates(0, 0), 6), Assert.Single(dataPoints));
+
+            //             x
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   |
+            //   +---+---+
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(-0.25, 1.25));
+            Assert.Equal(new DemDataPoint(new Coordinates(0, 1), 0), Assert.Single(dataPoints));
+
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   |
+            //   +---+---+
+            // x
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(1.25, -0.25));
+            Assert.Equal(new DemDataPoint(new Coordinates(1, 0), 4), Assert.Single(dataPoints));
+
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   |
+            //   +---+---+
+            //            x
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(1.25, 1.25));
+            Assert.Equal(new DemDataPoint(new Coordinates(1, 1), 2), Assert.Single(dataPoints));
+
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   | x |
+            //   +---+---+
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(0.75, 0.75));
+            Assert.Equal(new List<DemDataPoint>()
+            {
+                new DemDataPoint(new Coordinates(0.5, 0.5), 8),
+                new DemDataPoint(new Coordinates(1, 0.5), 7),
+                new DemDataPoint(new Coordinates(0.5, 1), 4),
+                new DemDataPoint(new Coordinates(1, 1), 2)
+            }, dataPoints.ToList());
+
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   |
+            //   +---+---+
+            //         x
+
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(1.25, 0.75));
+            Assert.Equal(new List<DemDataPoint>()
+            {
+                new DemDataPoint(new Coordinates(1, 0.5), 7),
+                new DemDataPoint(new Coordinates(1, 1), 2)
+            }, dataPoints.ToList());
+
+            //   +---+---+
+            //   |   |   |
+            //   +---+---+ 
+            //   |   |   | x
+            //   +---+---+
+
+            dataPoints = dataCell.GetNearbyElevation(new Coordinates(0.75, 1.25));
+            Assert.Equal(new List<DemDataPoint>()
+            {
+                new DemDataPoint(new Coordinates(0.5, 1), 4),
+                new DemDataPoint(new Coordinates(1, 1), 2)
+            }, dataPoints.ToList());
+
+        }
+
+        [Fact]
+        public void GetNearbyElevation_OutOfRange()
+        {
+            var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
+                { 6, 3, 0 },
+                { 5, 8, 4 },
+                { 4, 7, 2 }
+            });
+
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(-0.5, -0.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(-0.75, -0.75)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(1.5, 1.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(1.75, 1.75)));
+
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(0.5, -0.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(0.5, -0.75)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(0.5, 1.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(0.5, 1.75)));
+
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(-0.5, 0.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(-0.75, 0.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(1.5, 0.5)));
+            Assert.Empty(dataCell.GetNearbyElevation(new Coordinates(1.75, 0.5)));
         }
     }
 }
