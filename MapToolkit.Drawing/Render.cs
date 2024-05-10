@@ -17,9 +17,9 @@ namespace MapToolkit.Drawing
 {
     public static class Render
     {
-        public static void ToSvg(string file, Vector size, Action<IDrawSurface> draw)
+        public static void ToSvg(string file, Vector size, Action<IDrawSurface> draw, string stylePrefix = "")
         {
-            using (var surface = new SvgRender.SvgSurface(XmlWriter.Create(File.CreateText(file)), size, file))
+            using (var surface = new SvgRender.SvgSurface(XmlWriter.Create(File.CreateText(file), new XmlWriterSettings() { CloseOutput = true }), size, file, stylePrefix))
             {
                 draw(surface);
             }

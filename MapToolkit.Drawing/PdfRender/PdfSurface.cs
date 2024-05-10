@@ -231,5 +231,19 @@ namespace MapToolkit.Drawing.PdfRender
             var top = center - (picon.Size / 2);
             picon.Draw(new TranslateDraw(this, top.X, top.Y));
         }
+
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            var pstyle = (PdfStyle)style;
+
+            graphics.DrawRoundedRectangle(pstyle.Pen, 
+                pstyle.Brush, 
+                topLeft.X * pixelSize, 
+                topLeft.Y * pixelSize, 
+                (bottomRight.X - topLeft.X) * pixelSize, 
+                (bottomRight.Y - topLeft.Y) * pixelSize, 
+                radius * pixelSize, 
+                radius * pixelSize);
+        }
     }
 }

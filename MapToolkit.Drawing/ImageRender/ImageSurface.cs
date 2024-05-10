@@ -156,5 +156,27 @@ namespace MapToolkit.Drawing.ImageRender
             var iicon = (ImageIcon)icon;
             target.DrawImage(iicon.Image, new Point( (int)(center.X - (iicon.Image.Width / 2)), (int)(center.Y - (iicon.Image.Height / 2))), 1);
         }
+
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            var istyle = (ImageStyle)style;
+
+            var path = new PathBuilder()
+                .AddArc((float)topLeft.X + radius, (float)topLeft.Y + radius, radius, radius, 0, -90, -90)
+                .AddArc((float)bottomRight.X - radius, (float)topLeft.Y + radius, radius, radius, 0, 180, -90)
+                .AddArc((float)bottomRight.X - radius, (float)bottomRight.Y - radius, radius, radius, 0, 90, -90)
+                .AddArc((float)topLeft.X + radius, (float)bottomRight.Y - radius, radius, radius, 0, 0, -90)
+                .CloseFigure()
+                .Build();
+
+            if (istyle.Brush != null)
+            {
+                target.Fill(istyle.Brush, path);
+            }
+            if (istyle.Pen != null)
+            {
+                target.Draw(istyle.Pen, path);
+            }
+        }
     }
 }

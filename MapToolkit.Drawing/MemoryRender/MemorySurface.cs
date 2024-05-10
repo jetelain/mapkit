@@ -127,5 +127,10 @@ namespace MapToolkit.Drawing.MemoryRender
         {
             Operations.Add(new DrawIcon(center, (MemDrawIcon)icon));
         }
+
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            Operations.Add(new DrawRoundedRectangle(topLeft, bottomRight, (MemDrawStyle)style, radius));
+        }
     }
 }
