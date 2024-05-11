@@ -66,6 +66,11 @@ namespace MapToolkit.Drawing.MemoryRender
             throw new System.NotImplementedException();
         }
 
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            s.DrawRoundedRectangle(topLeft, bottomRight, memDrawContext.MapStyle((MemDrawStyle)style), radius);
+        }
+
         public void DrawText(Vector point, string text, IDrawTextStyle style)
         {
             throw new System.NotImplementedException();

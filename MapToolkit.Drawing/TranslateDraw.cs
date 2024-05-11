@@ -83,5 +83,10 @@ namespace MapToolkit.Drawing
         {
             drawSurface.DrawIcon(Translate(center), icon);
         }
+
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            drawSurface.DrawRoundedRectangle(Translate(topLeft), Translate(bottomRight), style, radius);
+        }
     }
 }

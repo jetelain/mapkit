@@ -39,5 +39,7 @@ namespace MapToolkit.Drawing
         void DrawText(Vector point, string text, IDrawTextStyle style);
 
         void DrawIcon(Vector center, IDrawIcon icon);
+
+        void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius);
     }
 }

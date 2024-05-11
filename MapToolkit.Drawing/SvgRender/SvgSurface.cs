@@ -25,11 +25,13 @@ namespace MapToolkit.Drawing.SvgRender
         private readonly int rounding = 1;
         private bool isWrittingStyle = false;
         private readonly StringBuilder styles = new StringBuilder();
+        private readonly string stylePrefix;
 
-        public SvgSurface(XmlWriter writer, Vector size, string? path = null)
+        public SvgSurface(XmlWriter writer, Vector size, string? path = null, string stylePrefix = "")
         {
             this.writer = writer;
             this.path = path;
+            this.stylePrefix = stylePrefix;
             StartSvg(size);
         }
 
@@ -56,7 +58,7 @@ namespace MapToolkit.Drawing.SvgRender
 
         private string TakeStyleId()
         {
-            return "s" + (nextStyleId++).ToString("x");
+            return stylePrefix + "s" + (nextStyleId++).ToString("x");
         }
 
         private void EndClass()
@@ -427,6 +429,19 @@ namespace MapToolkit.Drawing.SvgRender
             var sicon = (SvgIcon)icon;
             var top = center - (sicon.Size / 2);
             sicon.Draw(new TranslateDraw(this, top.X, top.Y));
+        }
+
+        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        {
+            FlushStyles();
+            writer.WriteStartElement("rect", SvgXmlns);
+            writer.WriteAttributeString("x", ToString(topLeft.X));
+            writer.WriteAttributeString("y", ToString(topLeft.Y));
+            writer.WriteAttributeString("width", ToString(bottomRight.X - topLeft.X));
+            writer.WriteAttributeString("height", ToString(bottomRight.Y - topLeft.Y));
+            writer.WriteAttributeString("rx", ToString(radius));
+            writer.WriteAttributeString("class", ((SvgStyle)style).Name);
+            writer.WriteEndElement();
         }
     }
 }
