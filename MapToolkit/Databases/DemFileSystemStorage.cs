@@ -24,7 +24,7 @@ namespace MapToolkit.Databases
             {
                 using (var input = File.OpenRead(indexFile))
                 {
-                    return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input).ConfigureAwait(false))!;
+                    return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input, DemDatabaseIndexContext.Default.DemDatabaseIndex).ConfigureAwait(false))!;
                 }
             }
             return BuildIndex();

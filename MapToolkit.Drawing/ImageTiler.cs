@@ -79,7 +79,7 @@ namespace MapToolkit.Drawing
                 {
                     var tile = fullImage.Clone(i => i.Crop(new Rectangle(x, y, tileSize, tileSize)));
                     var file = Path.Combine(targetDirectory, FormattableString.Invariant($"{zoomLevel}/{x / tileSize}/{y / tileSize}.{ext}"));
-                    Directory.CreateDirectory(Path.GetDirectoryName(file));
+                    Directory.CreateDirectory(Path.GetDirectoryName(file)!);
                     save(tile,file);
                 }
             }
