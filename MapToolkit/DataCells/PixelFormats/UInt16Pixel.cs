@@ -10,7 +10,7 @@ namespace MapToolkit.DataCells.PixelFormats
 
         public override ushort Average(IEnumerable<ushort> value)
         { 
-            return (ushort) value.Cast<int>().Average();
+            return (ushort) value.Select(v => (int)v).Average();
         }
 
         public override bool IsNoValue(ushort value)

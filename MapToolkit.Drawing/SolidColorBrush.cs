@@ -17,7 +17,7 @@ namespace MapToolkit.Drawing
             return other != null && Color.Equals(other.Color);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as SolidColorBrush);
         }

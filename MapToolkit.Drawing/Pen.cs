@@ -35,7 +35,7 @@ namespace MapToolkit.Drawing
             return false;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as Pen);
         }

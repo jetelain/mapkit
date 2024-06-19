@@ -259,7 +259,7 @@ namespace ClipperLib
       return !(val1 == val2);
     }
 
-    public override bool Equals(System.Object obj)
+    public override bool Equals(System.Object? obj)
     {
       if (obj == null || !(obj is Int128))
         return false;
@@ -409,7 +409,7 @@ namespace ClipperLib
       return a.X != b.X  || a.Y != b.Y; 
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
       if (obj == null) return false;
       if (obj is IntPoint)
@@ -492,9 +492,9 @@ namespace ClipperLib
 
   public class MyIntersectNodeSort : IComparer<IntersectNode>
   {
-    public int Compare(IntersectNode node1, IntersectNode node2)
+    public int Compare(IntersectNode? node1, IntersectNode? node2)
     {
-      cInt i = node2.Pt.Y - node1.Pt.Y;
+      cInt i = node2!.Pt.Y - node1!.Pt.Y;
       if (i > 0) return 1;
       else if (i < 0) return -1;
       else return 0;

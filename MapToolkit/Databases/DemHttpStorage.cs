@@ -32,11 +32,11 @@ namespace MapToolkit.Databases
 
         public async Task<IDemDataCell> Load(string path)
         {
-            var uri = new Uri(client.BaseAddress, path);
+            var uri = new Uri(client.BaseAddress!, path);
             var cacheFile = Path.Combine(localCache, uri.DnsSafeHost, uri.AbsolutePath.Substring(1).Replace('/', Path.DirectorySeparatorChar));
             if(!File.Exists(cacheFile))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(cacheFile));
+                Directory.CreateDirectory(Path.GetDirectoryName(cacheFile)!);
                 // XXX: Limit cache size ?
                 // XXX: Cache invalidation ?
                 using (var input = await client.GetStreamAsync(path).ConfigureAwait(false))
@@ -54,7 +54,7 @@ namespace MapToolkit.Databases
         {
             using (var input = await client.GetStreamAsync("index.json").ConfigureAwait(false))
             {
-                return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input).ConfigureAwait(false))!;
+                return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input, DemDatabaseIndexContext.Default.DemDatabaseIndex).ConfigureAwait(false))!;
             }
         }
     }

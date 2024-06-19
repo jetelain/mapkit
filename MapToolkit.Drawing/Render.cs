@@ -111,7 +111,7 @@ namespace MapToolkit.Drawing
 
                     ToSvg(file, tileSize, t => new MemDrawClipped(surface, t, pos, pos + tileSize).Draw());
 
-                    if (generateWebpFallback)
+                    if (image != null)
                     {
                         image.Mutate(p =>
                         {

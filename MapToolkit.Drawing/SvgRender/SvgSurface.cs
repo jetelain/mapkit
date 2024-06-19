@@ -21,7 +21,6 @@ namespace MapToolkit.Drawing.SvgRender
         private int nextPathId = 0;
         private int nextStyleId = 0;
         private int nextBrushId = 0;
-        private int nextImageId = 0;
         private readonly int rounding = 1;
         private bool isWrittingStyle = false;
         private readonly StringBuilder styles = new StringBuilder();

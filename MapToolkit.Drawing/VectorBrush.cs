@@ -27,7 +27,7 @@ namespace MapToolkit.Drawing
             return other == this;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as VectorBrush);
         }

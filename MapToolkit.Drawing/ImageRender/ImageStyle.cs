@@ -19,9 +19,9 @@ namespace MapToolkit.Drawing.ImageRender
             {
                 if (pen.Pattern != null)
                 {
-                    return new SixLabors.ImageSharp.Drawing.Processing.PatternPen(ToBrush(pen.Brush), (float)pen.Width, pen.Pattern.Select(v => (float)(v/pen.Width)).ToArray());
+                    return new SixLabors.ImageSharp.Drawing.Processing.PatternPen(ToBrush(pen.Brush) ?? throw new ArgumentException(), (float)pen.Width, pen.Pattern.Select(v => (float)(v/pen.Width)).ToArray());
                 }
-                return new SixLabors.ImageSharp.Drawing.Processing.SolidPen(ToBrush(pen.Brush), (float)pen.Width);
+                return new SixLabors.ImageSharp.Drawing.Processing.SolidPen(ToBrush(pen.Brush) ?? throw new ArgumentException(), (float)pen.Width);
             }
             return null;
         }
