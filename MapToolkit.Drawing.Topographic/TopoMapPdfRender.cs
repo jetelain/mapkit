@@ -1,6 +1,4 @@
-﻿using DemUtility;
-using MapToolkit.Drawing;
-using MapToolkit.Drawing.PdfRender;
+﻿using MapToolkit.Drawing.PdfRender;
 using MapToolkit.Projections;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
@@ -15,8 +13,8 @@ namespace MapToolkit.Drawing.Topographic
         private const double LegendHalfWidth = LegendWidth / 2;
         private const double Margin = 20;
 
-        private const double LegendWidthWithBothMargin = LegendWidth + 2 * Margin;
-        private const double LegendWidthWithAllsMargins = LegendWidth + 3 * Margin;
+        private const double LegendWidthWithBothMargin = LegendWidth + (2 * Margin);
+        private const double LegendWidthWithAllsMargins = LegendWidth + (3 * Margin);
         private const double DoubleLegendWidthWithBothMargin = LegendWidthWithBothMargin * 2;
 
         public static void RenderPDF(ITopoMapPdfRenderOptions opts, ITopoMapData data, int scale = 25)
@@ -32,7 +30,7 @@ namespace MapToolkit.Drawing.Topographic
             if (sizeInPoints.X > PaperSize.ArchEHeight || sizeInPoints.Y > PaperSize.ArchEWidth)
             {
                 var paperSize = new Vector(PaperSize.ArchEHeight, PaperSize.ArchEWidth);
-                var paperSurface = new Vector(PaperSize.ArchEHeight - (LegendWidth + Margin * 3) - 1, PaperSize.ArchEWidth - Margin * 2);
+                var paperSurface = new Vector(PaperSize.ArchEHeight - (LegendWidth + (Margin * 3)) - 5, PaperSize.ArchEWidth - (Margin * 2));
 
                 var tiles = GetTiles(data.DemDataCell.Start, scale, sizeInMeters, sizeInPoints, paperSurface);
 
@@ -63,7 +61,7 @@ namespace MapToolkit.Drawing.Topographic
 
             var paperSize = new Vector(PaperSize.A3Height, PaperSize.A3Width);
 
-            var paperSurface = new Vector(paperSize.X - Margin * 2, paperSize.Y - Margin * 2);
+            var paperSurface = new Vector(paperSize.X - (Margin * 2), paperSize.Y - (Margin * 2));
 
             var file = Path.Combine(opts.TargetDirectory, opts.FileName + "-book.pdf");
 
@@ -157,7 +155,7 @@ namespace MapToolkit.Drawing.Topographic
         {
             var document = new PdfDocument();
             document.Info.Title = data.Title;
-            document.Info.Creator = "MapToolkit Topo Map - Print Map created by GrueArbre";
+            document.Info.Creator = "MapToolkit Topographic Map";
             document.Info.Author = $"Original Map {opts.Attribution}";
 
             var rdata = TopoMapRenderData.Create(data);
@@ -188,7 +186,7 @@ namespace MapToolkit.Drawing.Topographic
             {
                 var delta = (dX - LegendWidthWithAllsMargins) / 2;
                 // | Margin | ... Legend ... | Margin | ... Map ... | Margin |
-                mapTopLeft = new Vector(delta + Margin * 2 + LegendWidth, dY / 2);
+                mapTopLeft = new Vector(delta + (Margin * 2) + LegendWidth, dY / 2);
                 legendTopCenter = new Vector(delta + LegendHalfWidth + Margin, dY / 2);
                 miniMap = true;
             }
@@ -199,7 +197,7 @@ namespace MapToolkit.Drawing.Topographic
                 {
                     // |              ... Map ...               | 
                     // |              | ... Legend ... | Margin | 
-                    legendTopCenter = new Vector(paperSizeInPoints.X - dX / 2 - LegendHalfWidth - Margin, paperSizeInPoints.Y - dY / 2 - LegendHeight - Margin);
+                    legendTopCenter = new Vector(paperSizeInPoints.X - (dX / 2) - LegendHalfWidth - Margin, paperSizeInPoints.Y - (dY / 2) - LegendHeight - Margin);
                     drawLegend = paperSizeInPoints.X > PaperSize.A3Height;
                 }
                 else
