@@ -40,15 +40,14 @@ namespace MapToolkit.Drawing.Topographic
             var contour = new ContourGraph();
             contour.Add(data.DemDataCell, new ContourLevelGenerator(10, 10), false);
             
-            var plotted = ComputePlottedPoints(data.DemDataCell, contour);
+            var plotted = data.PlottedPoints ?? ComputePlottedPoints(data.DemDataCell, contour);
 
             return new TopoMapRenderData(data, img, contour, plotted);
         }
 
-
         internal static List<DemDataPoint> ComputePlottedPoints(IDemDataView demView, ContourGraph contour)
         {
-            var lines = contour.Lines.Where(l => l.IsClosed && LengthInMeters(l.Points) > 200);
+            var lines = contour.Lines.Where(l => l.IsClosed && LengthInMeters(l.Points) > 200).ToList();
             var plotted = ContourMaximaMinima.FindMaxima(demView, lines);
             plotted.AddRange(ContourMaximaMinima.FindMinima(demView, lines));
             return plotted;
