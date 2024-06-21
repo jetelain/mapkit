@@ -23,5 +23,14 @@ namespace MapToolkit
                 item.MaxPoint.Longitude >= MinPoint.Longitude &&
                 item.MaxPoint.Latitude >= MinPoint.Latitude;
         }
+
+        internal bool Contains(Envelope item)
+        {
+            return
+                item.MinPoint.Longitude >= MinPoint.Longitude &&
+                item.MinPoint.Latitude >= MinPoint.Latitude &&
+                item.MaxPoint.Longitude <= MaxPoint.Longitude &&
+                item.MaxPoint.Latitude <= MaxPoint.Latitude;
+        }
     }
 }

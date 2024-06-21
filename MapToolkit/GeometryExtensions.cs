@@ -172,13 +172,14 @@ namespace MapToolkit
             }
             var source = polygons.Where(p => p.GetShellArea() > artefactFilter).ToList();
             var merged = new List<Polygon>(source.Take(1));
-            var box = merged.GetEnvelope();
             foreach (var polygon in source.Skip(1))
             {
-                if (box != Envelope.None && polygon.GetEnvelope().Intersects(box))
+                var polygonEnvelope = polygon.GetEnvelope();
+                var mergedIntersects = merged.Where(p => p.GetEnvelope().Intersects(polygonEnvelope)).ToList();
+                if (mergedIntersects.Count > 0)
                 {
                     var clipper = new Clipper();
-                    foreach (var other in merged)
+                    foreach (var other in mergedIntersects)
                     {
                         other.ToClipper(clipper, PolyType.ptSubject);
                     }
@@ -186,13 +187,12 @@ namespace MapToolkit
 
                     var result = new PolyTree();
                     clipper.Execute(ClipType.ctUnion, result);
-                    merged = ToPolygons(result).Where(p => p.GetShellArea() > artefactFilter).ToList();
+                    merged = ToPolygons(result).Concat(merged.Except(mergedIntersects)).Where(p => p.GetShellArea() > artefactFilter).ToList();
                 }
                 else
                 {
                     merged.Add(polygon);
                 }
-                box = merged.GetEnvelope();
             }
             return new MultiPolygon(merged);
         }
@@ -200,8 +200,8 @@ namespace MapToolkit
         internal static Envelope GetEnvelope(this Polygon merged)
         {
             return new Envelope(
-                new Coordinates(merged.Coordinates[0].Coordinates.Min(m => m.Latitude), merged.Coordinates[0].Coordinates.Min(m => m.Latitude)),
-                new Coordinates(merged.Coordinates[0].Coordinates.Max(m => m.Longitude), merged.Coordinates[0].Coordinates.Max(m => m.Longitude)));
+                new Coordinates(merged.Coordinates[0].Coordinates.Min(m => m.Latitude), merged.Coordinates[0].Coordinates.Min(m => m.Longitude)),
+                new Coordinates(merged.Coordinates[0].Coordinates.Max(m => m.Latitude), merged.Coordinates[0].Coordinates.Max(m => m.Longitude)));
         }
 
         internal static Envelope GetEnvelope(this IReadOnlyCollection<Polygon> merged)
@@ -215,8 +215,8 @@ namespace MapToolkit
                 return merged.First().GetEnvelope();
             }
             return new Envelope(
-                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Latitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Latitude)),
-                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Longitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Longitude)));
+                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Latitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Longitude)),
+                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Latitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Longitude)));
         }
 
         private static void ToClipper(this Polygon polygon, Clipper clipper, PolyType type)
