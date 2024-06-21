@@ -53,7 +53,7 @@ namespace MapToolkit
             return GetSignedArea(points) > 0;
         }
 
-        private static double GetSignedArea<T>(this List<T> points) where T : IPosition
+        private static double GetSignedArea<T>(this IList<T> points) where T : IPosition
         {
             if (points.Count < 3)
                 return 0;
@@ -73,6 +73,11 @@ namespace MapToolkit
             }
             area /= 2.0f;
             return area;
+        }
+
+        public static double GetShellArea(this Polygon polygon)
+        {
+            return Math.Abs(GetSignedArea(polygon.Coordinates[0].Coordinates));
         }
 
         private static void AddCropClip(Coordinates min, Coordinates max, Clipper clipper)
@@ -116,67 +121,110 @@ namespace MapToolkit
                 .Concat(result.Childs.SelectMany(c => c.Childs).SelectMany(c => FromPolyTreeNode(c, rounding)));
         }
 
-
-        /// <summary>
-        /// Subtract <paramref name="clip"/> polygons from <paramref name="subject"/> and returns the result.
-        /// </summary>
-        /// <param name="subject"></param>
-        /// <param name="clip"></param>
-        /// <param name="rounding"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Polygons in <paramref name="clip"/> must not overlap between them.
-        /// </remarks>
-        public static IEnumerable<Polygon> Substract(this Polygon subject, IEnumerable<Polygon> clip, int rounding = -1)
+        public static IEnumerable<Polygon> SubstractNoOverlap(this Polygon subject, IEnumerable<Polygon> clip, int rounding = -1)
         {
             var clipper = new Clipper();
-            foreach (var line in subject.Coordinates)
-            {
-                clipper.AddPath(line.Coordinates.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
-            }
+            subject.ToClipper(clipper, PolyType.ptSubject);
             foreach (var poly in clip)
             {
-                foreach (var line in poly.Coordinates)
-                {
-                    clipper.AddPath(line.Coordinates.Select(p => p.ToIntPoint()).ToList(), PolyType.ptClip, true);
-                }
+                poly.ToClipper(clipper, PolyType.ptClip);
             }
             var result = new PolyTree();
-            clipper.Execute(ClipType.ctXor, result);
+            clipper.Execute(ClipType.ctDifference, result);
             return result.ToPolygons(rounding);
         }
 
-        public static MultiPolygon UnionToMultiPolygon(this IEnumerable<Polygon> polygons)
+        public static IEnumerable<Polygon> Substract(this Polygon subject, IEnumerable<Polygon> others, int rounding = -1)
         {
-            var withoutHoles = polygons.Where(p => p.Coordinates.Count == 1).ToList();
-            var withHoles = polygons.Where(p => p.Coordinates.Count > 1).ToList();
-            if (withoutHoles.Count == 0 && withHoles.Count == 0)
+            var subjectEnv = subject.GetEnvelope();
+            var result = new List<Polygon>() { subject };
+            foreach (var other in others.Where(o => subjectEnv.Intersects(o.GetEnvelope())))
+            {
+                var previousResult = result.ToList();
+                result.Clear();
+                foreach (var subjet in previousResult)
+                {
+                    result.AddRange(subjet.Substract(other, rounding));
+                }
+                if (result.Count == 0)
+                {
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        public static IEnumerable<Polygon> Substract(this Polygon subject, Polygon other, int rounding = -1)
+        {
+            var clipper = new Clipper();
+            subject.ToClipper(clipper, PolyType.ptSubject);
+            other.ToClipper(clipper, PolyType.ptClip);
+            var result = new PolyTree();
+            clipper.Execute(ClipType.ctDifference, result);
+            return ToPolygons(result, rounding);
+        }
+
+        public static MultiPolygon UnionToMultiPolygon(this IReadOnlyCollection<Polygon> polygons, double artefactFilter = 0.01f)
+        {
+            if (polygons.Count == 0)
             {
                 return new MultiPolygon(new List<Polygon>());
             }
-            if (withoutHoles.Count > 0)
+            var source = polygons.Where(p => p.GetShellArea() > artefactFilter).ToList();
+            var merged = new List<Polygon>(source.Take(1));
+            var box = merged.GetEnvelope();
+            foreach (var polygon in source.Skip(1))
             {
-                withoutHoles = UnionWithoutHoles(withoutHoles);
-                if (withHoles.Count == 0)
+                if (box != Envelope.None && polygon.GetEnvelope().Intersects(box))
                 {
-                    return new MultiPolygon(withoutHoles);
+                    var clipper = new Clipper();
+                    foreach (var other in merged)
+                    {
+                        other.ToClipper(clipper, PolyType.ptSubject);
+                    }
+                    polygon.ToClipper(clipper, PolyType.ptClip);
+
+                    var result = new PolyTree();
+                    clipper.Execute(ClipType.ctUnion, result);
+                    merged = ToPolygons(result).Where(p => p.GetShellArea() > artefactFilter).ToList();
                 }
-                withHoles.AddRange(withHoles);
+                else
+                {
+                    merged.Add(polygon);
+                }
+                box = merged.GetEnvelope();
             }
-            // Naive way : merge two by two if bounding boxes overlaps
-            throw new NotImplementedException("TODO");
+            return new MultiPolygon(merged);
         }
 
-        private static List<Polygon> UnionWithoutHoles(IEnumerable<Polygon> polygons)
+        internal static Envelope GetEnvelope(this Polygon merged)
         {
-            var clipper = new Clipper();
-            foreach (var poly in polygons)
+            return new Envelope(
+                new Coordinates(merged.Coordinates[0].Coordinates.Min(m => m.Latitude), merged.Coordinates[0].Coordinates.Min(m => m.Latitude)),
+                new Coordinates(merged.Coordinates[0].Coordinates.Max(m => m.Longitude), merged.Coordinates[0].Coordinates.Max(m => m.Longitude)));
+        }
+
+        internal static Envelope GetEnvelope(this IReadOnlyCollection<Polygon> merged)
+        {
+            if (merged.Count == 0)
             {
-                clipper.AddPath(poly.Coordinates[0].Coordinates.Select(p => p.ToIntPoint()).ToList(), PolyType.ptSubject, true);
+                return Envelope.None;
             }
-            var result = new PolyTree();
-            clipper.Execute(ClipType.ctUnion, result, PolyFillType.pftNonZero);
-            return ToPolygons(result);
+            if (merged.Count == 1)
+            {
+                return merged.First().GetEnvelope();
+            }
+            return new Envelope(
+                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Latitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Min(m => m.Latitude)),
+                new Coordinates(merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Longitude), merged.SelectMany(m => m.Coordinates[0].Coordinates).Max(m => m.Longitude)));
+        }
+
+        private static void ToClipper(this Polygon polygon, Clipper clipper, PolyType type)
+        {
+            foreach (var line in polygon.Coordinates)
+            {
+                clipper.AddPath(line.Coordinates.Select(p => p.ToIntPoint()).ToList(), type, true);
+            }
         }
 
         public static IEnumerable<Polygon> Union(this Polygon subject, Polygon other)

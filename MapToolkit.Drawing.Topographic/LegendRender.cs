@@ -82,6 +82,12 @@ namespace MapToolkit.Drawing.Topographic
                 w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.WaterTower);
                 w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.Transmitter);
             }
+            if (style.Hospital != null && style.Dot != null)
+            {
+                w.DrawText(new Vector(LegendContentStart, 980), $"Hospital, Pylon", normalTextLeft);
+                w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.Hospital);
+                w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.Dot);
+            }
 
             w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {credits}", smallText);
 
