@@ -72,8 +72,6 @@ namespace MapToolkit.Drawing.Topographic
             document.Info.Creator = "MapToolkit Topo Map - Print Map created by GrueArbre";
             document.Info.Author = $"Original Map {opts.Attribution}";
 
-            Console.WriteLine($"{tiles.Count} tiles");
-
             var page = document.AddPage();
             page.Width = paperSize.X;
             page.Height = paperSize.Y;

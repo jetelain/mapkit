@@ -164,7 +164,7 @@ namespace MapToolkit
             return ToPolygons(result, rounding);
         }
 
-        public static MultiPolygon UnionToMultiPolygon(this IReadOnlyCollection<Polygon> polygons, double artefactFilter = 0.01f)
+        public static MultiPolygon UnionToMultiPolygon(this IReadOnlyCollection<Polygon> polygons, IProgress<double>? progress = null, double artefactFilter = 0.01f)
         {
             if (polygons.Count == 0)
             {
@@ -172,6 +172,7 @@ namespace MapToolkit
             }
             var source = polygons.Where(p => p.GetShellArea() > artefactFilter).ToList();
             var merged = new List<Polygon>(source.Take(1));
+            var done = 1;
             foreach (var polygon in source.Skip(1))
             {
                 var polygonEnvelope = polygon.GetEnvelope();
@@ -193,6 +194,8 @@ namespace MapToolkit
                 {
                     merged.Add(polygon);
                 }
+                done++;
+                progress?.Report(done * 100.0 / source.Count);
             }
             return new MultiPolygon(merged);
         }
