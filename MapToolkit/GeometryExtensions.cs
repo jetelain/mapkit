@@ -38,6 +38,16 @@ namespace MapToolkit
             return new MultiPolygon(result.ToPolygons());
         }
 
+        public static MultiPolygon Crop(this Polygon subject, Polygon clip)
+        {
+            var clipper = new Clipper();
+            subject.ToClipper(clipper, PolyType.ptSubject);
+            clip.ToClipper(clipper, PolyType.ptClip);
+            var result = new PolyTree();
+            clipper.Execute(ClipType.ctIntersection, result);
+            return new MultiPolygon(result.ToPolygons());
+        }
+
         public static bool IsCounterClockWise<T>(this List<T> points) where T : IPosition
         {
             //var north = points.IndexOf(points.OrderByDescending(p => p.Latitude).First());
@@ -78,6 +88,11 @@ namespace MapToolkit
         public static double GetShellArea(this Polygon polygon)
         {
             return Math.Abs(GetSignedArea(polygon.Coordinates[0].Coordinates));
+        }
+
+        public static double GetArea(this Polygon polygon)
+        {
+            return GetShellArea(polygon) - polygon.Coordinates.Skip(1).Sum(h => Math.Abs(GetSignedArea(h.Coordinates)));
         }
 
         private static void AddCropClip(Coordinates min, Coordinates max, Clipper clipper)

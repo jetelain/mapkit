@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Pmad.ProgressTracking" Version="0.1.13-g99634b7d95" />
     <ProjectReference Include="..\MapToolkit.Drawing\MapToolkit.Drawing.csproj" />
   </ItemGroup>
 
