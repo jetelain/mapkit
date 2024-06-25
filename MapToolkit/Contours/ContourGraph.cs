@@ -27,6 +27,8 @@ namespace MapToolkit.Contours
 
         private readonly LinesByElevation linesByLevel = new LinesByElevation();
 
+        private readonly List<(Coordinates Start, Coordinates End)> squares = new ();
+
         public int Count => linesByLevel.Values.Sum(l => l.Count);
 
         public IEnumerable<ContourLine> Lines => linesByLevel.Values.SelectMany(l => l);
@@ -135,6 +137,8 @@ namespace MapToolkit.Contours
 
         public void Add(IDemDataView cell, IContourLevelGenerator generator, bool closeLines = false, IProgress<double>? progress = null)
         {
+            squares.Add(new(cell.Start, cell.End));
+
             var prevScan = new LinesByElevation();
             var segments = new List<ContourSegment>();
 
@@ -243,24 +247,7 @@ namespace MapToolkit.Contours
         {
             var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
             var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
-            var poly = new List<Polygon>();
-            var i = 0;
-            foreach(var o in outer)
-            {
-                var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
-                var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
-                var l = new List<LineString>();
-                var holes = inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList();
-                l.Add(ToLineString2(o));
-                l.AddRange(NonOverlaping(holes).Select(ToLineString2));
-                poly.Add(new Polygon(l));
-                i++;
-                if ( i % 100 == 0)
-                {
-                    progress?.Report(i * 100.0 / outer.Count);
-                }
-            }
-            return poly;
+            return ToPoylgons(progress, outer, inner);
         }
 
         public IEnumerable<Polygon> ToPolygonsReverse(IProgress<double>? progress = null)
@@ -272,6 +259,11 @@ namespace MapToolkit.Contours
         {
             var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
             var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
+            return ToPoylgons(progress, outer, inner);
+        }
+
+        private IEnumerable<Polygon> ToPoylgons(IProgress<double>? progress, List<ContourLine> outer, List<ContourLine> inner)
+        {
             var poly = new List<Polygon>();
             var i = 0;
             foreach (var o in outer)
@@ -279,9 +271,10 @@ namespace MapToolkit.Contours
                 var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
                 var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
                 var l = new List<LineString>();
-                var holes = inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList();
+                var holes = NonOverlaping(inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList());
                 l.Add(ToLineString2(o));
-                l.AddRange(NonOverlaping(holes).Select(ToLineString2));
+                l.AddRange(holes.Select(ToLineString2));
+                inner.RemoveAll(holes.Contains);
                 poly.Add(new Polygon(l));
                 i++;
                 if (i % 100 == 0)
@@ -289,6 +282,22 @@ namespace MapToolkit.Contours
                     progress?.Report(i * 100.0 / outer.Count);
                 }
             }
+            if (inner.Count > 0)
+            {
+                if (squares.Count == 1) // Trivial case
+                {
+                    var square = squares[0];
+                    var l = new List<LineString>();
+                    l.Add(new LineString([square.Start, new Coordinates(square.Start.Latitude, square.End.Longitude), square.End, new Coordinates(square.End.Latitude, square.Start.Longitude), square.Start]));
+                    l.AddRange(NonOverlaping(inner).Select(ToLineString2));
+                    poly.Add(new Polygon(l));
+                }
+                else
+                {
+                    throw new NotImplementedException("TODO");
+                }
+            }
+            progress?.Report(100.0);
             return poly;
         }
 

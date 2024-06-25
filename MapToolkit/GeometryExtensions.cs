@@ -370,5 +370,14 @@ namespace MapToolkit
             return result;
         }
 
+        public static string ToGeoString(this Polygon polygon)
+        {
+            return $"POLYGON ({string.Join(", ", polygon.Coordinates.Select(c => ToGeoString(c.Coordinates)))})";
+        }
+
+        public static string ToGeoString(this IEnumerable<IPosition> points)
+        {
+            return $"({string.Join(", ", points.Select(p => FormattableString.Invariant($"{p.Longitude} {p.Latitude}")))})";
+        }
     }
 }
