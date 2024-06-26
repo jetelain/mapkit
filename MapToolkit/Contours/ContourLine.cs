@@ -49,7 +49,7 @@ namespace MapToolkit.Contours
         public bool IsDiscarded => IsClosed && Points.Count == 0;
 
 
-        internal bool TryAdd(ContourSegment segment, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        internal bool TryAdd(ContourSegment segment, double thresholdSqared)
         {
 #if DEBUG
             if (!segment.IsValidHypothesis)
@@ -78,7 +78,7 @@ namespace MapToolkit.Contours
             return true;
         }
 
-        internal bool TryMerge(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        internal bool TryMerge(ContourLine other, double thresholdSqared)
         {
             if (IsClosed || other.IsClosed || other.Level != Level || other == this)
             {
@@ -104,7 +104,7 @@ namespace MapToolkit.Contours
             return true;
         }
 
-        public void Append(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        public void Append(ContourLine other, double thresholdSqared)
         {
             if (other == this)
             {
@@ -114,6 +114,11 @@ namespace MapToolkit.Contours
             }
             Points.AddRange(other.Points);
             other.Discard();
+            UpdateIsClosed(thresholdSqared);
+        }
+
+        public void Close(double thresholdSqared)
+        {
             UpdateIsClosed(thresholdSqared);
         }
 

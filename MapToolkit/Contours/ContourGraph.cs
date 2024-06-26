@@ -23,7 +23,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private readonly double thresholdSqared = Coordinates.DefaultThresholdSquared;
+        private readonly double thresholdSquared;
 
         private readonly LinesByElevation linesByLevel = new LinesByElevation();
 
@@ -33,12 +33,23 @@ namespace MapToolkit.Contours
 
         public IEnumerable<ContourLine> Lines => linesByLevel.Values.SelectMany(l => l);
 
+        public ContourGraph()
+            : this(Coordinates.DefaultThresholdSquared)
+        {
+
+        }
+
+        public ContourGraph(double thresholdSquared = Coordinates.DefaultThresholdSquared)
+        {
+            this.thresholdSquared = thresholdSquared;
+        }
+
         private LinesByElevation AddSegments(IEnumerable<ContourSegment> segments, LinesByElevation prevScan)
         {
             var currentScan = new HashSet<ContourLine>();
             var currentScanIndex = new LinesByElevation();
 
-            var unknownHypothesis = AddSegments(segments.Where(s => !s.Point1.AlmostEquals(s.Point2, thresholdSqared)), prevScan, currentScan, currentScanIndex);
+            var unknownHypothesis = AddSegments(segments.Where(s => !s.Point1.AlmostEquals(s.Point2, thresholdSquared)), prevScan, currentScan, currentScanIndex);
 
             if (unknownHypothesis.Count > 0)
             {
@@ -93,7 +104,7 @@ namespace MapToolkit.Contours
                 var lastest = currentLines.AsEnumerable().Reverse()/*.Take(5)*/;
                 foreach (var prev in lastest)
                 {
-                    if (prev.TryAdd(segment))
+                    if (prev.TryAdd(segment, thresholdSquared))
                     {
                         var merged = Merge(prev, lastest);
                         if (previousParallel.TryGetValue(segmentKey, out var prevLinesX))
@@ -108,7 +119,7 @@ namespace MapToolkit.Contours
             {
                 foreach (var line in prevLines)
                 {
-                    if (line.TryAdd(segment, thresholdSqared))
+                    if (line.TryAdd(segment, thresholdSquared))
                     {
                         return Merge(line, prevLines);
                     }
@@ -127,7 +138,7 @@ namespace MapToolkit.Contours
         {
             foreach (var line in parallel)
             {
-                if (line != editedLine && line.TryMerge(editedLine, thresholdSqared))
+                if (line != editedLine && line.TryMerge(editedLine, thresholdSquared))
                 {
                     return line;
                 }
@@ -217,7 +228,7 @@ namespace MapToolkit.Contours
                                 var b = toAnalyse[j];
                                 if (!b.IsClosed)
                                 {
-                                    if (a.TryMerge(b, thresholdSqared))
+                                    if (a.TryMerge(b, thresholdSquared))
                                     {
                                         Interlocked.Increment(ref merged);
                                     }
@@ -287,10 +298,11 @@ namespace MapToolkit.Contours
                 if (squares.Count == 1) // Trivial case
                 {
                     var square = squares[0];
-                    var l = new List<LineString>();
-                    l.Add(new LineString([square.Start, new Coordinates(square.Start.Latitude, square.End.Longitude), square.End, new Coordinates(square.End.Latitude, square.Start.Longitude), square.Start]));
-                    l.AddRange(NonOverlaping(inner).Select(ToLineString2));
-                    poly.Add(new Polygon(l));
+                    var all = new Polygon([new LineString([square.Start, new Coordinates(square.Start.Latitude, square.End.Longitude), square.End, new Coordinates(square.End.Latitude, square.Start.Longitude), square.Start])]);
+                    foreach(var result in all.Substract(NonOverlaping(inner).Select(l => new Polygon([ToLineString2(l)]))))
+                    {
+                        poly.Add(result);
+                    }
                 }
                 else
                 {
@@ -315,7 +327,7 @@ namespace MapToolkit.Contours
             return new LineString(o.Points.Take(o.Points.Count - 1).Concat(o.Points.Take(1)));
         }
 
-        private static void CloseLines(IEnumerable<ContourLine> value, Coordinates edgeSW, Coordinates edgeNE)
+        private void CloseLines(IEnumerable<ContourLine> value, Coordinates edgeSW, Coordinates edgeNE)
         {
             var notClosed = value.Where(l => !l.IsClosed).ToList();
             if (notClosed.Count == 0)
@@ -347,7 +359,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private static void LookEast(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookEast(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Latitude == edgeNE.Latitude && n.Last.Longitude > lookFrom.Longitude)
@@ -355,7 +367,7 @@ namespace MapToolkit.Contours
                 .FirstOrDefault();
             if (other != null)
             {
-                other.Append(line);
+                other.Append(line, thresholdSquared);
             }
             else if ( depth < 4 )
             {
@@ -364,7 +376,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private static void LookSouth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookSouth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Longitude == edgeNE.Longitude && n.Last.Latitude < lookFrom.Latitude)
@@ -372,7 +384,7 @@ namespace MapToolkit.Contours
                 .FirstOrDefault();
             if (other != null)
             {
-                other.Append(line);
+                other.Append(line, thresholdSquared);
             }
             else if (depth < 4)
             {
@@ -382,7 +394,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private static void LookWest(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookWest(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Latitude == edgeSW.Latitude && n.Last.Longitude < lookFrom.Longitude)
@@ -390,7 +402,7 @@ namespace MapToolkit.Contours
                 .FirstOrDefault();
             if (other != null)
             {
-                other.Append(line);
+                other.Append(line, thresholdSquared);
             }
             else if (depth < 4)
             {
@@ -399,7 +411,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private static void LookNorth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookNorth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Longitude == edgeSW.Longitude && n.Last.Latitude > lookFrom.Latitude)
@@ -407,7 +419,7 @@ namespace MapToolkit.Contours
                 .FirstOrDefault();
             if (other != null)
             {
-                other.Append(line);
+                other.Append(line, thresholdSquared);
             }
             else if (depth < 4)
             {
