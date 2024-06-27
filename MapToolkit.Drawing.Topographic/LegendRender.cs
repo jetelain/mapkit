@@ -1,6 +1,7 @@
 ﻿using MapToolkit.Drawing;
 using MapToolkit.Drawing.PdfRender;
 using MapToolkit.Projections;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.Topographic
@@ -21,6 +22,7 @@ namespace MapToolkit.Drawing.Topographic
         private const double LegendContentStart = InsideMargin;
         private const double LegendContentCenter = LegendHalfWidth;
         private const double LegendContentEnd = LegendWidth - InsideMargin;
+        private const double LegendContentWidth = LegendContentEnd - InsideMargin;
 
         private const double LegendContentP1 = LegendContentCenter;
         private const double LegendContentW = (LegendContentEnd - LegendContentCenter - InsideMargin * 2) / 3;
@@ -30,16 +32,18 @@ namespace MapToolkit.Drawing.Topographic
         private const double LegendContentP5 = LegendContentP4 + InsideMargin;
         private const double LegendContentP6 = LegendContentEnd;
 
-        public static void RenderLegend(IDrawSurface w, ITopoMapData data, ITopoMapPdfRenderOptions opts, int scale)
-        {
-            RenderLegend(w, data.Title, opts.Attribution, scale);
-        }
-
-        public static void RenderLegend(IDrawSurface w, string title, string credits, int scale, string? fullCopyrightNotice = null, string? licenseNotice = null)
+        public static void RenderLegend(IDrawSurface w, TopoMapMetadata data, int scale)
         {
             var style = TopoMapStyle.CreateFull(w, ColorPalette.Default, true);
 
-            var titleText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 160, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
+            var titleFontSize = 160f;
+            var titleSize = TextMeasurer.MeasureSize(data.Title, new TextOptions(SystemFonts.Collection.Get("Calibri").CreateFont(titleFontSize)));
+            if ( titleSize.Width > LegendContentWidth)
+            {
+                titleFontSize = (float)(titleFontSize * LegendContentWidth / titleSize.Width);
+            }
+
+            var titleText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, titleFontSize, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
             var subTitleText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 60, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
             var normalText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 32, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
             var smallText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 25, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
@@ -47,8 +51,8 @@ namespace MapToolkit.Drawing.Topographic
 
             w.DrawRectangle(new Vector(0, 0), new Vector(LegendWidth, LegendHeight), w.AllocateStyle(Color.White, Color.Black, 2));
 
-            w.DrawText(new Vector(LegendContentCenter, 20), "MapToolkit Topographic Map", subTitleText);
-            w.DrawText(new Vector(LegendContentCenter, 90), title, titleText);
+            w.DrawText(new Vector(LegendContentCenter, 20), data.UpperTitle, subTitleText);
+            w.DrawText(new Vector(LegendContentCenter, 90), data.Title, titleText);
             if (scale == -1)
             {
                 w.DrawText(new Vector(LegendContentCenter, 300), $"Dynamic scale : see bottom left of map", normalText);
@@ -65,47 +69,35 @@ namespace MapToolkit.Drawing.Topographic
             RoadLegend(w, style, normalTextLeft, 680, TopoMapPathType.Track, "Vehicle track");
             RoadLegend(w, style, normalTextLeft, 740, TopoMapPathType.Trail, "Foot trail");
 
-            w.DrawText(new Vector(LegendContentStart, 800), $"Bridges Main, Secondary, Road", normalTextLeft);
+            w.DrawText(new Vector(LegendContentStart, 800), "Bridges Main, Secondary, Road", normalTextLeft);
             RenderBridge(w, style, TopoMapPathType.Main, new Vector(LegendContentP1, 800), new Vector(LegendContentP2, 800));
             RenderBridge(w, style, TopoMapPathType.Secondary, new Vector(LegendContentP3, 800), new Vector(LegendContentP4, 800));
             RenderBridge(w, style, TopoMapPathType.Road, new Vector(LegendContentP5, 800), new Vector(LegendContentP6, 800));
 
-            w.DrawText(new Vector(LegendContentStart, 860), $"Forest, Rocks, Water", normalTextLeft);
+            w.DrawText(new Vector(LegendContentStart, 860), "Forest, Rocks, Water", normalTextLeft);
             w.DrawRectangle(new Vector(LegendContentP1, 840), new Vector(LegendContentP2, 880), style.forest);
             w.DrawRectangle(new Vector(LegendContentP3, 840), new Vector(LegendContentP4, 880), style.rocks);
             w.DrawRectangle(new Vector(LegendContentP5, 840), new Vector(LegendContentP6, 880), style.water);
 
             if (style.WindPowerPlant != null && style.WaterTower != null && style.Transmitter != null)
             {
-                w.DrawText(new Vector(LegendContentStart, 920), $"Wind turbine, Water tower, Transmitter", normalTextLeft);
+                w.DrawText(new Vector(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
                 w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.WindPowerPlant);
                 w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.WaterTower);
                 w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.Transmitter);
             }
             if (style.Hospital != null && style.Dot != null)
             {
-                w.DrawText(new Vector(LegendContentStart, 980), $"Hospital, Pylon", normalTextLeft);
+                w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon", normalTextLeft);
                 w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.Hospital);
                 w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.Dot);
             }
 
-            w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {credits}", smallText);
-
-            if (!string.IsNullOrEmpty(fullCopyrightNotice))
+            w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {data.Attribution}", smallText);
+            w.DrawText(new Vector(LegendContentCenter, 1890), data.ExportCreator, smallText);
+            if (!string.IsNullOrEmpty(data.LicenseNotice))
             {
-                w.DrawText(new Vector(LegendContentCenter, 1850), fullCopyrightNotice, smallText);
-            }
-            if (scale == -1)
-            {
-                w.DrawText(new Vector(LegendContentCenter, 1890), "Web Map created by GrueArbre", smallText);
-            }
-            else
-            {
-                w.DrawText(new Vector(LegendContentCenter, 1890), "Print Map created by GrueArbre", smallText);
-            }
-            if (!string.IsNullOrEmpty(fullCopyrightNotice))
-            {
-                w.DrawText(new Vector(LegendContentCenter, 1930), "ONLY FOR ARMA USE - NO COMMERCIAL USE - Licensed under APL-SA", smallText);
+                w.DrawText(new Vector(LegendContentCenter, 1930), data.LicenseNotice, smallText);
             }
         }
 

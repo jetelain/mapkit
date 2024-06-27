@@ -2,11 +2,11 @@
 {
     public static class TopoMapDataExtensions
     {
-        public static ITopoMapData Crop(this ITopoMapData other, Coordinates min, Coordinates max, string? title = null)
+        public static ITopoMapData Crop(this ITopoMapData other, Coordinates min, Coordinates max, TopoMapMetadata? metadata = null)
         {
             return new TopoMapData()
             {
-                Title = title ?? other.Title,
+                Metadata = metadata ?? other.Metadata,
                 DemDataCell = other.DemDataCell.CreateView(min, max),
                 ForestPolygons = other.ForestPolygons?.Crop(min, max),
                 RockPolygons = other.RockPolygons?.Crop(min, max),

@@ -1,54 +1,64 @@
 ﻿using System.Globalization;
 using GeoJSON.Text.Geometry;
-using MapToolkit.Drawing;
 using MapToolkit.Drawing.Contours;
 using MapToolkit.Projections;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.Topographic
 {
-    public static class TopoMapRender
+    public class TopoMapRender
     {
-        public static void Render(IDrawSurface writer, TopoMapRenderData renderData, NoProjectionArea proj)
+        private readonly TopoMapRenderData renderData;
+        private readonly ITopoMapData data;
+        private readonly NoProjectionArea proj;
+
+        public TopoMapRender(TopoMapRenderData renderData, NoProjectionArea proj)
+        {
+            this.renderData = renderData;
+            this.data = renderData.Data;
+            this.proj = proj;
+        }
+
+        public void Render(IDrawSurface writer)
         {
             var style = TopoMapStyle.CreateFull(writer, ColorPalette.Default);
 
-            RenderAny(writer, renderData, proj, style);
+            RenderAny(writer, style);
 
-            NaiveGraticule(writer, proj, style);
+            NaiveGraticule(writer, style);
         }
 
-        public static void RenderWithExternGraticule(IDrawSurface writer, TopoMapRenderData renderData, NoProjectionArea proj)
+        public void RenderWithExternGraticule(IDrawSurface writer)
         {
             var style = TopoMapStyle.CreateFull(writer, ColorPalette.Default, true);
 
-            RenderAny(writer, renderData, proj, style);
+            RenderAny(writer, style);
 
-            NaiveGraticule(writer, proj, style);
+            NaiveGraticule(writer, style);
         }
 
-        public static void RenderLod2(IDrawSurface writer, TopoMapRenderData renderData, NoProjectionArea proj)
+        public void RenderLod2(IDrawSurface writer)
         {
             var style = TopoMapStyle.CreateLod2(writer, ColorPalette.Default);
 
-            RenderAny(writer, renderData, proj, style, true);
+            RenderAny(writer, style, true);
 
-            NaiveGraticule(writer, proj, style);
+            NaiveGraticule(writer, style);
         }
 
-        public static void RenderLod3(IDrawSurface writer, TopoMapRenderData renderData, NoProjectionArea proj)
+        public void RenderLod3(IDrawSurface writer)
         {
             var style = TopoMapStyle.CreateLod3(writer, ColorPalette.Default);
             var data = renderData.Data;
 
             if (data.ForestPolygons != null)
             {
-                DrawPolygons(writer, proj, data.ForestPolygons, style.forest);
+                DrawPolygons(writer, data.ForestPolygons, style.forest);
             }
 
             if (data.RockPolygons != null)
             {
-                DrawPolygons(writer, proj, data.RockPolygons, style.rocks);
+                DrawPolygons(writer, data.RockPolygons, style.rocks);
             }
 
             if (renderData.Img != null)
@@ -58,12 +68,12 @@ namespace MapToolkit.Drawing.Topographic
 
             if (data.WaterPolygons != null)
             {
-                DrawPolygons(writer, proj, data.WaterPolygons, style.water);
+                DrawPolygons(writer, data.WaterPolygons, style.water);
             }
 
             if (data.Roads != null)
             {
-                RenderRoads(writer, data.Roads, proj, style.roadForeground, style.roadBackground);
+                RenderRoads(writer, data.Roads, style.roadForeground, style.roadBackground);
             }
 
             if (data.Bridges != null)
@@ -71,22 +81,22 @@ namespace MapToolkit.Drawing.Topographic
                 RenderBridgesRoads(writer, data.Bridges, proj, style.bridgeForeground, style.bridgeBackground, style.BridgeLimit);
             }
 
-            RenderNames(writer, data, proj, style);
+            RenderNames(writer, style);
 
-            NaiveGraticule(writer, proj, style, 10000);
+            NaiveGraticule(writer, style, 10000);
         }
 
-        private static void RenderAny(IDrawSurface writer, TopoMapRenderData renderData, NoProjectionArea proj, TopoMapStyle style, bool simpler = false)
+        private void RenderAny(IDrawSurface writer, TopoMapStyle style, bool simpler = false)
         {
             var data = renderData.Data;
 
             if (data.ForestPolygons != null)
             {
-                DrawPolygons(writer, proj, data.ForestPolygons, style.forest);
+                DrawPolygons(writer, data.ForestPolygons, style.forest);
             }
             if (data.RockPolygons != null)
             {
-                DrawPolygons(writer, proj, data.RockPolygons, style.rocks);
+                DrawPolygons(writer, data.RockPolygons, style.rocks);
             }
 
             var render = new ContourRender(writer, style.contourStyle);
@@ -101,22 +111,22 @@ namespace MapToolkit.Drawing.Topographic
 
             if (data.WaterPolygons != null)
             {
-                DrawPolygons(writer, proj, data.WaterPolygons, style.water);
+                DrawPolygons(writer, data.WaterPolygons, style.water);
             }
 
             if (data.BuildingPolygons != null && style.buildings != null)
             {
-                DrawPolygons(writer, proj, data.BuildingPolygons, style.buildings);
+                DrawPolygons(writer, data.BuildingPolygons, style.buildings);
             }
 
             if (data.Roads != null)
             {
-                RenderRoads(writer, data.Roads, proj, style.roadForeground, style.roadBackground);
+                RenderRoads(writer, data.Roads, style.roadForeground, style.roadBackground);
             }
 
             if (data.FortPolygons != null && style.Forts != null)
             {
-                DrawPolygons(writer, proj, data.FortPolygons, style.Forts);
+                DrawPolygons(writer, data.FortPolygons, style.Forts);
             }
 
             if (data.Bridges != null)
@@ -134,7 +144,7 @@ namespace MapToolkit.Drawing.Topographic
 
             if (renderData.PlottedPoints != null && style.plotted != null && style.plottedCircle != null)
             {
-                RenderPlotted(writer, proj, renderData.PlottedPoints, style.plotted, style.plottedCircle);
+                RenderPlotted(writer, renderData.PlottedPoints, style.plotted, style.plottedCircle);
             }
 
             if (data.Icons != null)
@@ -149,10 +159,10 @@ namespace MapToolkit.Drawing.Topographic
                 }
             }
 
-            RenderNames(writer, data, proj, style);
+            RenderNames(writer, style);
         }
 
-        private static void RenderNames(IDrawSurface writer, ITopoMapData data, NoProjectionArea proj, TopoMapStyle style)
+        private void RenderNames(IDrawSurface writer, TopoMapStyle style)
         {
             if (data.Names != null)
             {
@@ -198,7 +208,7 @@ namespace MapToolkit.Drawing.Topographic
             return null;
         }
 
-        private static void RenderPlotted(IDrawSurface writer, NoProjectionArea proj, List<DemDataPoint> plottedPoints, IDrawTextStyle plotted, IDrawStyle plottedCircle)
+        private void RenderPlotted(IDrawSurface writer, List<DemDataPoint> plottedPoints, IDrawTextStyle plotted, IDrawStyle plottedCircle)
         {
             foreach (var point in plottedPoints)
             {
@@ -211,7 +221,7 @@ namespace MapToolkit.Drawing.Topographic
             }
         }
 
-        private static void NaiveGraticule(IDrawSurface writer, NoProjectionArea proj, TopoMapStyle style, int step = 1000)
+        private void NaiveGraticule(IDrawSurface writer, TopoMapStyle style, int step = 1000)
         {
             var format = "00";
             if (step == 10000)
@@ -248,7 +258,7 @@ namespace MapToolkit.Drawing.Topographic
             }
         }
 
-        private static void RenderRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, NoProjectionArea proj, IDrawStyle?[] foreground, IDrawStyle?[] background)
+        private void RenderRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, IDrawStyle?[] foreground, IDrawStyle?[] background)
         {
             foreach (var roads in data)
             {
@@ -274,7 +284,7 @@ namespace MapToolkit.Drawing.Topographic
             }
         }
 
-        private static void RenderBridgesRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, NoProjectionArea proj, IDrawStyle?[] foreground, IDrawStyle?[] background, IDrawStyle limitLine)
+        private void RenderBridgesRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, NoProjectionArea proj, IDrawStyle?[] foreground, IDrawStyle?[] background, IDrawStyle limitLine)
         {
             foreach (var roads in data)
             {
@@ -314,7 +324,7 @@ namespace MapToolkit.Drawing.Topographic
             writer.DrawPolyline(new[] { begin + new Vector(d4), begin + new Vector(x2 + d4) }, limitLine);
         }
 
-        private static void DrawPolygons(IDrawSurface writer, NoProjectionArea proj, MultiPolygon surface, IDrawStyle styleToUse)
+        private void DrawPolygons(IDrawSurface writer, MultiPolygon surface, IDrawStyle styleToUse)
         {
             foreach (var poly in surface.Coordinates)
             {

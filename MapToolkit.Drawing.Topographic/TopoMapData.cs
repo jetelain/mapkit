@@ -5,7 +5,7 @@ namespace MapToolkit.Drawing.Topographic
 {
     internal class TopoMapData : ITopoMapData
     {
-        public string Title { get; set; } = "(no name)";
+        public TopoMapMetadata Metadata { get; set; } = TopoMapMetadata.None;
 
         public Dictionary<TopoMapPathType, MultiLineString>? Roads { get; set; }
 
