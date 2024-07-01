@@ -29,6 +29,8 @@ namespace MapToolkit.Drawing.Topographic
 
         public MultiLineString? Powerlines { get; set; }
 
+        public MultiLineString? Railways { get; set; }
+
         public MultiPolygon? FortPolygons { get; internal set; }
     }
 }

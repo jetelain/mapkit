@@ -141,7 +141,13 @@ namespace MapToolkit.Drawing.Topographic
                     writer.DrawPolyline(pl.Coordinates.Select(p => proj.Project(p)), style.Powerline);
                 }
             }
-
+            if (data.Railways != null && style.Railway != null)
+            {
+                foreach (var pl in data.Railways.Coordinates)
+                {
+                    DrawRailway(writer, style.Railway, pl.Coordinates.Select(p => proj.Project(p)));
+                }
+            }
             if (renderData.PlottedPoints != null && style.plotted != null && style.plottedCircle != null)
             {
                 RenderPlotted(writer, renderData.PlottedPoints, style.plotted, style.plottedCircle);
@@ -160,6 +166,22 @@ namespace MapToolkit.Drawing.Topographic
             }
 
             RenderNames(writer, style);
+        }
+
+        internal static void DrawRailway(IDrawSurface writer, IDrawStyle railway, IEnumerable<Vector> points)
+        {
+            writer.DrawPolyline(points, railway);
+            var x = new FollowPath(points);
+
+            if (x.Move(5))
+            {
+                writer.DrawPolyline([x.Current + (x.Vector90 * 2.5), x.Current + (x.VectorM90 * 2.5)], railway);
+
+                while (x.Move(75) && !x.IsLast)
+                {
+                    writer.DrawPolyline([x.Current + (x.Vector90 * 2.5), x.Current + (x.VectorM90 * 2.5)], railway);
+                }
+            }
         }
 
         private void RenderNames(IDrawSurface writer, TopoMapStyle style)

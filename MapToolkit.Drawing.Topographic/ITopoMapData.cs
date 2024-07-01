@@ -27,6 +27,8 @@ namespace MapToolkit.Drawing.Topographic
 
         MultiLineString? Powerlines { get; }
 
+        MultiLineString? Railways { get; }
+
         MultiPolygon? FortPolygons { get; }
 
         List<DemDataPoint>? PlottedPoints { get; }

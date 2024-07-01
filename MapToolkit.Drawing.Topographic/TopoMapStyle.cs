@@ -35,6 +35,7 @@ namespace MapToolkit.Drawing.Topographic
         public IDrawIcon? Hospital { get; private set; }
         public required IDrawStyle BridgeLimit { get; internal set; }
         public IDrawStyle? Forts { get; internal set; }
+        public IDrawStyle? Railway { get; private set; }
 
         public static TopoMapStyle CreateFull(IDrawSurface writer, ColorPalette palette, bool externGraticule = false)
         {
@@ -59,7 +60,7 @@ namespace MapToolkit.Drawing.Topographic
             var bx2 = writer.AllocatePenStyle(palette.RoadBorder, 9);
             var r3 = writer.AllocatePenStyle(palette.Road, 4);
             var b4 = writer.AllocatePenStyle(palette.RoadBorder, 5, new[] { 10.0, 6.0 });
-            var r7 = writer.AllocatePenStyle(palette.Trail, 5);
+            var r7 = writer.AllocatePenStyle(palette.Trail, 2);
 
             var gl1 = writer.AllocatePenStyle(palette.Graticule, 1);
             var gl2 = writer.AllocatePenStyle(palette.Graticule, 2);
@@ -99,6 +100,7 @@ namespace MapToolkit.Drawing.Topographic
                 //TechnicalTower = IconsRender.TechnicalTower(writer),
                 Transmitter = IconsRender.Transmitter(writer),
                 Powerline = writer.AllocatePenStyle(Color.Black),
+                Railway = writer.AllocatePenStyle(Color.Black),
                 Dot = IconsRender.Dot(writer),
                 Hospital = IconsRender.Hospital(writer),
                 BridgeLimit = writer.AllocatePenStyle(palette.RoadBorder, 3),

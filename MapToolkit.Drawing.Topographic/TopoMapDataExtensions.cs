@@ -16,6 +16,7 @@
                 Bridges = other.Bridges?.ToDictionary(k => k.Key, k => k.Value.Crop(min, max)),
                 Roads = other.Roads?.ToDictionary(k => k.Key, k => k.Value.Crop(min, max)),
                 Powerlines = other.Powerlines?.Crop(min, max),
+                Railways = other.Railways?.Crop(min, max),
                 Names = other.Names?.Where(n => n.Position?.IsInSquare(min, max) ?? false)?.ToList(),
                 Icons = other.Icons?.Where(n => n.Coordinates?.IsInSquare(min, max) ?? false)?.ToList(),
                 PlottedPoints = other.PlottedPoints?.Where(n => n.Coordinates?.IsInSquare(min, max) ?? false)?.ToList()

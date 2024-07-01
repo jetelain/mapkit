@@ -86,11 +86,17 @@ namespace MapToolkit.Drawing.Topographic
                 w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.WaterTower);
                 w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.Transmitter);
             }
-            if (style.Hospital != null && style.Dot != null)
+            if (style.Hospital != null && style.Dot != null && style.Powerline != null)
             {
-                w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon", normalTextLeft);
+                w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon, Powerline", normalTextLeft);
                 w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.Hospital);
                 w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.Dot);
+                w.DrawPolyline([new Vector(LegendContentP5, 980), new Vector(LegendContentP6, 980)], style.Powerline);
+            }
+            if (style.Railway != null)
+            {
+                w.DrawText(new Vector(LegendContentStart, 1040), "Railway", normalTextLeft);
+                TopoMapRender.DrawRailway(w, style.Railway, [new Vector(LegendContentP1, 1040), new Vector(LegendContentP2, 1040)]);
             }
 
             w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {data.Attribution}", smallText);
