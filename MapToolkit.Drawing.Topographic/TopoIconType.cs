@@ -6,6 +6,8 @@
         WaterTower,
         Transmitter,
         ElectricityPylon,
-        Hospital
+        Hospital,
+        LightHouse,
+        TechnicalTower
     }
 }

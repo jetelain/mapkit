@@ -79,20 +79,19 @@ namespace MapToolkit.Drawing.Topographic
             w.DrawRectangle(new Vector(LegendContentP3, 840), new Vector(LegendContentP4, 880), style.rocks);
             w.DrawRectangle(new Vector(LegendContentP5, 840), new Vector(LegendContentP6, 880), style.water);
 
-            if (style.WindPowerPlant != null && style.WaterTower != null && style.Transmitter != null)
+            w.DrawText(new Vector(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
+            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.GetIcon(TopoIconType.WindPowerPlant));
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower));
+            w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter));
+            
+            w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon, Powerline", normalTextLeft);
+            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital));
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.ElectricityPylon));
+            if (style.Powerline != null)
             {
-                w.DrawText(new Vector(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
-                w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.WindPowerPlant);
-                w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.WaterTower);
-                w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.Transmitter);
-            }
-            if (style.Hospital != null && style.Dot != null && style.Powerline != null)
-            {
-                w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon, Powerline", normalTextLeft);
-                w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.Hospital);
-                w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.Dot);
                 w.DrawPolyline([new Vector(LegendContentP5, 980), new Vector(LegendContentP6, 980)], style.Powerline);
             }
+
             if (style.Railway != null)
             {
                 w.DrawText(new Vector(LegendContentStart, 1040), "Railway", normalTextLeft);

@@ -157,7 +157,7 @@ namespace MapToolkit.Drawing.Topographic
             {
                 foreach (var icon in data.Icons)
                 {
-                    var i = GetIcon(style, icon.MapType);
+                    var i = style.GetIcon(icon.MapType);
                     if (i != null)
                     {
                         writer.DrawIcon(proj.Project(icon.Coordinates), i);
@@ -206,28 +206,6 @@ namespace MapToolkit.Drawing.Topographic
                     }
                 }
             }
-        }
-
-        private static IDrawIcon? GetIcon(TopoMapStyle style, TopoIconType mapType)
-        {
-            switch (mapType)
-            {
-                case TopoIconType.WindPowerPlant:
-                    return style.WindPowerPlant;
-
-                case TopoIconType.WaterTower:
-                    return style.WaterTower;
-
-                case TopoIconType.Transmitter:
-                    return style.Transmitter;
-
-                case TopoIconType.ElectricityPylon:
-                    return style.Dot;
-
-                case TopoIconType.Hospital:
-                    return style.Hospital;
-            }
-            return null;
         }
 
         private void RenderPlotted(IDrawSurface writer, List<DemDataPoint> plottedPoints, IDrawTextStyle plotted, IDrawStyle plottedCircle)

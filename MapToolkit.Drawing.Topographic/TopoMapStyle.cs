@@ -6,7 +6,6 @@ namespace MapToolkit.Drawing.Topographic
 {
     internal class TopoMapStyle
     {
-        public IDrawIcon? WindPowerPlant { get; private set; }
         public required IDrawStyle rocks { get; internal set; }
         public required IDrawStyle forest { get; internal set; }
         public required IDrawStyle water { get; internal set; }
@@ -27,15 +26,19 @@ namespace MapToolkit.Drawing.Topographic
         public IDrawTextStyle? name { get; private set; }
         public IDrawTextStyle? plotted { get; private set; }
         public IDrawStyle? plottedCircle { get; private set; }
-        public IDrawIcon? WaterTower { get; private set; }
-        public IDrawIcon? TechnicalTower { get; internal set; }
-        public IDrawIcon? Transmitter { get; private set; }
         public IDrawStyle? Powerline { get; private set; }
-        public IDrawIcon? Dot { get; private set; }
-        public IDrawIcon? Hospital { get; private set; }
         public required IDrawStyle BridgeLimit { get; internal set; }
         public IDrawStyle? Forts { get; internal set; }
         public IDrawStyle? Railway { get; private set; }
+        public Dictionary<TopoIconType, IDrawIcon> Icons { get; } = new Dictionary<TopoIconType, IDrawIcon>();
+        public IDrawIcon? GetIcon(TopoIconType type)
+        {
+            if ( Icons.TryGetValue(type, out var icon))
+            { 
+                return icon; 
+            }
+            return null;
+        }
 
         public static TopoMapStyle CreateFull(IDrawSurface writer, ColorPalette palette, bool externGraticule = false)
         {
@@ -95,16 +98,19 @@ namespace MapToolkit.Drawing.Topographic
                 name = name,
                 plotted = writer.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Italic, 18, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterLeft),
                 plottedCircle = writer.AllocateBrushStyle(Color.Black),
-                WindPowerPlant = IconsRender.WindTurbine(writer),
-                WaterTower = IconsRender.WaterTower(writer),
-                //TechnicalTower = IconsRender.TechnicalTower(writer),
-                Transmitter = IconsRender.Transmitter(writer),
                 Powerline = writer.AllocatePenStyle(Color.Black),
                 Railway = writer.AllocatePenStyle(Color.Black),
-                Dot = IconsRender.Dot(writer),
-                Hospital = IconsRender.Hospital(writer),
                 BridgeLimit = writer.AllocatePenStyle(palette.RoadBorder, 3),
-                Forts = writer.AllocateStyle(Color.White, Color.Black)
+                Forts = writer.AllocateStyle(Color.White, Color.Black),
+                Icons = { 
+                    { TopoIconType.WindPowerPlant, IconsRender.WindTurbine(writer) },
+                    { TopoIconType.WaterTower, IconsRender.WaterTower(writer) },
+                    { TopoIconType.Transmitter, IconsRender.Transmitter(writer) },
+                    { TopoIconType.TechnicalTower, IconsRender.TechnicalTower(writer) },
+                    { TopoIconType.ElectricityPylon, IconsRender.Dot(writer) },
+                    { TopoIconType.Hospital, IconsRender.Hospital(writer) },
+                    { TopoIconType.LightHouse, IconsRender.LightHouse(writer) }
+                }
             };
         }
 
