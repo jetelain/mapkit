@@ -109,5 +109,19 @@ namespace MapToolkit.Drawing.Topographic
             target.DrawPolygon([new(18 * .8, 8 * .8), new(26 * .8, 5 * .8), new(26 * .8, 10 * .8), new(18 * .8, 8 * .8)], style);
             target.DrawPolygon([new(16 * .8, 1 * .8), new(21 * .8, 6 * .8), new(11 * .8, 6 * .8), new(16 * .8, 1 * .8)], style);
         }
+
+        public static IDrawIcon Church(IDrawSurface w)
+        {
+            var pen = w.AllocatePenStyle(Color.Black);
+            var fill = w.AllocateStyle(Color.White, Color.Black);
+            return w.AllocateIcon(new Vector(18, 18), (target) => Church(target, pen, fill));
+        }
+
+        private static void Church(IDrawSurface target, IDrawStyle pen, IDrawStyle fill)
+        {
+            target.DrawPolyline(new[] { new Vector(9, 0), new Vector(9, 9) }, pen);
+            target.DrawPolyline(new[] { new Vector(5, 4), new Vector(13, 4) }, pen);
+            target.DrawCircle(new Vector(9, 13), 3.5f, fill);
+        }
     }
 }

@@ -109,7 +109,8 @@ namespace MapToolkit.Drawing.Topographic
                     { TopoIconType.TechnicalTower, IconsRender.TechnicalTower(writer) },
                     { TopoIconType.ElectricityPylon, IconsRender.Dot(writer) },
                     { TopoIconType.Hospital, IconsRender.Hospital(writer) },
-                    { TopoIconType.LightHouse, IconsRender.LightHouse(writer) }
+                    { TopoIconType.LightHouse, IconsRender.LightHouse(writer) },
+                    { TopoIconType.Church, IconsRender.Church(writer) }
                 }
             };
         }

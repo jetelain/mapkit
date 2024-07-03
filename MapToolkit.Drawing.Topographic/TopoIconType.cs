@@ -8,6 +8,9 @@
         ElectricityPylon,
         Hospital,
         LightHouse,
-        TechnicalTower
+        TechnicalTower,
+        Church,
+        // Synagogue,
+        // Mosquee
     }
 }
