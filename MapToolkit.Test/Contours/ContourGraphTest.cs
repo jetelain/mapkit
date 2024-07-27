@@ -58,7 +58,7 @@ namespace MapToolkit.Test.Contours
             Assert.Single(graph.Lines);
             polygons = graph.ToPolygons();
             polygon = Assert.Single(polygons);
-            Assert.Equal("POLYGON ((1 1, 0 1, 0 0, 1 0, 1 1), (0.25 0.5, 0.5 0.75, 0.75 0.5, 0.5 0.25, 0.25 0.5))", polygon.ToString());
+            Assert.Equal("POLYGON ((1 0, 1 1, 0 1, 0 0, 1 0), (0.25 0.5, 0.5 0.75, 0.75 0.5, 0.5 0.25, 0.25 0.5))", polygon.ToString());
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace MapToolkit.Test.Contours
             Assert.Single(graph.Lines);
             var polygons = graph.ToPolygonsReverse();
             var polygon = Assert.Single(polygons);
-            Assert.Equal("POLYGON ((1 1, 0 1, 0 0, 1 0, 1 1), (0.25 0.5, 0.5 0.75, 0.75 0.5, 0.5 0.25, 0.25 0.5))", polygon.ToString());
+            Assert.Equal("POLYGON ((1 0, 1 1, 0 1, 0 0, 1 0), (0.25 0.5, 0.5 0.75, 0.75 0.5, 0.5 0.25, 0.25 0.5))", polygon.ToString());
 
             cell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), new Coordinates(1, 1), new short[3, 3] {
                 { 10, 10, 10 },
