@@ -16,8 +16,8 @@ namespace MapToolkit.Projections
             Size = size;
             minLon = min.Longitude;
             maxLat = max.Latitude;
-            //latFactor = (max.Latitude - min.Latitude) / size.Y;
-            //lonFactor = (max.Longitude - min.Longitude) / size.X;
+            latFactor = (max.Latitude - min.Latitude) / size.Y;
+            lonFactor = (max.Longitude - min.Longitude) / size.X;
             factor = (max.Vector2D - min.Vector2D) / size.Vector2D;
         }
 
