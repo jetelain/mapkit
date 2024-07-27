@@ -1,6 +1,8 @@
 ﻿using MapToolkit.Drawing;
 using MapToolkit.Drawing.PdfRender;
 using MapToolkit.Projections;
+using Pmad.Geometry.Collections;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -183,7 +185,7 @@ namespace MapToolkit.Drawing.Topographic
                 var mr = w.AllocatePenStyle("FE002C", 2);
                 foreach (var road in mains)
                 {
-                    var simpler = LevelOfDetailHelper.SimplifyAnglesAndDistances(road.Points.Select(projection.Project).ToList(), 1);
+                    var simpler = LevelOfDetailHelper.SimplifyAnglesAndDistances(projection.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()).ToList(), 1);
                     if (simpler.Count > 0)
                     {
                         w.DrawPolyline(simpler, mr);
@@ -233,9 +235,9 @@ namespace MapToolkit.Drawing.Topographic
         {
             return new[]{
                         projection.Project(tile.Min),
-                        projection.Project(new Coordinates(tile.Min.Latitude, tile.Max.Longitude)),
+                        projection.Project(new CoordinatesS(tile.Min.Latitude, tile.Max.Longitude)),
                         projection.Project(tile.Max),
-                        projection.Project(new Coordinates(tile.Max.Latitude, tile.Min.Longitude)),
+                        projection.Project(new CoordinatesS(tile.Max.Latitude, tile.Min.Longitude)),
                         projection.Project(tile.Min)};
         }
     }

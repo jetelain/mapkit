@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using MapToolkit.Contours;
 using MapToolkit.DataCells;
+using Pmad.Geometry;
+using Pmad.Geometry.Collections;
+using Pmad.Geometry.Shapes;
 
 namespace MapToolkit.Test.Contours
 {
@@ -23,7 +26,7 @@ namespace MapToolkit.Test.Contours
             graph.Add(cell, new ContourFixedLevel([5]), false, null);
             var line = Assert.Single(graph.Lines);
             Assert.Equal(5, line.Level);
-            Assert.Equal("(0.5 0.75, 0.25 0.5, 0.5 0.25, 0.75 0.5, 0.5 0.75)", line.Points.ToGeoString());
+            Assert.Equal("LINESTRING (0.5 0.75, 0.25 0.5, 0.5 0.25, 0.75 0.5, 0.5 0.75)", new Path<double,Vector2D>(line.Points.AsSpan<CoordinatesS,Vector2D>().ToReadOnlyArray()).ToString());
 
         }
 

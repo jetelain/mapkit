@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
 using Pmad.Geometry;
 using Pmad.Geometry.Collections;
@@ -193,8 +191,8 @@ namespace MapToolkit.Contours
 
         private void CloseLines(IDemDataView cell)
         {
-            var edgeSW = cell.GetPointsOnParallel(0, 0, 1).First().Coordinates;
-            var edgeNE = cell.GetPointsOnParallel(cell.PointsLat - 1, cell.PointsLon - 1, 1).First().Coordinates;
+            var edgeSW = cell.GetPointsOnParallel(0, 0, 1).First().CoordinatesS;
+            var edgeNE = cell.GetPointsOnParallel(cell.PointsLat - 1, cell.PointsLon - 1, 1).First().CoordinatesS;
             CloseLines(Lines, edgeSW, edgeNE);
             Cleanup();
         }
@@ -285,9 +283,8 @@ namespace MapToolkit.Contours
             var i = 0;
             foreach (var o in outer)
             {
-                var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
-                var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
-                var holes = NonOverlaping(inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList());
+                var minMax = VectorEnvelope<Vector2D>.FromList(o.Points.AsSpan<CoordinatesS, Vector2D>());
+                var holes = NonOverlaping(inner.Where(i => minMax.Contains(i.Points[0].Vector2D) && o.IsPointInsideOrOnBoundary(i.Points[0])).ToList());
                 inner.RemoveAll(holes.Contains);
                 poly.Add(new Polygon<double, Vector2D>(shapeSettings, ToLineString2(o), holes.Select(ToLineString2).ToReadOnlyArray()));
                 i++;
@@ -322,7 +319,7 @@ namespace MapToolkit.Contours
             {
                 return holes;
             }
-            return holes.Where(h1 => !holes.Any(h2 => h2 != h1 && h1.Points.IsPointInside(h2.Points[0]))).ToList();
+            return holes.Where(h1 => !holes.Any(h2 => h2 != h1 && h1.IsPointInside(h2.Points[0]))).ToList();
         }
 
         private static ReadOnlyArray<Vector2D> ToLineString2(ContourLine o)
@@ -330,7 +327,7 @@ namespace MapToolkit.Contours
             return o.Points.Take(o.Points.Count - 1).Select(p => p.Vector2D).Concat(o.Points.Take(1).Select(p => p.Vector2D)).ToReadOnlyArray();
         }
 
-        private void CloseLines(IEnumerable<ContourLine> value, Coordinates edgeSW, Coordinates edgeNE)
+        private void CloseLines(IEnumerable<ContourLine> value, CoordinatesS edgeSW, CoordinatesS edgeNE)
         {
             var notClosed = value.Where(l => !l.IsClosed).ToList();
             if (notClosed.Count == 0)
@@ -362,7 +359,7 @@ namespace MapToolkit.Contours
             }
         }
 
-        private void LookEast(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookEast(CoordinatesS edgeSW, CoordinatesS edgeNE, List<ContourLine> notClosed, ContourLine line, CoordinatesS lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Latitude == edgeNE.Latitude && n.Last.Longitude > lookFrom.Longitude)
@@ -374,12 +371,12 @@ namespace MapToolkit.Contours
             }
             else if ( depth < 4 )
             {
-                line.Points.Insert(0, edgeNE);
+                line.Points.Prepend(edgeNE);
                 LookSouth(edgeSW, edgeNE, notClosed, line, edgeNE, depth + 1);
             }
         }
 
-        private void LookSouth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookSouth(CoordinatesS edgeSW, CoordinatesS edgeNE, List<ContourLine> notClosed, ContourLine line, CoordinatesS lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Longitude == edgeNE.Longitude && n.Last.Latitude < lookFrom.Latitude)
@@ -391,13 +388,13 @@ namespace MapToolkit.Contours
             }
             else if (depth < 4)
             {
-                var southEast = new Coordinates(edgeSW.Latitude, edgeNE.Longitude);
-                line.Points.Insert(0, southEast);
+                var southEast = new CoordinatesS(edgeSW.Latitude, edgeNE.Longitude);
+                line.Points.Prepend(southEast);
                 LookWest(edgeSW, edgeNE, notClosed, line, southEast, depth + 1);
             }
         }
 
-        private void LookWest(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookWest(CoordinatesS edgeSW, CoordinatesS edgeNE, List<ContourLine> notClosed, ContourLine line, CoordinatesS lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Latitude == edgeSW.Latitude && n.Last.Longitude < lookFrom.Longitude)
@@ -409,12 +406,12 @@ namespace MapToolkit.Contours
             }
             else if (depth < 4)
             {
-                line.Points.Insert(0, edgeSW);
+                line.Points.Prepend(edgeSW);
                 LookNorth(edgeSW, edgeNE, notClosed, line, edgeSW, depth + 1);
             }
         }
 
-        private void LookNorth(Coordinates edgeSW, Coordinates edgeNE, List<ContourLine> notClosed, ContourLine line, Coordinates lookFrom, int depth = 0)
+        private void LookNorth(CoordinatesS edgeSW, CoordinatesS edgeNE, List<ContourLine> notClosed, ContourLine line, CoordinatesS lookFrom, int depth = 0)
         {
             var other = notClosed
                 .Where(n => !n.IsClosed && n.Last.Longitude == edgeSW.Longitude && n.Last.Latitude > lookFrom.Latitude)
@@ -426,8 +423,8 @@ namespace MapToolkit.Contours
             }
             else if (depth < 4)
             {
-                var northWest = new Coordinates(edgeNE.Latitude, edgeSW.Longitude);
-                line.Points.Insert(0, northWest);
+                var northWest = new CoordinatesS(edgeNE.Latitude, edgeSW.Longitude);
+                line.Points.Prepend(northWest);
                 LookEast(edgeSW, edgeNE, notClosed, line, northWest, depth + 1);
             }
         }

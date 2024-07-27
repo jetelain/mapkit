@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using ClipperLib;
 using GeoJSON.Text.Geometry;
+using Pmad.Geometry;
 
 namespace MapToolkit
 {

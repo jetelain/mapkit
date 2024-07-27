@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MapToolkit.Contours
+﻿namespace MapToolkit.Contours
 {
     internal class ContourSegment
     {
-        public ContourSegment(Coordinates point1, Coordinates point2, double level, int kind, ContourHypothesis? hypothesis = null, int hcase = 0)
+        public ContourSegment(CoordinatesS point1, CoordinatesS point2, double level, int kind, ContourHypothesis? hypothesis = null, int hcase = 0)
         {
             Point1 = point1;
             Point2 = point2;
@@ -17,8 +13,8 @@ namespace MapToolkit.Contours
             Kind = kind;
         }
 
-        public Coordinates Point1 { get; }
-        public Coordinates Point2 { get; }
+        public CoordinatesS Point1 { get; }
+        public CoordinatesS Point2 { get; }
         public double Level { get; }
 
         public ContourHypothesis? Hypothesis { get; }

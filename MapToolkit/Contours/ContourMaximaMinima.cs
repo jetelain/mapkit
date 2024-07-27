@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MapToolkit.DataCells;
 using MapToolkit.Utils;
+using Pmad.Geometry;
+using Pmad.Geometry.Collections;
 
 namespace MapToolkit.Contours
 {
@@ -27,7 +29,7 @@ namespace MapToolkit.Contours
                 var line = list[i];
                 if (line != null)
                 {
-                    var inside = list.FirstOrDefault(l => l != null && l.Level * factor > line.Level * factor && line.Points.IsPointInside(l.First));
+                    var inside = list.FirstOrDefault(l => l != null && l.Level * factor > line.Level * factor && line.IsPointInside(l.First));
                     if (inside != null)
                     {
                         list[i] = null;
@@ -39,10 +41,9 @@ namespace MapToolkit.Contours
             rel = new BasicProgress(new RelativeProgress(progress, 50, 0.5), list.Where(l => l != null).Count());
             foreach (var line in list.Where(l => l != null).Cast<ContourLine>())
             {
-                var min = new Coordinates(line.Points.Min(l => l.Latitude), line.Points.Min(l => l.Longitude));
-                var max = new Coordinates(line.Points.Max(l => l.Latitude), line.Points.Max(l => l.Longitude));
+                var minMax = VectorEnvelope<Vector2D>.FromList(line.Points.AsSpan<CoordinatesS,Vector2D>());
 
-                var sub = cell.CreateView(min, max);
+                var sub = cell.CreateView(new Coordinates(minMax.Min), new Coordinates(minMax.Max));
 
                 var matching =
                         Enumerable
@@ -50,7 +51,7 @@ namespace MapToolkit.Contours
                         .SelectMany(lat => sub.GetPointsOnParallel(lat, 0, sub.PointsLon))
                         .Where(p => p.Elevation * factor > line.Level * factor)
                         .OrderByDescending(p => p.Elevation * factor)
-                        .Where(p => line.Points.IsPointInside(p.Coordinates))
+                        .Where(p => line.IsPointInside(p.CoordinatesS))
                         .ToList();
                 if (matching.Count > 0)
                 {

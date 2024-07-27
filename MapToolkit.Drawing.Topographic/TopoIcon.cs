@@ -2,7 +2,7 @@
 {
     public sealed class TopoIcon
     {
-        public TopoIcon(TopoIconType mapType, Coordinates coordinates)
+        public TopoIcon(TopoIconType mapType, CoordinatesS coordinates)
         {
             MapType = mapType;
             Coordinates = coordinates;
@@ -10,6 +10,6 @@
 
         public TopoIconType MapType { get; }
 
-        public Coordinates Coordinates { get; }
+        public CoordinatesS Coordinates { get; }
     }
 }

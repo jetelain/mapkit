@@ -34,6 +34,8 @@ namespace MapToolkit
 
         public Vector2D Vector2D => vector;
 
+        public CoordinatesS CoordinatesS => new (vector);
+
         public bool Equals(DemDataPoint? other)
         {
             if (other != null)

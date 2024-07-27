@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Pmad.Geometry;
+using Pmad.Geometry.Algorithms;
+using Pmad.Geometry.Collections;
 
 namespace MapToolkit.Contours
 {
     public sealed class ContourLine
     {
+        private ReadOnlyArrayBuilder<CoordinatesS> points = new ReadOnlyArrayBuilder<CoordinatesS>();
+
         internal ContourLine(ContourSegment segment)
         {
 #if DEBUG
@@ -14,14 +18,14 @@ namespace MapToolkit.Contours
                 throw new ArgumentException();
             }
 #endif
-            Points.Add(segment.Point1);
-            Points.Add(segment.Point2);
+            this.points.Add(segment.Point1);
+            this.points.Add(segment.Point2);
             Level = segment.Level;
         }
 
-        public ContourLine(IEnumerable<Coordinates> points, double level)
+        public ContourLine(IEnumerable<CoordinatesS> points, double level)
         {
-            Points.AddRange(points);
+            this.points.AddRange(points);
             Level = level;
             UpdateIsClosed(Coordinates.DefaultThresholdSquared);
         }
@@ -34,13 +38,13 @@ namespace MapToolkit.Contours
         /// 
         /// Points are clockwise for basin.
         /// </remarks>
-        public List<Coordinates> Points { get; } = new List<Coordinates>();
+        public ReadOnlyArrayBuilder<CoordinatesS> Points => points;
 
         public double Level { get; }
 
-        public Coordinates First => Points[0];
+        public CoordinatesS First => points[0];
 
-        public Coordinates Last => Points[Points.Count - 1];
+        public CoordinatesS Last => points[points.Count-1];
 
         public bool IsClosed { get; private set; }
 
@@ -67,7 +71,7 @@ namespace MapToolkit.Contours
             }
             else if (segment.Point2.AlmostEquals(First, thresholdSqared))
             {
-                Points.Insert(0, segment.Point1);
+                Points.Prepend(segment.Point1);
             }
             else
             {
@@ -92,8 +96,7 @@ namespace MapToolkit.Contours
             else if (First.AlmostEquals(other.Last, thresholdSqared))
             {
                 other.Points.AddRange(Points.Skip(1));
-                Points.Clear();
-                Points.AddRange(other.Points);
+                points = other.Points;
                 other.Discard();
             }
             else
@@ -125,7 +128,7 @@ namespace MapToolkit.Contours
         private void Discard()
         {
             IsClosed = true;
-            Points.Clear();
+            points = new ReadOnlyArrayBuilder<CoordinatesS>();
         }
 
         internal void UpdateIsClosed(double thresholdSqared)
@@ -136,6 +139,17 @@ namespace MapToolkit.Contours
             }
         }
 
-        public bool IsCounterClockWise => Points.IsCounterClockWise();
+        public bool IsCounterClockWise => SignedArea<double, Vector2D>.GetSignedAreaD(points.AsSpan<CoordinatesS,Vector2D>()) > 0;
+
+
+        public bool IsPointInside(CoordinatesS point)
+        {
+            return points.AsSpan<CoordinatesS,Vector2D>().TestPointInPolygon(point.Vector2D) == Clipper2Lib.PointInPolygonResult.IsInside;
+        }
+
+        public bool IsPointInsideOrOnBoundary(CoordinatesS point)
+        {
+            return points.AsSpan<CoordinatesS, Vector2D>().TestPointInPolygon(point.Vector2D) != Clipper2Lib.PointInPolygonResult.IsOutside;
+        }
     }
 }

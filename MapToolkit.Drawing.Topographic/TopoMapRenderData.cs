@@ -2,6 +2,8 @@
 using MapToolkit.DataCells;
 using MapToolkit.GeodeticSystems;
 using MapToolkit.Hillshading;
+using Pmad.Geometry;
+using Pmad.Geometry.Collections;
 using Pmad.ProgressTracking;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -63,9 +65,11 @@ namespace MapToolkit.Drawing.Topographic
             return length > 200 && length < 100_000;
         }
 
-        private static double LengthInMeters(List<Coordinates> points)
+        private static double LengthInMeters(ReadOnlyArrayBuilder<CoordinatesS> points)
         {
-            return points.Take(points.Count - 1).Zip(points.Skip(1), (a, b) => MeterProjectedDistance.Instance.DistanceInMeters(a, b)).Sum();
+            return points.AsSpan<CoordinatesS, Vector2D>().GetLengthD();
+
+            //return points.Take(points.Count - 1).Zip(points.Skip(1), (a, b) => MeterProjectedDistance.Instance.DistanceInMeters(a, b)).Sum();
         }
     }
 }

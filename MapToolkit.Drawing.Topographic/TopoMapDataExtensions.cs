@@ -4,7 +4,7 @@ namespace MapToolkit.Drawing.Topographic
 {
     public static class TopoMapDataExtensions
     {
-        public static ITopoMapData Crop(this ITopoMapData other, Coordinates min, Coordinates max, TopoMapMetadata? metadata = null)
+        public static ITopoMapData Crop(this ITopoMapData other, CoordinatesS min, CoordinatesS max, TopoMapMetadata? metadata = null)
         {
             var range = new VectorEnvelope<Vector2D>(min.Vector2D, max.Vector2D);
             return new TopoMapData()
@@ -20,9 +20,9 @@ namespace MapToolkit.Drawing.Topographic
                 Roads = other.Roads?.ToDictionary(k => k.Key, k => k.Value.Crop(range)),
                 Powerlines = other.Powerlines?.Crop(range),
                 Railways = other.Railways?.Crop(range),
-                Names = other.Names?.Where(n => n.Position?.IsInSquare(min, max) ?? false)?.ToList(),
-                Icons = other.Icons?.Where(n => n.Coordinates?.IsInSquare(min, max) ?? false)?.ToList(),
-                PlottedPoints = other.PlottedPoints?.Where(n => n.Coordinates?.IsInSquare(min, max) ?? false)?.ToList()
+                Names = other.Names?.Where(n => n.Position.IsInSquare(range))?.ToList(),
+                Icons = other.Icons?.Where(n => n.Coordinates.IsInSquare(range))?.ToList(),
+                PlottedPoints = other.PlottedPoints?.Where(n => n.CoordinatesS.IsInSquare(range))?.ToList()
             };
         }
     }

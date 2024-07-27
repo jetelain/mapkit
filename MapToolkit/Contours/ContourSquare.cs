@@ -142,29 +142,29 @@ namespace MapToolkit.Contours
                 | (level < northEast.Elevation ? NorthEastBit : 0);
         }
 
-        private Coordinates InterpolateWestBorder(double level)
+        private CoordinatesS InterpolateWestBorder(double level)
         {
-            return new Coordinates(
+            return new CoordinatesS(
                 Interpolate(level, southWest.Coordinates.Latitude, northWest.Coordinates.Latitude, southWest.Elevation, northWest.Elevation),
                 northWest.Coordinates.Longitude);
         }
 
-        private Coordinates InterpolateSouthBorder(double level)
+        private CoordinatesS InterpolateSouthBorder(double level)
         {
-            return new Coordinates(southWest.Coordinates.Latitude,
+            return new CoordinatesS(southWest.Coordinates.Latitude,
                 Interpolate(level, southWest.Coordinates.Longitude, southEast.Coordinates.Longitude, southWest.Elevation, southEast.Elevation));
         }
 
-        private Coordinates InterpolateEastBorder(double level)
+        private CoordinatesS InterpolateEastBorder(double level)
         {
-            return new Coordinates(
+            return new CoordinatesS(
                 Interpolate(level, southEast.Coordinates.Latitude, northEast.Coordinates.Latitude, southEast.Elevation, northEast.Elevation),
                 northEast.Coordinates.Longitude);
         }
 
-        private Coordinates InterpolateNorthBorder(double level)
+        private CoordinatesS InterpolateNorthBorder(double level)
         {
-            return new Coordinates(
+            return new CoordinatesS(
                 northWest.Coordinates.Latitude,
                 Interpolate(level, northWest.Coordinates.Longitude, northEast.Coordinates.Longitude, northWest.Elevation, northEast.Elevation));
         }

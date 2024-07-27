@@ -1,5 +1,6 @@
 ﻿using System;
 using GeoJSON.Text.Geometry;
+using Pmad.Geometry;
 
 namespace MapToolkit.Projections
 {
@@ -32,7 +33,7 @@ namespace MapToolkit.Projections
 
         public double Scale => 1;
 
-        public Vector Project(IPosition point)
+        public Vector Project(CoordinatesS point)
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;
             var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
@@ -41,6 +42,27 @@ namespace MapToolkit.Projections
                 return new Vector(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
             }
             return new Vector(x - dX, y - dY);
+        }
+
+        public Vector Project(Vector2D point)
+        {
+            var y = halfFullSize * (point.Longitude() + 180) / 180;
+            var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude() + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
+            if (rounding != -1)
+            {
+                return new Vector(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
+            }
+            return new Vector(x - dX, y - dY);
+        }
+
+        public Vector[] Project(ReadOnlySpan<CoordinatesS> coordinates)
+        {
+            var result = new Vector[coordinates.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = Project(coordinates[i]);
+            }
+            return result;
         }
     }
 }

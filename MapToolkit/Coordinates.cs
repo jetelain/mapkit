@@ -32,6 +32,11 @@ namespace MapToolkit
             this.vector = vector;
         }
 
+        public Coordinates(CoordinatesS crd)
+        {
+            this.vector = crd.Vector2D;
+        }
+
         public Coordinates(IntPoint point, int rounding = -1, double scaleForClipper = ScaleForClipper)
         {
             vector = new Vector2D(point.X, point.Y) / ScaleForClipper;

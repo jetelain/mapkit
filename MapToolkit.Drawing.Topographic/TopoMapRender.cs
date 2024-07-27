@@ -5,6 +5,7 @@ using MapToolkit.Drawing.Contours;
 using MapToolkit.Projections;
 using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
+using Pmad.Geometry.Collections;
 using Pmad.Geometry.Shapes;
 using SixLabors.ImageSharp;
 
@@ -142,14 +143,14 @@ namespace MapToolkit.Drawing.Topographic
             {
                 foreach (var pl in data.Powerlines)
                 {
-                    writer.DrawPolyline(pl.Points.Select(proj.Project), style.Powerline);
+                    writer.DrawPolyline(proj.Project(pl.Points.AsSpan<Vector2D, CoordinatesS>()), style.Powerline);
                 }
             }
             if (data.Railways != null && style.Railway != null)
             {
                 foreach (var pl in data.Railways)
                 {
-                    DrawRailway(writer, style.Railway, pl.Points.Select(proj.Project));
+                    DrawRailway(writer, style.Railway, proj.Project(pl.Points.AsSpan<Vector2D, CoordinatesS>()));
                 }
             }
             if (renderData.PlottedPoints != null && style.plotted != null && style.plottedCircle != null)
@@ -218,7 +219,7 @@ namespace MapToolkit.Drawing.Topographic
         {
             foreach (var point in plottedPoints)
             {
-                var projected = proj.Project(point.Coordinates);
+                var projected = proj.Project(point.CoordinatesS);
                 var text = Math.Round(point.Elevation).ToString(CultureInfo.InvariantCulture);
 
                 writer.DrawCircle(projected, 1.5f, plottedCircle);
@@ -236,7 +237,7 @@ namespace MapToolkit.Drawing.Topographic
             }
             for (int x = 1; x < 100; ++x)
             {
-                var projected = proj.Project(new Coordinates(0, x * step));
+                var projected = proj.Project(new CoordinatesS(0, x * step));
                 if (projected.X >= 0 && projected.X <= proj.Size.X)
                 {
                     writer.DrawPolyline(new[] {
@@ -250,7 +251,7 @@ namespace MapToolkit.Drawing.Topographic
             }
             for (int y = 1; y < 100; ++y)
             {
-                var projected = proj.Project(new Coordinates(y * step, 0));
+                var projected = proj.Project(new CoordinatesS(y * step, 0));
                 if (projected.Y >= 0 && projected.Y <= proj.Size.Y)
                 {
                     writer.DrawPolyline(new[] {
@@ -273,7 +274,7 @@ namespace MapToolkit.Drawing.Topographic
                 {
                     foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
+                        writer.DrawPolyline(proj.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()), style);
                     }
                 }
             }
@@ -284,7 +285,7 @@ namespace MapToolkit.Drawing.Topographic
                 {
                     foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
+                        writer.DrawPolyline(proj.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()), style);
                     }
                 }
             }
@@ -299,7 +300,7 @@ namespace MapToolkit.Drawing.Topographic
                 {
                     foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
+                        writer.DrawPolyline(proj.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()), style);
 
                         BridgeLimit(writer, proj.Project(road.Points[0]), proj.Project(road.Points[1]), limitLine);
                         BridgeLimit(writer, proj.Project(road.Points[road.Points.Count - 1]), proj.Project(road.Points[road.Points.Count - 2]), limitLine);
@@ -313,7 +314,7 @@ namespace MapToolkit.Drawing.Topographic
                 {
                     foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
+                        writer.DrawPolyline(proj.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()), style);
                     }
                 }
             }
@@ -335,8 +336,8 @@ namespace MapToolkit.Drawing.Topographic
             foreach (var poly in surface)
             {
                 writer.DrawPolygon(
-                    poly.Shell.Select(proj.Project),
-                    poly.Holes.Select(l => l.Select(proj.Project)),
+                    proj.Project(poly.Shell.AsSpan<Vector2D, CoordinatesS>()),
+                    poly.Holes.Select(l => proj.Project(l.AsSpan<Vector2D, CoordinatesS>())),
                     styleToUse);
             }
         }
@@ -345,13 +346,13 @@ namespace MapToolkit.Drawing.Topographic
         {
             foreach (var poly in surface)
             {
-                var contour = LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Shell.Select(proj.Project), 1);
+                var contour = LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(proj.Project(poly.Shell.AsSpan<Vector2D,CoordinatesS>()), 1);
 
                 if (contour.Count > 0)
                 {
                     writer.DrawPolygon(
                         contour,
-                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Holes.Select(l => l.Select(proj.Project)), 1) ?? Enumerable.Empty<IEnumerable<Vector>>(),
+                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Holes.Select(l => proj.Project(l.AsSpan<Vector2D, CoordinatesS>())), 1) ?? Enumerable.Empty<IEnumerable<Vector>>(),
                         styleToUse);
                 }
             }

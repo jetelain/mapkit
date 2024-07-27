@@ -91,7 +91,7 @@ namespace MapToolkit.Drawing.Topographic
             document.Save(file);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(Coordinates start, int scale, Vector sizeInMeters, Vector sizeInPoints, Vector paperSurface)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesS start, int scale, Vector sizeInMeters, Vector sizeInPoints, Vector paperSurface)
         {
             var w = Math.Ceiling(sizeInPoints.X / paperSurface.X);
             var h = Math.Ceiling(sizeInPoints.Y / paperSurface.Y);
@@ -105,7 +105,7 @@ namespace MapToolkit.Drawing.Topographic
             return GetTiles(start, w, h, overlapInMeters, baseSize);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(Coordinates start, double w, double h, Vector overlapInMeters, Vector baseSize)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesS start, double w, double h, Vector overlapInMeters, Vector baseSize)
         {
             var tiles = new List<TopoMapPdfTile>();
             for (var x = 0; x < w; ++x)
