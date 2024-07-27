@@ -145,28 +145,28 @@ namespace MapToolkit.Contours
         private CoordinatesS InterpolateWestBorder(double level)
         {
             return new CoordinatesS(
-                Interpolate(level, southWest.Coordinates.Latitude, northWest.Coordinates.Latitude, southWest.Elevation, northWest.Elevation),
-                northWest.Coordinates.Longitude);
+                Interpolate(level, southWest.Latitude, northWest.Latitude, southWest.Elevation, northWest.Elevation),
+                northWest.Longitude);
         }
 
         private CoordinatesS InterpolateSouthBorder(double level)
         {
-            return new CoordinatesS(southWest.Coordinates.Latitude,
-                Interpolate(level, southWest.Coordinates.Longitude, southEast.Coordinates.Longitude, southWest.Elevation, southEast.Elevation));
+            return new CoordinatesS(southWest.Latitude,
+                Interpolate(level, southWest.Longitude, southEast.Longitude, southWest.Elevation, southEast.Elevation));
         }
 
         private CoordinatesS InterpolateEastBorder(double level)
         {
             return new CoordinatesS(
-                Interpolate(level, southEast.Coordinates.Latitude, northEast.Coordinates.Latitude, southEast.Elevation, northEast.Elevation),
-                northEast.Coordinates.Longitude);
+                Interpolate(level, southEast.Latitude, northEast.Latitude, southEast.Elevation, northEast.Elevation),
+                northEast.Longitude);
         }
 
         private CoordinatesS InterpolateNorthBorder(double level)
         {
             return new CoordinatesS(
-                northWest.Coordinates.Latitude,
-                Interpolate(level, northWest.Coordinates.Longitude, northEast.Coordinates.Longitude, northWest.Elevation, northEast.Elevation));
+                northWest.Latitude,
+                Interpolate(level, northWest.Longitude, northEast.Longitude, northWest.Elevation, northEast.Elevation));
         }
 
         private static double Interpolate(double level, double x1, double x2, double e1, double e2)

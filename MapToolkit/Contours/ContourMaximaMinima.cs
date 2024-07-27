@@ -57,9 +57,9 @@ namespace MapToolkit.Contours
                 {
                     var elevation = matching[0].Elevation;
                     var identitcal = matching.Where(m => m.Elevation == elevation);
-                    var latitude = identitcal.Average(p => p.Coordinates.Latitude);
-                    var longitude = identitcal.Average(p => p.Coordinates.Longitude);
-                    result.Add(new DemDataPoint(new Coordinates(latitude, longitude), elevation));
+                    var latitude = identitcal.Average(p => p.Latitude);
+                    var longitude = identitcal.Average(p => p.Longitude);
+                    result.Add(new DemDataPoint(new CoordinatesS(latitude, longitude), elevation));
                 }
                 rel.AddOne();
             }

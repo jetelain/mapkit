@@ -1,8 +1,10 @@
-﻿using Pmad.Geometry;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Pmad.Geometry;
 
 namespace MapToolkit
 {
-    public struct CoordinatesS
+    public struct CoordinatesS : IEquatable<CoordinatesS>
     {
         public readonly Vector2D Vector2D;
 
@@ -46,6 +48,25 @@ namespace MapToolkit
         public bool IsInSquare(CoordinatesS min, CoordinatesS max)
         {
             return Vector2D.IsInRange(min.Vector2D, max.Vector2D);
+        }
+
+        public bool Equals(CoordinatesS other)
+        {
+            return Vector2D == other.Vector2D;
+        }
+
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            if (obj is CoordinatesS other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Vector2D.GetHashCode();
         }
 
         public static CoordinatesS operator +(CoordinatesS c, Vector v)

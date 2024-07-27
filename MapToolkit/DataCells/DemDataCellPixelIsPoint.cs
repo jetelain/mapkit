@@ -82,7 +82,7 @@ namespace MapToolkit.DataCells
                 var f00 = ToDouble(Data[relLat0, relLon0]);
                 if (!double.IsNaN(f00))
                 {
-                    yield return new DemDataPoint(new Coordinates(Start.Latitude + (relLat0 * PixelSizeLat), Start.Longitude + (relLon0 * PixelSizeLon)), f00);
+                    yield return new DemDataPoint(new CoordinatesS(Start.Latitude + (relLat0 * PixelSizeLat), Start.Longitude + (relLon0 * PixelSizeLon)), f00);
                 }
             }
 
@@ -91,7 +91,7 @@ namespace MapToolkit.DataCells
                 var f10 = ToDouble(Data[relLat1, relLon0]);
                 if (!double.IsNaN(f10))
                 {
-                    yield return new DemDataPoint(new Coordinates(Start.Latitude + (relLat1 * PixelSizeLat), Start.Longitude + (relLon0 * PixelSizeLon)), f10);
+                    yield return new DemDataPoint(new CoordinatesS(Start.Latitude + (relLat1 * PixelSizeLat), Start.Longitude + (relLon0 * PixelSizeLon)), f10);
                 }
             }
 
@@ -100,7 +100,7 @@ namespace MapToolkit.DataCells
                 var f01 = ToDouble(Data[relLat0, relLon1]);
                 if (!double.IsNaN(f01))
                 {
-                    yield return new DemDataPoint(new Coordinates(Start.Latitude + (relLat0 * PixelSizeLat), Start.Longitude + (relLon1 * PixelSizeLon)), f01);
+                    yield return new DemDataPoint(new CoordinatesS(Start.Latitude + (relLat0 * PixelSizeLat), Start.Longitude + (relLon1 * PixelSizeLon)), f01);
                 }
             }
 
@@ -109,7 +109,7 @@ namespace MapToolkit.DataCells
                 var f11 = ToDouble(Data[relLat1, relLon1]);
                 if (!double.IsNaN(f11))
                 {
-                    yield return new DemDataPoint(new Coordinates(Start.Latitude + (relLat1 * PixelSizeLat), Start.Longitude + (relLon1 * PixelSizeLon)), f11);
+                    yield return new DemDataPoint(new CoordinatesS(Start.Latitude + (relLat1 * PixelSizeLat), Start.Longitude + (relLon1 * PixelSizeLon)), f11);
                 }
             }
         }
@@ -270,7 +270,7 @@ namespace MapToolkit.DataCells
             for (var lon = Math.Max(0, startLon); lon < lonEnd; ++lon)
             {
                 yield return new DemDataPoint(
-                    new Coordinates(Start.Latitude + (lat * PixelSizeLat),
+                    new CoordinatesS(Start.Latitude + (lat * PixelSizeLat),
                     Start.Longitude + (lon * PixelSizeLon)),
                     PixelFormat.ToDouble(Data[lat, lon]));
             }

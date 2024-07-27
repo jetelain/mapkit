@@ -325,7 +325,10 @@ namespace MapToolkit.Contours
 
         private static ReadOnlyArray<Vector2D> ToLineString2(ContourLine o)
         {
-            return o.Points.Take(o.Points.Count - 1).Select(p => p.Vector2D).Concat(o.Points.Take(1).Select(p => p.Vector2D)).ToReadOnlyArray();
+            var result = new ReadOnlyArrayBuilder<Vector2D>(o.Points.Count);
+            result.AddRange(o.Points.AsSpan<CoordinatesS,Vector2D>().Slice(0, o.Points.Count-1));
+            result.Add(o.Points[0].Vector2D); // Ensures that 1st and last are exactly the same (ContourLine has approximative match)
+            return result.Build();
         }
 
         private void CloseLines(IEnumerable<ContourLine> value, CoordinatesS edgeSW, CoordinatesS edgeNE)

@@ -91,12 +91,12 @@ namespace MapToolkit.Contours
             }
             if (Last.AlmostEquals(other.First, thresholdSqared))
             {
-                Points.AddRange(other.Points.Skip(1));
+                Points.AddRange(other.Points.Slice(1));
                 other.Discard();
             }
             else if (First.AlmostEquals(other.Last, thresholdSqared))
             {
-                other.Points.AddRange(Points.Skip(1));
+                other.Points.AddRange(Points.Slice(1));
                 points = other.Points;
                 other.Discard();
             }

@@ -8,15 +8,15 @@ namespace MapToolkit
     [DebuggerDisplay("{Coordinates} => {Elevation}")]
     public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition
     {
-        private readonly Vector2D vector;
+        private readonly CoordinatesS vector;
 
         public DemDataPoint(Coordinates coordinates, double elevation)
         {
-            vector = (coordinates ?? throw new ArgumentNullException(nameof(coordinates))).Vector2D;
+            vector = (coordinates ?? throw new ArgumentNullException(nameof(coordinates)));
             Elevation = elevation;
         }
 
-        public DemDataPoint(Vector2D vector, double elevation)
+        public DemDataPoint(CoordinatesS vector, double elevation)
         {
             this.vector = vector;
             Elevation = elevation;
@@ -28,19 +28,19 @@ namespace MapToolkit
 
         double? IPosition.Altitude => Elevation;
 
-        public double Latitude => vector.Y;
+        public double Latitude => vector.Latitude;
 
-        public double Longitude => vector.X;
+        public double Longitude => vector.Longitude;
 
-        public Vector2D Vector2D => vector;
+        public Vector2D Vector2D => vector.Vector2D;
 
-        public CoordinatesS CoordinatesS => new (vector);
+        public CoordinatesS CoordinatesS => vector;
 
         public bool Equals(DemDataPoint? other)
         {
             if (other != null)
             {
-                return vector == other.vector
+                return vector.Vector2D == other.vector.Vector2D
                     && Elevation == other.Elevation;
             }
             return false;
@@ -53,7 +53,7 @@ namespace MapToolkit
 
         public override int GetHashCode()
         {
-            return vector.GetHashCode() ^ Elevation.GetHashCode();
+            return vector.Vector2D.GetHashCode() ^ Elevation.GetHashCode();
         }
     }
 }
