@@ -4,12 +4,19 @@ using System.Numerics;
 using System.Text.Json.Serialization;
 using ClipperLib;
 using GeoJSON.Text.Geometry;
+using Pmad.Geometry;
+using Pmad.Geometry.Shapes;
 
 namespace MapToolkit
 {
     [DebuggerDisplay("({Latitude};{Longitude})")]
     public class Coordinates : IEquatable<Coordinates>, IPosition
     {
+        private readonly Vector2D vector;
+
+        public static ShapeSettings<double, Vector2D> LatLonSettings = new ShapeSettings<double, Vector2D>(2_000_000, 4);
+        public static ShapeSettings<double, Vector2D> EastingNorthingSettings = new ShapeSettings<double, Vector2D>(1_000, 4);
+
         internal const double ScaleForClipper = 2_000_000d;
 
         public static readonly Coordinates Zero = new Coordinates(0, 0);
@@ -17,41 +24,44 @@ namespace MapToolkit
         [JsonConstructor]
         public Coordinates(double latitude, double longitude)
         {
-            Latitude = latitude;
-            Longitude = longitude;
+            vector = new Vector2D(longitude, latitude);
+        }
+
+        public Coordinates(Vector2D vector)
+        {
+            this.vector = vector;
         }
 
         public Coordinates(IntPoint point, int rounding = -1, double scaleForClipper = ScaleForClipper)
         {
-            Latitude = point.Y / scaleForClipper;
-            Longitude = point.X / scaleForClipper;
-
+            vector = new Vector2D(point.X, point.Y) / ScaleForClipper;
             if (rounding > -1)
             {
-                Latitude = Math.Round(Latitude, rounding);
-                Longitude = Math.Round(Longitude, rounding);
+                vector = new Vector2D(Math.Round(vector.X, rounding), Math.Round(vector.Y, rounding));
             }
         }
 
         public static Coordinates FromXY(double x, double y)
         {
-            return new Coordinates(y, x);
+            return new Coordinates(new Vector2D(x, y));
         }
 
         public static Coordinates FromXY(Vector2 vector)
         {
-            return new Coordinates(vector.Y, vector.X);
+            return new Coordinates(new Vector2D(vector.X, vector.Y));
         }
 
         public static Coordinates FromLatLon(double lat, double lon)
         {
-            return new Coordinates(lat, lon);
+            return new Coordinates(new Vector2D(lon, lat));
         }
 
 
-        public double Latitude { get; }
+        public double Latitude => vector.Y;
 
-        public double Longitude { get; }
+        public double Longitude => vector.X;
+
+        public Vector2D Vector2D => vector;
 
         [JsonIgnore]
         public double? Altitude => null;
@@ -60,8 +70,7 @@ namespace MapToolkit
         {
             if (other != null)
             {
-                return other.Latitude == Latitude 
-                    && other.Longitude == Longitude;
+                return other.vector == vector;
             }
             return false;
         }
@@ -73,7 +82,7 @@ namespace MapToolkit
 
         public override int GetHashCode()
         {
-            return Latitude.GetHashCode() ^ Longitude.GetHashCode();
+            return vector.GetHashCode();
         }
 
         public override string ToString()
@@ -88,9 +97,7 @@ namespace MapToolkit
 
         internal double DistanceSquared(Coordinates coordinates)
         {
-            var dy = Latitude - coordinates.Latitude;
-            var dx = Longitude - coordinates.Longitude;
-            return (dx * dx) + (dy * dy);
+            return (coordinates.vector - vector).LengthSquared();
         }
 
         internal const double DefaultThreshold = 0.000_005; // Less than 1m at equator
@@ -101,7 +108,7 @@ namespace MapToolkit
         {
             if (other != null)
             {
-                if (other.Latitude == Latitude && other.Longitude == Longitude)
+                if (other.vector == vector)
                 {
                     return true;
                 }
@@ -115,27 +122,27 @@ namespace MapToolkit
 
         public bool IsInSquare(Coordinates start, Coordinates end)
         {
-            return start.Latitude <= Latitude && Latitude <= end.Latitude &&
-                   start.Longitude <= Longitude && Longitude <= end.Longitude;
+            return vector.IsInRange(start.vector, end.vector);
         }
 
         public IntPoint ToIntPoint(double scaleForClipper = ScaleForClipper)
         {
-            return new IntPoint(Longitude * scaleForClipper, Latitude * scaleForClipper);
+            return new IntPoint(vector.X * scaleForClipper, vector.Y * scaleForClipper);
         }
 
         public static Coordinates operator+ (Coordinates c, Vector v)
         {
-            return new Coordinates(c.Latitude + v.DeltaLat, c.Longitude + v.DeltaLon);
+            return new Coordinates(c.vector + v.Vector2D);
         }
 
         public static Coordinates operator -(Coordinates c, Vector v)
         {
-            return new Coordinates(c.Latitude - v.DeltaLat, c.Longitude - v.DeltaLon);
+            return new Coordinates(c.vector - v.Vector2D);
         }
+
         public static Vector operator -(Coordinates a, Coordinates b)
         {
-            return Vector.FromLatLonDelta(a.Latitude - b.Latitude, a.Longitude - b.Longitude);
+            return new Vector(a.vector - b.vector);
         }
 
         public Coordinates Round(int digits)

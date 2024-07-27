@@ -1,5 +1,6 @@
 ﻿using System;
 using GeoJSON.Text.Geometry;
+using Pmad.Geometry;
 
 namespace MapToolkit.Projections
 {
@@ -28,6 +29,13 @@ namespace MapToolkit.Projections
             return new Vector(
                 (point.Longitude - minLon) / lonFactor,
                 (maxLat - point.Latitude) / latFactor);
+        }
+
+        public Vector Project(Vector2D point)
+        {
+            return new Vector(
+                (point.Longitude() - minLon) / lonFactor,
+                (maxLat - point.Latitude()) / latFactor);
         }
     }
 }

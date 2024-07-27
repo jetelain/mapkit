@@ -1,5 +1,7 @@
 ﻿using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
+using Pmad.Geometry.Shapes;
+using Pmad.Geometry;
 
 namespace MapToolkit.Drawing.Topographic
 {
@@ -7,17 +9,17 @@ namespace MapToolkit.Drawing.Topographic
     {
         public TopoMapMetadata Metadata { get; set; } = TopoMapMetadata.None;
 
-        public Dictionary<TopoMapPathType, MultiLineString>? Roads { get; set; }
+        public Dictionary<TopoMapPathType, MultiPath<double, Vector2D>>? Roads { get; set; }
 
-        public Dictionary<TopoMapPathType, MultiLineString>? Bridges { get; set; }
+        public Dictionary<TopoMapPathType, MultiPath<double, Vector2D>>? Bridges { get; set; }
 
-        public MultiPolygon? ForestPolygons { get; set; }
+        public MultiPolygon<double, Vector2D>? ForestPolygons { get; set; }
 
-        public MultiPolygon? RockPolygons { get; set; }
+        public MultiPolygon<double, Vector2D>? RockPolygons { get; set; }
 
-        public MultiPolygon? BuildingPolygons { get; set; }
+        public MultiPolygon<double, Vector2D>? BuildingPolygons { get; set; }
 
-        public MultiPolygon? WaterPolygons { get; set; }
+        public MultiPolygon<double, Vector2D>? WaterPolygons { get; set; }
 
         public required IDemDataView DemDataCell { get; set; }
 
@@ -27,10 +29,10 @@ namespace MapToolkit.Drawing.Topographic
 
         public List<TopoIcon>? Icons { get; set; }
 
-        public MultiLineString? Powerlines { get; set; }
+        public MultiPath<double, Vector2D>? Powerlines { get; set; }
 
-        public MultiLineString? Railways { get; set; }
+        public MultiPath<double, Vector2D>? Railways { get; set; }
 
-        public MultiPolygon? FortPolygons { get; internal set; }
+        public MultiPolygon<double, Vector2D>? FortPolygons { get; internal set; }
     }
 }

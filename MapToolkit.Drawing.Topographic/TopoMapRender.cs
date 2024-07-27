@@ -1,7 +1,11 @@
 ﻿using System.Globalization;
+using System.Numerics;
 using GeoJSON.Text.Geometry;
 using MapToolkit.Drawing.Contours;
 using MapToolkit.Projections;
+using Pmad.Geometry;
+using Pmad.Geometry.Algorithms;
+using Pmad.Geometry.Shapes;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.Topographic
@@ -136,16 +140,16 @@ namespace MapToolkit.Drawing.Topographic
 
             if (data.Powerlines != null && style.Powerline != null)
             {
-                foreach (var pl in data.Powerlines.Coordinates)
+                foreach (var pl in data.Powerlines)
                 {
-                    writer.DrawPolyline(pl.Coordinates.Select(p => proj.Project(p)), style.Powerline);
+                    writer.DrawPolyline(pl.Points.Select(proj.Project), style.Powerline);
                 }
             }
             if (data.Railways != null && style.Railway != null)
             {
-                foreach (var pl in data.Railways.Coordinates)
+                foreach (var pl in data.Railways)
                 {
-                    DrawRailway(writer, style.Railway, pl.Coordinates.Select(p => proj.Project(p)));
+                    DrawRailway(writer, style.Railway, pl.Points.Select(proj.Project));
                 }
             }
             if (renderData.PlottedPoints != null && style.plotted != null && style.plottedCircle != null)
@@ -171,15 +175,17 @@ namespace MapToolkit.Drawing.Topographic
         internal static void DrawRailway(IDrawSurface writer, IDrawStyle railway, IEnumerable<Vector> points)
         {
             writer.DrawPolyline(points, railway);
-            var x = new FollowPath(points);
+            var x = new PathFollower<double,Vector2D>(points.Select(p => p.Vector2D));
 
             if (x.Move(5))
             {
-                writer.DrawPolyline([x.Current + (x.Vector90 * 2.5), x.Current + (x.VectorM90 * 2.5)], railway);
+                var normal = Vector2D.Normalize(x.Delta);
+                writer.DrawPolyline([new(x.Current + (normal.Rotate90() * 2.5)), new(x.Current + (normal.RotateM90() * 2.5))], railway);
 
                 while (x.Move(75) && !x.IsLast)
                 {
-                    writer.DrawPolyline([x.Current + (x.Vector90 * 2.5), x.Current + (x.VectorM90 * 2.5)], railway);
+                    normal = Vector2D.Normalize(x.Delta);
+                    writer.DrawPolyline([new (x.Current + (normal.Rotate90() * 2.5)), new(x.Current + (normal.RotateM90() * 2.5))], railway);
                 }
             }
         }
@@ -258,16 +264,16 @@ namespace MapToolkit.Drawing.Topographic
             }
         }
 
-        private void RenderRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, IDrawStyle?[] foreground, IDrawStyle?[] background)
+        private void RenderRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiPath<double,Vector2D>> data, IDrawStyle?[] foreground, IDrawStyle?[] background)
         {
             foreach (var roads in data)
             {
                 var style = background[(int)roads.Key];
                 if (style != null)
                 {
-                    foreach (var road in roads.Value.Coordinates)
+                    foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Coordinates.Select(p => proj.Project(p)), style);
+                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
                     }
                 }
             }
@@ -276,27 +282,27 @@ namespace MapToolkit.Drawing.Topographic
                 var style = foreground[(int)roads.Key];
                 if (style != null)
                 {
-                    foreach (var road in roads.Value.Coordinates)
+                    foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Coordinates.Select(p => proj.Project(p)), style);
+                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
                     }
                 }
             }
         }
 
-        private void RenderBridgesRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiLineString> data, NoProjectionArea proj, IDrawStyle?[] foreground, IDrawStyle?[] background, IDrawStyle limitLine)
+        private void RenderBridgesRoads(IDrawSurface writer, Dictionary<TopoMapPathType, MultiPath<double,Vector2D>> data, NoProjectionArea proj, IDrawStyle?[] foreground, IDrawStyle?[] background, IDrawStyle limitLine)
         {
             foreach (var roads in data)
             {
                 var style = background[(int)roads.Key];
                 if (style != null)
                 {
-                    foreach (var road in roads.Value.Coordinates)
+                    foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Coordinates.Select(p => proj.Project(p)), style);
+                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
 
-                        BridgeLimit(writer, proj.Project(road.Coordinates[0]), proj.Project(road.Coordinates[1]), limitLine);
-                        BridgeLimit(writer, proj.Project(road.Coordinates[road.Coordinates.Count - 1]), proj.Project(road.Coordinates[road.Coordinates.Count - 2]), limitLine);
+                        BridgeLimit(writer, proj.Project(road.Points[0]), proj.Project(road.Points[1]), limitLine);
+                        BridgeLimit(writer, proj.Project(road.Points[road.Points.Count - 1]), proj.Project(road.Points[road.Points.Count - 2]), limitLine);
                     }
                 }
             }
@@ -305,9 +311,9 @@ namespace MapToolkit.Drawing.Topographic
                 var style = foreground[(int)roads.Key];
                 if (style != null)
                 {
-                    foreach (var road in roads.Value.Coordinates)
+                    foreach (var road in roads.Value)
                     {
-                        writer.DrawPolyline(road.Coordinates.Select(p => proj.Project(p)), style);
+                        writer.DrawPolyline(road.Points.Select(proj.Project), style);
                     }
                 }
             }
@@ -324,28 +330,28 @@ namespace MapToolkit.Drawing.Topographic
             writer.DrawPolyline(new[] { begin + new Vector(d4), begin + new Vector(x2 + d4) }, limitLine);
         }
 
-        private void DrawPolygons(IDrawSurface writer, MultiPolygon surface, IDrawStyle styleToUse)
+        private void DrawPolygons(IDrawSurface writer, MultiPolygon<double, Vector2D> surface, IDrawStyle styleToUse)
         {
-            foreach (var poly in surface.Coordinates)
+            foreach (var poly in surface)
             {
                 writer.DrawPolygon(
-                    poly.Coordinates[0].Coordinates.Cast<Coordinates>().Select(proj.Project),
-                    poly.Coordinates.Skip(1).Select(l => l.Coordinates.Cast<Coordinates>().Select(proj.Project)),
+                    poly.Shell.Select(proj.Project),
+                    poly.Holes.Select(l => l.Select(proj.Project)),
                     styleToUse);
             }
         }
 
-        internal static void DrawPolygonsSimplified(IDrawSurface writer, NoProjectionArea proj, MultiPolygon surface, IDrawStyle styleToUse)
+        internal static void DrawPolygonsSimplified(IDrawSurface writer, NoProjectionArea proj, MultiPolygon<double,Vector2D> surface, IDrawStyle styleToUse)
         {
-            foreach (var poly in surface.Coordinates)
+            foreach (var poly in surface)
             {
-                var contour = LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Coordinates[0].Coordinates.Cast<Coordinates>().Select(proj.Project), 1);
+                var contour = LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Shell.Select(proj.Project), 1);
 
                 if (contour.Count > 0)
                 {
                     writer.DrawPolygon(
                         contour,
-                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Coordinates.Skip(1).Select(l => l.Coordinates.Cast<Coordinates>().Select(proj.Project)), 1) ?? Enumerable.Empty<IEnumerable<Vector>>(),
+                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Holes.Select(l => l.Select(proj.Project)), 1) ?? Enumerable.Empty<IEnumerable<Vector>>(),
                         styleToUse);
                 }
             }

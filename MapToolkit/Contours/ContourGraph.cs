@@ -5,6 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
+using Pmad.Geometry;
+using Pmad.Geometry.Collections;
+using Pmad.Geometry.Shapes;
 
 namespace MapToolkit.Contours
 {
@@ -27,21 +30,24 @@ namespace MapToolkit.Contours
 
         private readonly LinesByElevation linesByLevel = new LinesByElevation();
 
-        private readonly List<(Coordinates Start, Coordinates End)> squares = new ();
+        private readonly List<VectorEnvelope<Vector2D>> squares = new ();
 
         public int Count => linesByLevel.Values.Sum(l => l.Count);
 
         public IEnumerable<ContourLine> Lines => linesByLevel.Values.SelectMany(l => l);
 
+        private readonly ShapeSettings<double,Vector2D> shapeSettings;
+
         public ContourGraph()
-            : this(Coordinates.DefaultThresholdSquared)
+            : this(Coordinates.LatLonSettings)
         {
 
         }
 
-        public ContourGraph(double thresholdSquared = Coordinates.DefaultThresholdSquared)
+        public ContourGraph(ShapeSettings<double, Vector2D> shapeSettings)
         {
-            this.thresholdSquared = thresholdSquared;
+            this.thresholdSquared = shapeSettings.NegligibleDistanceSquared;
+            this.shapeSettings = shapeSettings;
         }
 
         private LinesByElevation AddSegments(IEnumerable<ContourSegment> segments, LinesByElevation prevScan)
@@ -148,7 +154,7 @@ namespace MapToolkit.Contours
 
         public void Add(IDemDataView cell, IContourLevelGenerator generator, bool closeLines = false, IProgress<double>? progress = null)
         {
-            squares.Add(new(cell.Start, cell.End));
+            squares.Add(new(cell.Start.Vector2D, cell.End.Vector2D));
 
             var prevScan = new LinesByElevation();
             var segments = new List<ContourSegment>();
@@ -249,44 +255,41 @@ namespace MapToolkit.Contours
         }
 #endif
 
-        public IEnumerable<Polygon> ToPolygons(IProgress<double>? progress = null)
+        public IEnumerable<Polygon<double, Vector2D>> ToPolygons(IProgress<double>? progress = null)
         {
             return linesByLevel.SelectMany(l => ToPolygons(l.Value, progress)).ToList();
         }
 
-        private IEnumerable<Polygon> ToPolygons(List<ContourLine> value, IProgress<double>? progress)
+        private IEnumerable<Polygon<double, Vector2D>> ToPolygons(List<ContourLine> value, IProgress<double>? progress)
         {
             var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
             var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
             return ToPoylgons(progress, outer, inner);
         }
 
-        public IEnumerable<Polygon> ToPolygonsReverse(IProgress<double>? progress = null)
+        public IEnumerable<Polygon<double, Vector2D>> ToPolygonsReverse(IProgress<double>? progress = null)
         {
             return linesByLevel.SelectMany(l => ToPolygonsReverse(l.Value, progress)).ToList();
         }
 
-        private IEnumerable<Polygon> ToPolygonsReverse(List<ContourLine> value, IProgress<double>? progress)
+        private IEnumerable<Polygon<double, Vector2D>> ToPolygonsReverse(List<ContourLine> value, IProgress<double>? progress)
         {
             var outer = value.Where(c => c.IsClosed && c.Points.Count > 3 && !c.IsCounterClockWise).ToList();
             var inner = value.Where(c => c.IsClosed && c.Points.Count > 3 && c.IsCounterClockWise).ToList();
             return ToPoylgons(progress, outer, inner);
         }
 
-        private IEnumerable<Polygon> ToPoylgons(IProgress<double>? progress, List<ContourLine> outer, List<ContourLine> inner)
+        private IEnumerable<Polygon<double, Vector2D>> ToPoylgons(IProgress<double>? progress, List<ContourLine> outer, List<ContourLine> inner)
         {
-            var poly = new List<Polygon>();
+            var poly = new List<Polygon<double,Vector2D>>();
             var i = 0;
             foreach (var o in outer)
             {
                 var min = new Coordinates(o.Points.Min(o => o.Latitude), o.Points.Min(o => o.Longitude));
                 var max = new Coordinates(o.Points.Max(o => o.Latitude), o.Points.Max(o => o.Longitude));
-                var l = new List<LineString>();
                 var holes = NonOverlaping(inner.Where(i => i.Points[0].IsInSquare(min, max) && o.Points.IsPointInsideOrOnBoundary(i.Points[0])).ToList());
-                l.Add(ToLineString2(o));
-                l.AddRange(holes.Select(ToLineString2));
                 inner.RemoveAll(holes.Contains);
-                poly.Add(new Polygon(l));
+                poly.Add(new Polygon<double, Vector2D>(shapeSettings, ToLineString2(o), holes.Select(ToLineString2).ToReadOnlyArray()));
                 i++;
                 if (i % 100 == 0)
                 {
@@ -298,8 +301,8 @@ namespace MapToolkit.Contours
                 if (squares.Count == 1) // Trivial case
                 {
                     var square = squares[0];
-                    var all = new Polygon([new LineString([square.Start, new Coordinates(square.Start.Latitude, square.End.Longitude), square.End, new Coordinates(square.End.Latitude, square.Start.Longitude), square.Start])]);
-                    foreach(var result in all.Substract(NonOverlaping(inner).Select(l => new Polygon([ToLineString2(l)]))))
+                    var all = shapeSettings.CreateRectangle(square);
+                    foreach (var result in all.SubstractAll(NonOverlaping(inner).Select(l => new Polygon<double, Vector2D>(shapeSettings, ToLineString2(l)))))
                     {
                         poly.Add(result);
                     }
@@ -322,9 +325,9 @@ namespace MapToolkit.Contours
             return holes.Where(h1 => !holes.Any(h2 => h2 != h1 && h1.Points.IsPointInside(h2.Points[0]))).ToList();
         }
 
-        private static LineString ToLineString2(ContourLine o)
+        private static ReadOnlyArray<Vector2D> ToLineString2(ContourLine o)
         {
-            return new LineString(o.Points.Take(o.Points.Count - 1).Concat(o.Points.Take(1)));
+            return o.Points.Take(o.Points.Count - 1).Select(p => p.Vector2D).Concat(o.Points.Take(1).Select(p => p.Vector2D)).ToReadOnlyArray();
         }
 
         private void CloseLines(IEnumerable<ContourLine> value, Coordinates edgeSW, Coordinates edgeNE)

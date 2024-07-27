@@ -177,13 +177,13 @@ namespace MapToolkit.Drawing.Topographic
                 TopoMapRender.DrawPolygonsSimplified(w, projection, data.WaterPolygons, w.AllocateBrushStyle("B3D9FE"));
             }
 
-            var mains = data.Roads?[TopoMapPathType.Main]?.Coordinates;
+            var mains = data.Roads?[TopoMapPathType.Main];
             if (mains != null)
             {
                 var mr = w.AllocatePenStyle("FE002C", 2);
                 foreach (var road in mains)
                 {
-                    var simpler = LevelOfDetailHelper.SimplifyAnglesAndDistances(road.Coordinates.Select(projection.Project).ToList(), 1);
+                    var simpler = LevelOfDetailHelper.SimplifyAnglesAndDistances(road.Points.Select(projection.Project).ToList(), 1);
                     if (simpler.Count > 0)
                     {
                         w.DrawPolyline(simpler, mr);
