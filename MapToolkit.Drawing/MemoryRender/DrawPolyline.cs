@@ -52,7 +52,10 @@ namespace MapToolkit.Drawing.MemoryRender
                 var result = Clipper2Lib.Clipper.RectClipLines(context.Clip, subject);
                 foreach (var line in result)
                 {
-                    context.Target.DrawPolyline(line.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                    if (line.Count > 1)
+                    {
+                        context.Target.DrawPolyline(line.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                    }
                 }
             }
         }

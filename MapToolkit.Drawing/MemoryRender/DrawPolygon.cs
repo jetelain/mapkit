@@ -63,7 +63,7 @@ namespace MapToolkit.Drawing.MemoryRender
                 if (result.Count > 0)
                 {
                     context.Target.DrawPolygon(
-                        result.Select(c => c.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))).ToArray()),
+                        result.Where(p => p.Count > 2).Select(c => c.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))).ToArray()),
                         context.MapStyle(Style));
                 }
             }
