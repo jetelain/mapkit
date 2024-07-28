@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ClipperLib;
+using Clipper2Lib;
+//using ClipperLib;
 
 namespace MapToolkit.Drawing.MemoryRender
 {
@@ -36,14 +37,22 @@ namespace MapToolkit.Drawing.MemoryRender
             }
             else
             {
-                var clipper = new Clipper();
-                clipper.AddPath(Points.Select(p => new IntPoint(p.X * 100, p.Y * 100)).ToList(), PolyType.ptSubject, false);
-                clipper.AddPath(context.Clip, PolyType.ptClip, true);
-                var result = new PolyTree();
-                clipper.Execute(ClipType.ctIntersection, result);
-                foreach(var c in result.Childs)
+                //var clipper = new Clipper();
+                //clipper.AddPath(Points.Select(p => new IntPoint(p.X * 100, p.Y * 100)).ToList(), PolyType.ptSubject, false);
+                //clipper.AddPath(context.Clip, PolyType.ptClip, true);
+                //var result = new PolyTree();
+                //clipper.Execute(ClipType.ctIntersection, result);
+                //foreach (var c in result.Childs)
+                //{
+                //    context.Target.DrawPolyline(c.Contour.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                //}
+
+                var subject = new Paths64(1);
+                subject.Add(new Path64(Points.Select(p => new Point64(p.X * 100, p.Y * 100))));
+                var result = Clipper2Lib.Clipper.RectClipLines(context.Clip, subject);
+                foreach (var line in result)
                 {
-                    context.Target.DrawPolyline(c.Contour.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                    context.Target.DrawPolyline(line.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
                 }
             }
         }

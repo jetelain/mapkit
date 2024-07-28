@@ -105,9 +105,9 @@ namespace MapToolkit.Drawing.Topographic
             target.DrawPolygon(
                 [new(12 * .8, 10 * .8), new(20 * .8, 10 * .8), new(22 * .8, 30 * .8), new(17.5 * .8, 30 * .8), new(17.5 * .8, 25 * .8), new(14.5 * .8, 25 * .8), new(14.5 * .8, 30 * .8), new(10 * .8, 30 * .8), new(12 * .8, 10 * .8)],
                 [[new(14.5 * .8, 13 * .8), new(14.5 * .8, 17 * .8), new(17.5 * .8, 17 * .8), new(17.5 * .8, 13 * .8), new(14.5 * .8, 13 * .8)]], style);
-            target.DrawPolygon([new(14 * .8, 8 * .8), new(6 * .8, 5 * .8), new(6 * .8, 10 * .8), new(14 * .8, 8 * .8)], style);
-            target.DrawPolygon([new(18 * .8, 8 * .8), new(26 * .8, 5 * .8), new(26 * .8, 10 * .8), new(18 * .8, 8 * .8)], style);
-            target.DrawPolygon([new(16 * .8, 1 * .8), new(21 * .8, 6 * .8), new(11 * .8, 6 * .8), new(16 * .8, 1 * .8)], style);
+            target.DrawPolygon([[new(14 * .8, 8 * .8), new(6 * .8, 5 * .8), new(6 * .8, 10 * .8), new(14 * .8, 8 * .8)]], style);
+            target.DrawPolygon([[new(18 * .8, 8 * .8), new(26 * .8, 5 * .8), new(26 * .8, 10 * .8), new(18 * .8, 8 * .8)]], style);
+            target.DrawPolygon([[new(16 * .8, 1 * .8), new(21 * .8, 6 * .8), new(11 * .8, 6 * .8), new(16 * .8, 1 * .8)]], style);
         }
 
         public static IDrawIcon Church(IDrawSurface w)

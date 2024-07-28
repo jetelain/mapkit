@@ -49,19 +49,14 @@ namespace MapToolkit.Drawing
             drawSurface.DrawImage(image, Translate(pos), size, alpha);
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
-            drawSurface.DrawPolygon(contour.Select(Translate), style);
-        }
-
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
-        {
-            drawSurface.DrawPolygon(contour.Select(Translate), holes.Select(h => h.Select(Translate)), style);
+            drawSurface.DrawPolygon(paths.Select(h => h.Select(Translate).ToArray()), style);
         }
 
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
         {
-            drawSurface.DrawPolygon(points.Select(Translate), style);
+            drawSurface.DrawPolyline(points.Select(Translate), style);
         }
 
         public void DrawText(Vector point, string text, IDrawTextStyle style)

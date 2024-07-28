@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pmad.Geometry.Collections;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -22,9 +23,7 @@ namespace MapToolkit.Drawing
 
         IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw);
 
-        void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style);
-
-        void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style);
+        void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style);
 
         void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style);
 

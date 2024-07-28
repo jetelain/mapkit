@@ -112,19 +112,15 @@ namespace MapToolkit.Drawing
             return new List<Vector>();
         }
 
-        public static IEnumerable<IEnumerable<Vector>>? SimplifyAnglesAndDistancesClosed(IEnumerable<IEnumerable<Vector>>? enumerable, double lengthSquared)
+        public static List<Vector[]> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector[]> enumerable, double lengthSquared)
         {
-            if(enumerable == null)
-            {
-                return null;
-            }
-            var result = new List<IEnumerable<Vector>>();
+            var result = new List<Vector[]>();
             foreach(var item in enumerable)
             {
                 var simplified = SimplifyAnglesAndDistances(item.ToList(), lengthSquared);
                 if (simplified.Count > 3)
                 {
-                    result.Add(simplified);
+                    result.Add(simplified.ToArray());
                 }
             }
             return result;

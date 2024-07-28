@@ -293,12 +293,11 @@ namespace MapToolkit.Drawing.SvgRender
             return sharedStringBuilder.ToString();
         }
 
-        private string GeneratePathWithHoles(IEnumerable<Vector> points, IEnumerable<IEnumerable<Vector>> holes)
+        private string GeneratePathWithHoles(IEnumerable<Vector[]> paths)
         {
             sharedStringBuilder.Clear();
             KeepSharedStringBuilderLightweight();
-            AppendPath(points, true);
-            foreach(var hole in holes)
+            foreach(var hole in paths)
             {
                 AppendPath(hole, true);
             }
@@ -395,13 +394,13 @@ namespace MapToolkit.Drawing.SvgRender
             writer.Dispose();
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
             FlushStyles();
 
             writer.WriteStartElement("path", SvgXmlns);
             writer.WriteAttributeString("class", ((SvgStyle)style).Name);
-            writer.WriteAttributeString("d", GeneratePathWithHoles(contour, holes));
+            writer.WriteAttributeString("d", GeneratePathWithHoles(paths));
             writer.WriteEndElement();
         }
 

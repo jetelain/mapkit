@@ -27,13 +27,26 @@ namespace MapToolkit.Drawing
 
         public static void DrawRectangle(this IDrawSurface surface, Vector topLeft, Vector bottomRight, IDrawStyle style)
         {
-            surface.DrawPolygon(new[] {
+            surface.DrawPolygon([new Vector[] {
                     topLeft,
                     new Vector(bottomRight.X, topLeft.Y),
                     bottomRight,
                     new Vector(topLeft.X, bottomRight.Y),
                     topLeft
-                }, style);
+                }], style);
+        }
+
+        public static void DrawPolygon(this IDrawSurface surface, Vector[] contour, IDrawStyle style)
+        {
+            surface.DrawPolygon([contour], style);
+        }
+
+        public static void DrawPolygon(this IDrawSurface surface, Vector[] contour, IEnumerable<Vector[]> holes, IDrawStyle style)
+        {
+            var paths = new List<Vector[]>();
+            paths.Add(contour);
+            paths.AddRange(holes);
+            surface.DrawPolygon(paths, style);
         }
 
 

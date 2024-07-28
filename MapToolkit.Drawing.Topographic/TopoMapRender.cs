@@ -351,8 +351,8 @@ namespace MapToolkit.Drawing.Topographic
                 if (contour.Count > 0)
                 {
                     writer.DrawPolygon(
-                        contour,
-                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Holes.Select(l => proj.Project(l.AsSpan<Vector2D, CoordinatesS>())), 1) ?? Enumerable.Empty<IEnumerable<Vector>>(),
+                        contour.ToArray(),
+                        LevelOfDetailHelper.SimplifyAnglesAndDistancesClosed(poly.Holes.Select(l => proj.Project(l.AsSpan<Vector2D, CoordinatesS>()).ToArray()), 1),
                         styleToUse);
                 }
             }

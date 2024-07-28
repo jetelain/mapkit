@@ -9,6 +9,8 @@ namespace MapToolkit.Drawing.MemoryRender
 {
     internal class MemorySurface : IDrawSurface
     {
+        private static readonly List<List<Vector>> NoHoles = new List<List<Vector>>();
+
         internal List<IDrawOperation> Operations { get; } = new List<IDrawOperation>();
 
         internal List<MemDrawStyle> Styles { get; }
@@ -69,14 +71,9 @@ namespace MapToolkit.Drawing.MemoryRender
             Operations.Add(new DrawImage(image, pos, size, alpha));
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
-            Operations.Add(new DrawPolygon(contour.ToList(), null, (MemDrawStyle)style));
-        }
-
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
-        {
-            Operations.Add(new DrawPolygon(contour.ToList(), holes.Select(h => h.ToList()).ToList(), (MemDrawStyle)style));
+            Operations.Add(new DrawPolygon(paths.ToList(),(MemDrawStyle)style));
         }
 
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
