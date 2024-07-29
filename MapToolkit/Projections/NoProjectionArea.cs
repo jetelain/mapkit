@@ -33,13 +33,6 @@ namespace MapToolkit.Projections
             //    (maxLat - point.Latitude) / latFactor);
         }
 
-        public Vector Project(Vector2D point)
-        {
-            return new Vector(
-                (point.Longitude() - minLon) / lonFactor,
-                (maxLat - point.Latitude()) / latFactor);
-        }
-
         public Vector[] Project(ReadOnlySpan<CoordinatesS> coordinates)
         {
             var result = new Vector[coordinates.Length];

@@ -302,8 +302,8 @@ namespace MapToolkit.Drawing.Topographic
                     {
                         writer.DrawPolyline(proj.Project(road.Points.AsSpan<Vector2D, CoordinatesS>()), style);
 
-                        BridgeLimit(writer, proj.Project(road.Points[0]), proj.Project(road.Points[1]), limitLine);
-                        BridgeLimit(writer, proj.Project(road.Points[road.Points.Count - 1]), proj.Project(road.Points[road.Points.Count - 2]), limitLine);
+                        BridgeLimit(writer, proj.Project(new CoordinatesS(road.Points[0])), proj.Project(new CoordinatesS(road.Points[1])), limitLine);
+                        BridgeLimit(writer, proj.Project(new CoordinatesS(road.Points[road.Points.Count - 1])), proj.Project(new CoordinatesS(road.Points[road.Points.Count - 2])), limitLine);
                     }
                 }
             }

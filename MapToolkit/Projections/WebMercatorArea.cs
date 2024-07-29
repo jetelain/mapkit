@@ -1,6 +1,4 @@
 ﻿using System;
-using GeoJSON.Text.Geometry;
-using Pmad.Geometry;
 
 namespace MapToolkit.Projections
 {
@@ -37,17 +35,6 @@ namespace MapToolkit.Projections
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;
             var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
-            if (rounding != -1)
-            {
-                return new Vector(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
-            }
-            return new Vector(x - dX, y - dY);
-        }
-
-        public Vector Project(Vector2D point)
-        {
-            var y = halfFullSize * (point.Longitude() + 180) / 180;
-            var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude() + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
             if (rounding != -1)
             {
                 return new Vector(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
