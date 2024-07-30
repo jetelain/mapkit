@@ -61,11 +61,11 @@ namespace MapToolkit
             return new Coordinates(new Vector2D(lon, lat));
         }
 
-
         public double Latitude => vector.Y;
 
         public double Longitude => vector.X;
 
+        [JsonIgnore]
         public Vector2D Vector2D => vector;
 
         [JsonIgnore]
