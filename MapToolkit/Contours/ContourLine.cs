@@ -28,7 +28,7 @@ namespace MapToolkit.Contours
         {
             this.points.AddRange(points);
             Level = level;
-            UpdateIsClosed(Coordinates.DefaultThresholdSquared);
+            UpdateIsClosed(Coordinates.LatLonSettings.NegligibleDistanceSquared);
         }
 
         /// <summary>
