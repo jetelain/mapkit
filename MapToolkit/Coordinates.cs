@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json.Serialization;
-using ClipperLib;
 using GeoJSON.Text.Geometry;
 using Pmad.Geometry;
 using Pmad.Geometry.Shapes;
@@ -16,8 +15,6 @@ namespace MapToolkit
 
         public static ShapeSettings<double, Vector2D> LatLonSettings = new ShapeSettings<double, Vector2D>(2_000_000, 4);
         public static ShapeSettings<double, Vector2D> EastingNorthingSettings = new ShapeSettings<double, Vector2D>(1_000, 4);
-
-        internal const double ScaleForClipper = 2_000_000d;
 
         public static readonly Coordinates Zero = new Coordinates(0, 0);
 
@@ -35,15 +32,6 @@ namespace MapToolkit
         public Coordinates(CoordinatesS crd)
         {
             this.vector = crd.Vector2D;
-        }
-
-        public Coordinates(IntPoint point, int rounding = -1, double scaleForClipper = ScaleForClipper)
-        {
-            vector = new Vector2D(point.X, point.Y) / ScaleForClipper;
-            if (rounding > -1)
-            {
-                vector = new Vector2D(Math.Round(vector.X, rounding), Math.Round(vector.Y, rounding));
-            }
         }
 
         public static Coordinates FromXY(double x, double y)
@@ -105,34 +93,9 @@ namespace MapToolkit
             return (coordinates.vector - vector).LengthSquared();
         }
 
-        internal const double DefaultThreshold = 0.000_005; // Less than 1m at equator
-
-        internal const double DefaultThresholdSquared = DefaultThreshold * DefaultThreshold;
-
-        public bool AlmostEquals(Coordinates? other, double thresholdSqared = DefaultThresholdSquared)
-        {
-            if (other != null)
-            {
-                if (other.vector == vector)
-                {
-                    return true;
-                }
-                if (DistanceSquared(other) <= thresholdSqared)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public bool IsInSquare(Coordinates start, Coordinates end)
         {
             return vector.IsInRange(start.vector, end.vector);
-        }
-
-        public IntPoint ToIntPoint(double scaleForClipper = ScaleForClipper)
-        {
-            return new IntPoint(vector.X * scaleForClipper, vector.Y * scaleForClipper);
         }
 
         public static Coordinates operator+ (Coordinates c, Vector v)
