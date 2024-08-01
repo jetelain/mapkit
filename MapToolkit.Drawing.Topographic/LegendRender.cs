@@ -86,19 +86,21 @@ namespace MapToolkit.Drawing.Topographic
             w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower));
             w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter));
             
-            w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Pylon, Powerline", normalTextLeft);
+            w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Church", normalTextLeft);
             w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital));
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.ElectricityPylon));
-            if (style.Powerline != null)
-            {
-                w.DrawPolyline([new Vector(LegendContentP5, 980), new Vector(LegendContentP6, 980)], style.Powerline);
-            }
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.Church));
 
+            w.DrawText(new Vector(LegendContentStart, 1040), "Railway, Pylon, Powerline", normalTextLeft);
             if (style.Railway != null)
             {
-                w.DrawText(new Vector(LegendContentStart, 1040), "Railway", normalTextLeft);
                 TopoMapRender.DrawRailway(w, style.Railway, [new Vector(LegendContentP1, 1040), new Vector(LegendContentP2, 1040)]);
             }
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 1040), style.GetIcon(TopoIconType.ElectricityPylon));
+            if (style.Powerline != null)
+            {
+                w.DrawPolyline([new Vector(LegendContentP5, 1040), new Vector(LegendContentP6, 1040)], style.Powerline);
+            }
+
 
             w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {data.Attribution}", smallText);
             w.DrawText(new Vector(LegendContentCenter, 1890), data.ExportCreator, smallText);
