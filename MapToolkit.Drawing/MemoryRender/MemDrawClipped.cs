@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Clipper2Lib;
-using ClipperLib;
+﻿using Pmad.Geometry.Clipper2Lib;
 
 namespace MapToolkit.Drawing.MemoryRender
 {
@@ -20,14 +18,11 @@ namespace MapToolkit.Drawing.MemoryRender
             Clip = new Rect64(
                     (long)(ClipMin.X * 100) - 200, (long)(ClipMin.Y * 100) - 200,
                     (long)(ClipMax.X * 100) + 200, (long)(ClipMax.Y * 100) + 200);
-
         }
 
         public Vector ClipMax { get; }
 
         public Rect64 Clip { get; }
-
-        //public List<IntPoint> Clip { get; }
 
         public Vector ClipMin { get; }
 

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Clipper2Lib;
-//using ClipperLib;
+﻿using Pmad.Geometry;
+using Pmad.Geometry.Clipper2Lib;
 
 namespace MapToolkit.Drawing.MemoryRender
 {
@@ -59,7 +57,7 @@ namespace MapToolkit.Drawing.MemoryRender
 
                 var subject = new Paths64(Paths.Count);
                 subject.AddRange(Paths.Select(h => new Path64(h.Select(p => new Point64(p.X * 100, p.Y * 100)))));
-                var result = Clipper2Lib.Clipper.RectClip(context.Clip, subject);
+                var result = Clipper.RectClip(context.Clip, subject);
                 if (result.Count > 0)
                 {
                     context.Target.DrawPolygon(

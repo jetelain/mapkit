@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Clipper2Lib;
-//using ClipperLib;
+﻿using Pmad.Geometry.Clipper2Lib;
 
 namespace MapToolkit.Drawing.MemoryRender
 {
@@ -49,7 +46,7 @@ namespace MapToolkit.Drawing.MemoryRender
 
                 var subject = new Paths64(1);
                 subject.Add(new Path64(Points.Select(p => new Point64(p.X * 100, p.Y * 100))));
-                var result = Clipper2Lib.Clipper.RectClipLines(context.Clip, subject);
+                var result = Clipper.RectClipLines(context.Clip, subject);
                 foreach (var line in result)
                 {
                     if (line.Count > 1)

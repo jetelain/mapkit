@@ -9,8 +9,6 @@ namespace MapToolkit.Drawing.MemoryRender
 {
     internal class MemorySurface : IDrawSurface
     {
-        private static readonly List<List<Vector>> NoHoles = new List<List<Vector>>();
-
         internal List<IDrawOperation> Operations { get; } = new List<IDrawOperation>();
 
         internal List<MemDrawStyle> Styles { get; }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
 using Pmad.Geometry.Collections;
@@ -145,12 +143,12 @@ namespace MapToolkit.Contours
 
         public bool IsPointInside(CoordinatesS point)
         {
-            return points.AsSpan<CoordinatesS,Vector2D>().TestPointInPolygon(point.Vector2D) == Clipper2Lib.PointInPolygonResult.IsInside;
+            return points.AsSpan<CoordinatesS,Vector2D>().TestPointInPolygon(point.Vector2D) == Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsInside;
         }
 
         public bool IsPointInsideOrOnBoundary(CoordinatesS point)
         {
-            return points.AsSpan<CoordinatesS, Vector2D>().TestPointInPolygon(point.Vector2D) != Clipper2Lib.PointInPolygonResult.IsOutside;
+            return points.AsSpan<CoordinatesS, Vector2D>().TestPointInPolygon(point.Vector2D) != Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsOutside;
         }
     }
 }
