@@ -16,10 +16,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="BitMiracle.LibTiff.NET" Version="2.4.649" />
-		<PackageReference Include="GeoJSON.Text" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
-		<PackageReference Include="System.Text.Json" Version="6.0.5" />
-		<PackageReference Include="ZstdSharp.Port" Version="0.6.3" />
+		<PackageReference Include="GeoJSON.Text" Version="1.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+		<PackageReference Include="ZstdSharp.Port" Version="0.8.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 		<!--<PackageReference Include="Pmad.Geometry" Version="0.1.5-gba3893693c" />-->
 	</ItemGroup>
