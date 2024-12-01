@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
 using Pmad.Geometry.Collections;

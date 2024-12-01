@@ -21,10 +21,7 @@
 		<PackageReference Include="System.Text.Json" Version="8.0.5" />
 		<PackageReference Include="ZstdSharp.Port" Version="0.8.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
-		<!--<PackageReference Include="Pmad.Geometry" Version="0.1.5-gba3893693c" />-->
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\GeometryToolkit\src\Pmad.Geometry\Pmad.Geometry.csproj" />
+		<PackageReference Include="Pmad.Geometry" Version="0.1.46" />
 	</ItemGroup>
 
 </Project>

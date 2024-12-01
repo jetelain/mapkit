@@ -299,7 +299,7 @@ namespace MapToolkit.Contours
                 if (squares.Count == 1) // Trivial case
                 {
                     var square = squares[0];
-                    var all = shapeSettings.CreateRectangle(square);
+                    var all = shapeSettings.CreateRectanglePolygon(square);
                     foreach (var result in all.SubstractAll(NonOverlaping(inner).Select(l => new Polygon<double, Vector2D>(shapeSettings, ToLineString2(l)))))
                     {
                         poly.Add(result);
