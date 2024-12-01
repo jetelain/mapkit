@@ -82,20 +82,20 @@ namespace MapToolkit.Drawing.Topographic
             w.DrawRectangle(new Vector(LegendContentP5, 840), new Vector(LegendContentP6, 880), style.water);
 
             w.DrawText(new Vector(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
-            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.GetIcon(TopoIconType.WindPowerPlant));
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower));
-            w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter));
+            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.GetIcon(TopoIconType.WindPowerPlant)!);
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower)!);
+            w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter)!);
             
             w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Church", normalTextLeft);
-            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital));
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.Church));
+            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital)!);
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.Church)!);
 
             w.DrawText(new Vector(LegendContentStart, 1040), "Railway, Pylon, Powerline", normalTextLeft);
             if (style.Railway != null)
             {
                 TopoMapRender.DrawRailway(w, style.Railway, [new Vector(LegendContentP1, 1040), new Vector(LegendContentP2, 1040)]);
             }
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 1040), style.GetIcon(TopoIconType.ElectricityPylon));
+            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 1040), style.GetIcon(TopoIconType.ElectricityPylon)!);
             if (style.Powerline != null)
             {
                 w.DrawPolyline([new Vector(LegendContentP5, 1040), new Vector(LegendContentP6, 1040)], style.Powerline);
