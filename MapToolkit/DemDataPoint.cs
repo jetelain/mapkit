@@ -8,7 +8,7 @@ namespace MapToolkit
     [DebuggerDisplay("{Coordinates} => {Elevation}")]
     public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition
     {
-        private readonly CoordinatesS vector;
+        private readonly CoordinatesValue vector;
 
         public DemDataPoint(Coordinates coordinates, double elevation)
         {
@@ -16,7 +16,7 @@ namespace MapToolkit
             Elevation = elevation;
         }
 
-        public DemDataPoint(CoordinatesS vector, double elevation)
+        public DemDataPoint(CoordinatesValue vector, double elevation)
         {
             this.vector = vector;
             Elevation = elevation;
@@ -34,7 +34,7 @@ namespace MapToolkit
 
         public Vector2D Vector2D => vector.Vector2D;
 
-        public CoordinatesS CoordinatesS => vector;
+        public CoordinatesValue CoordinatesS => vector;
 
         public bool Equals(DemDataPoint? other)
         {

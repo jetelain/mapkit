@@ -65,9 +65,9 @@ namespace MapToolkit.Drawing.Topographic
             return length > 200 && length < 100_000;
         }
 
-        private static double LengthInMeters(ReadOnlyArrayBuilder<CoordinatesS> points)
+        private static double LengthInMeters(ReadOnlyArrayBuilder<CoordinatesValue> points)
         {
-            return points.AsSpan<CoordinatesS, Vector2D>().GetLengthD();
+            return points.AsSpan<CoordinatesValue, Vector2D>().GetLengthD();
 
             //return points.Take(points.Count - 1).Zip(points.Skip(1), (a, b) => MeterProjectedDistance.Instance.DistanceInMeters(a, b)).Sum();
         }

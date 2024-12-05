@@ -41,7 +41,7 @@ namespace MapToolkit.Contours
             rel = new BasicProgress(new RelativeProgress(progress, 50, 0.5), list.Where(l => l != null).Count());
             foreach (var line in list.Where(l => l != null).Cast<ContourLine>())
             {
-                var minMax = VectorEnvelope<Vector2D>.FromList(line.Points.AsSpan<CoordinatesS,Vector2D>());
+                var minMax = VectorEnvelope<Vector2D>.FromList(line.Points.AsSpan<CoordinatesValue,Vector2D>());
 
                 var sub = cell.CreateView(new Coordinates(minMax.Min), new Coordinates(minMax.Max));
 
@@ -59,7 +59,7 @@ namespace MapToolkit.Contours
                     var identitcal = matching.Where(m => m.Elevation == elevation);
                     var latitude = identitcal.Average(p => p.Latitude);
                     var longitude = identitcal.Average(p => p.Longitude);
-                    result.Add(new DemDataPoint(new CoordinatesS(latitude, longitude), elevation));
+                    result.Add(new DemDataPoint(new CoordinatesValue(latitude, longitude), elevation));
                 }
                 rel.AddOne();
             }

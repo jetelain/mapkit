@@ -8,7 +8,7 @@ namespace MapToolkit.Contours
 {
     public sealed class ContourLine
     {
-        private ReadOnlyArrayBuilder<CoordinatesS> points = new ReadOnlyArrayBuilder<CoordinatesS>();
+        private ReadOnlyArrayBuilder<CoordinatesValue> points = new ReadOnlyArrayBuilder<CoordinatesValue>();
 
         internal ContourLine(ContourSegment segment)
         {
@@ -23,7 +23,7 @@ namespace MapToolkit.Contours
             Level = segment.Level;
         }
 
-        public ContourLine(IEnumerable<CoordinatesS> points, double level)
+        public ContourLine(IEnumerable<CoordinatesValue> points, double level)
         {
             this.points.AddRange(points);
             Level = level;
@@ -38,13 +38,13 @@ namespace MapToolkit.Contours
         /// 
         /// Points are clockwise for basin.
         /// </remarks>
-        public ReadOnlyArrayBuilder<CoordinatesS> Points => points;
+        public ReadOnlyArrayBuilder<CoordinatesValue> Points => points;
 
         public double Level { get; }
 
-        public CoordinatesS First => points[0];
+        public CoordinatesValue First => points[0];
 
-        public CoordinatesS Last => points[points.Count-1];
+        public CoordinatesValue Last => points[points.Count-1];
 
         public bool IsClosed { get; private set; }
 
@@ -128,7 +128,7 @@ namespace MapToolkit.Contours
         private void Discard()
         {
             IsClosed = true;
-            points = new ReadOnlyArrayBuilder<CoordinatesS>();
+            points = new ReadOnlyArrayBuilder<CoordinatesValue>();
         }
 
         internal void UpdateIsClosed(double thresholdSqared)
@@ -139,17 +139,17 @@ namespace MapToolkit.Contours
             }
         }
 
-        public bool IsCounterClockWise => SignedArea<double, Vector2D>.GetSignedAreaD(points.AsSpan<CoordinatesS,Vector2D>()) > 0;
+        public bool IsCounterClockWise => SignedArea<double, Vector2D>.GetSignedAreaD(points.AsSpan<CoordinatesValue,Vector2D>()) > 0;
 
 
-        public bool IsPointInside(CoordinatesS point)
+        public bool IsPointInside(CoordinatesValue point)
         {
-            return points.AsSpan<CoordinatesS,Vector2D>().TestPointInPolygon(point.Vector2D) == Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsInside;
+            return points.AsSpan<CoordinatesValue,Vector2D>().TestPointInPolygon(point.Vector2D) == Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsInside;
         }
 
-        public bool IsPointInsideOrOnBoundary(CoordinatesS point)
+        public bool IsPointInsideOrOnBoundary(CoordinatesValue point)
         {
-            return points.AsSpan<CoordinatesS, Vector2D>().TestPointInPolygon(point.Vector2D) != Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsOutside;
+            return points.AsSpan<CoordinatesValue, Vector2D>().TestPointInPolygon(point.Vector2D) != Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsOutside;
         }
     }
 }

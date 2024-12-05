@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Pmad.Geometry;
 
 namespace MapToolkit
 {
-    public struct CoordinatesS : IEquatable<CoordinatesS>
+    [DebuggerDisplay("({Latitude};{Longitude})")]
+    public struct CoordinatesValue : IEquatable<CoordinatesValue>
     {
         public readonly Vector2D Vector2D;
 
-        public CoordinatesS(double latitude, double longitude)
+        public CoordinatesValue(double latitude, double longitude)
         {
             Vector2D = new Vector2D(longitude, latitude);
         }
 
-        public CoordinatesS(Vector2D vector)
+        public CoordinatesValue(Vector2D vector)
         {
             Vector2D = vector;
         }
 
-        public CoordinatesS(Coordinates crd)
+        public CoordinatesValue(Coordinates crd)
         {
             Vector2D = crd.Vector2D;
         }
@@ -27,7 +29,7 @@ namespace MapToolkit
 
         public double Longitude => Vector2D.X;
 
-        public bool AlmostEquals(CoordinatesS other, double thresholdSqared )
+        public bool AlmostEquals(CoordinatesValue other, double thresholdSqared )
         {
             if (other.Vector2D == Vector2D)
             {
@@ -45,19 +47,19 @@ namespace MapToolkit
             return range.Contains(Vector2D);
         }
 
-        public bool IsInSquare(CoordinatesS min, CoordinatesS max)
+        public bool IsInSquare(CoordinatesValue min, CoordinatesValue max)
         {
             return Vector2D.IsInRange(min.Vector2D, max.Vector2D);
         }
 
-        public bool Equals(CoordinatesS other)
+        public bool Equals(CoordinatesValue other)
         {
             return Vector2D == other.Vector2D;
         }
 
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
-            if (obj is CoordinatesS other)
+            if (obj is CoordinatesValue other)
             {
                 return Equals(other);
             }
@@ -69,23 +71,23 @@ namespace MapToolkit
             return Vector2D.GetHashCode();
         }
 
-        public static CoordinatesS operator +(CoordinatesS c, Vector v)
+        public static CoordinatesValue operator +(CoordinatesValue c, Vector v)
         {
-            return new CoordinatesS(c.Vector2D + v.Vector2D);
+            return new CoordinatesValue(c.Vector2D + v.Vector2D);
         }
 
-        public static CoordinatesS operator -(CoordinatesS c, Vector v)
+        public static CoordinatesValue operator -(CoordinatesValue c, Vector v)
         {
-            return new CoordinatesS(c.Vector2D - v.Vector2D);
+            return new CoordinatesValue(c.Vector2D - v.Vector2D);
         }
 
-        public static Vector operator -(CoordinatesS a, CoordinatesS b)
+        public static Vector operator -(CoordinatesValue a, CoordinatesValue b)
         {
             return new Vector(a.Vector2D - b.Vector2D);
         }
 
-        public static implicit operator Coordinates(CoordinatesS d) => new Coordinates(d.Vector2D);
+        public static implicit operator Coordinates(CoordinatesValue d) => new Coordinates(d.Vector2D);
 
-        public static implicit operator CoordinatesS(Coordinates d) => new CoordinatesS(d.Vector2D);
+        public static implicit operator CoordinatesValue(Coordinates d) => new CoordinatesValue(d.Vector2D);
     }
 }

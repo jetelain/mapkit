@@ -4,9 +4,9 @@ namespace MapToolkit.Projections
 {
     public interface IProjectionArea
     {
-        Vector Project(CoordinatesS coordinates);
+        Vector Project(CoordinatesValue coordinates);
 
-        Vector[] Project(ReadOnlySpan<CoordinatesS> coordinates);
+        Vector[] Project(ReadOnlySpan<CoordinatesValue> coordinates);
 
         Vector Min { get; }
 

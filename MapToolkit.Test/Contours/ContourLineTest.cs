@@ -24,10 +24,10 @@ namespace MapToolkit.Test.Contours
             */
 
             var cl = new ContourLine(new[] {
-                new CoordinatesS(2,2), // A
-                new CoordinatesS(1,3), // B
-                new CoordinatesS(1,1), // C
-                new CoordinatesS(2,2)  // A
+                new CoordinatesValue(2,2), // A
+                new CoordinatesValue(1,3), // B
+                new CoordinatesValue(1,1), // C
+                new CoordinatesValue(2,2)  // A
             }, 100);
 
             Assert.False(cl.IsCounterClockWise);
@@ -45,10 +45,10 @@ namespace MapToolkit.Test.Contours
             */
 
             cl = new ContourLine(new[] {
-                new CoordinatesS(2,2), // A
-                new CoordinatesS(1,1), // B
-                new CoordinatesS(1,3), // C
-                new CoordinatesS(2,2)  // A
+                new CoordinatesValue(2,2), // A
+                new CoordinatesValue(1,1), // B
+                new CoordinatesValue(1,3), // C
+                new CoordinatesValue(2,2)  // A
             }, 100);
 
             Assert.True(cl.IsCounterClockWise);

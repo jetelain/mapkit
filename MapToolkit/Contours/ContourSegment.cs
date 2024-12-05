@@ -2,7 +2,7 @@
 {
     internal class ContourSegment
     {
-        public ContourSegment(CoordinatesS point1, CoordinatesS point2, double level, int kind, ContourHypothesis? hypothesis = null, int hcase = 0)
+        public ContourSegment(CoordinatesValue point1, CoordinatesValue point2, double level, int kind, ContourHypothesis? hypothesis = null, int hcase = 0)
         {
             Point1 = point1;
             Point2 = point2;
@@ -13,8 +13,8 @@
             Kind = kind;
         }
 
-        public CoordinatesS Point1 { get; }
-        public CoordinatesS Point2 { get; }
+        public CoordinatesValue Point1 { get; }
+        public CoordinatesValue Point2 { get; }
         public double Level { get; }
 
         public ContourHypothesis? Hypothesis { get; }

@@ -29,7 +29,7 @@ namespace MapToolkit
             this.vector = vector;
         }
 
-        public Coordinates(CoordinatesS crd)
+        public Coordinates(CoordinatesValue crd)
         {
             this.vector = crd.Vector2D;
         }

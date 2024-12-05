@@ -2,7 +2,7 @@
 {
     public sealed class TopoLocation
     {
-        public TopoLocation(string name, TopoLocationType type, CoordinatesS position)
+        public TopoLocation(string name, TopoLocationType type, CoordinatesValue position)
         {
             Name = name;
             Type = type;
@@ -13,6 +13,6 @@
 
         public TopoLocationType Type { get; }
 
-        public CoordinatesS Position { get; }
+        public CoordinatesValue Position { get; }
     }
 }

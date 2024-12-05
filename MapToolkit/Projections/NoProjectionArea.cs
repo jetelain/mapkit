@@ -25,7 +25,7 @@ namespace MapToolkit.Projections
 
         public Vector Size { get; }
 
-        public Vector Project(CoordinatesS point)
+        public Vector Project(CoordinatesValue point)
         {
             return new Vector(new Vector2D(point.Longitude - minLon, maxLat - point.Latitude) / factor);
             //return new Vector(
@@ -33,7 +33,7 @@ namespace MapToolkit.Projections
             //    (maxLat - point.Latitude) / latFactor);
         }
 
-        public Vector[] Project(ReadOnlySpan<CoordinatesS> coordinates)
+        public Vector[] Project(ReadOnlySpan<CoordinatesValue> coordinates)
         {
             var result = new Vector[coordinates.Length];
             for (int i = 0; i < result.Length; i++)

@@ -31,7 +31,7 @@ namespace MapToolkit.Projections
 
         public double Scale => 1;
 
-        public Vector Project(CoordinatesS point)
+        public Vector Project(CoordinatesValue point)
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;
             var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
@@ -42,7 +42,7 @@ namespace MapToolkit.Projections
             return new Vector(x - dX, y - dY);
         }
 
-        public Vector[] Project(ReadOnlySpan<CoordinatesS> coordinates)
+        public Vector[] Project(ReadOnlySpan<CoordinatesValue> coordinates)
         {
             var result = new Vector[coordinates.Length];
             for (int i = 0; i < result.Length; i++)

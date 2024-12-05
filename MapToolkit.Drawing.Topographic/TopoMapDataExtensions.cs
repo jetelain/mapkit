@@ -4,7 +4,7 @@ namespace MapToolkit.Drawing.Topographic
 {
     public static class TopoMapDataExtensions
     {
-        public static ITopoMapData Crop(this ITopoMapData other, CoordinatesS min, CoordinatesS max, TopoMapMetadata? metadata = null)
+        public static ITopoMapData Crop(this ITopoMapData other, CoordinatesValue min, CoordinatesValue max, TopoMapMetadata? metadata = null)
         {
             var range = new VectorEnvelope<Vector2D>(min.Vector2D, max.Vector2D);
             return new TopoMapData()
