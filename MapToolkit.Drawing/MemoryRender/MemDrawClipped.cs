@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ClipperLib;
+﻿using Pmad.Geometry.Clipper2Lib;
 
 namespace MapToolkit.Drawing.MemoryRender
 {
@@ -9,18 +8,21 @@ namespace MapToolkit.Drawing.MemoryRender
         {
             ClipMin = min;
             ClipMax = max;
-            Clip = new List<IntPoint>() {
-                new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMin.Y * 100.0 - 200.0),
-                new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMax.Y * 100.0 + 200.0),
-                new IntPoint(ClipMax.X * 100.0 + 200.0, ClipMax.Y * 100.0 + 200.0),
-                new IntPoint(ClipMax.X * 100.0 + 200.0, ClipMin.Y * 100.0 - 200.0),
-                new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMin.Y * 100.0 - 200.0)
-            };
+            //Clip = new List<IntPoint>() {
+            //    new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMin.Y * 100.0 - 200.0),
+            //    new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMax.Y * 100.0 + 200.0),
+            //    new IntPoint(ClipMax.X * 100.0 + 200.0, ClipMax.Y * 100.0 + 200.0),
+            //    new IntPoint(ClipMax.X * 100.0 + 200.0, ClipMin.Y * 100.0 - 200.0),
+            //    new IntPoint(ClipMin.X * 100.0 - 200.0, ClipMin.Y * 100.0 - 200.0)
+            //};
+            Clip = new Rect64(
+                    (long)(ClipMin.X * 100) - 200, (long)(ClipMin.Y * 100) - 200,
+                    (long)(ClipMax.X * 100) + 200, (long)(ClipMax.Y * 100) + 200);
         }
 
         public Vector ClipMax { get; }
 
-        public List<IntPoint> Clip { get; }
+        public Rect64 Clip { get; }
 
         public Vector ClipMin { get; }
 

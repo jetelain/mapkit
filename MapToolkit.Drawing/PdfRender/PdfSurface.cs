@@ -84,29 +84,6 @@ namespace MapToolkit.Drawing.PdfRender
                 size.Y * pixelSize);
         }
 
-        public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
-        {
-            var pstyle = (PdfStyle)style;
-            if (pstyle.VectorBrush != null)
-            {
-                DrawPolygon(points, Enumerable.Empty<IEnumerable<Vector>>(), pstyle);
-                return;
-            }
-            var xpoints = points.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray();
-            if (pstyle.Pen != null && pstyle.Brush != null)
-            {
-                graphics.DrawPolygon(pstyle.Pen, pstyle.Brush, xpoints, XFillMode.Alternate);
-            }
-            else if (pstyle.Pen != null)
-            {
-                graphics.DrawPolygon(pstyle.Pen, xpoints);
-            }
-            else if (pstyle.Brush != null)
-            {
-                graphics.DrawPolygon(pstyle.Brush, xpoints, XFillMode.Alternate);
-            }
-        }
-
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
@@ -161,20 +138,18 @@ namespace MapToolkit.Drawing.PdfRender
             graphics.Restore(state);
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
             var pb = new XGraphicsPath();
-            pb.AddLines(contour.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray());
-            pb.CloseFigure();
-            foreach (var hole in holes)
+            foreach (var hole in paths)
             {
                 pb.AddLines(hole.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray());
                 pb.CloseFigure();
             }
             if (pstyle.VectorBrush != null)
             {
-                FillPolygon(pb, contour, pstyle.VectorBrush);
+                FillPolygon(pb, paths.SelectMany(p => p), pstyle.VectorBrush);
             }
             if (pstyle.Pen != null && pstyle.Brush != null)
             {

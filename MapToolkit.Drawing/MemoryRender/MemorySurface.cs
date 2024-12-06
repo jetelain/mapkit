@@ -69,14 +69,9 @@ namespace MapToolkit.Drawing.MemoryRender
             Operations.Add(new DrawImage(image, pos, size, alpha));
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
-            Operations.Add(new DrawPolygon(contour.ToList(), null, (MemDrawStyle)style));
-        }
-
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
-        {
-            Operations.Add(new DrawPolygon(contour.ToList(), holes.Select(h => h.ToList()).ToList(), (MemDrawStyle)style));
+            Operations.Add(new DrawPolygon(paths.ToList(),(MemDrawStyle)style));
         }
 
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)

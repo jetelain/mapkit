@@ -35,7 +35,7 @@ namespace MapToolkit.Databases
 
         public async Task<IDemDataCell> Load(IDemStorage storage, IMemoryCache cache)
         {
-            if (!cache.TryGetValue(this, out IDemDataCell result))
+            if (!cache.TryGetValue(this, out IDemDataCell? result) || result == null)
             {
                 using var entry = cache.CreateEntry(this);
                 result = await storage.Load(Path).ConfigureAwait(false);

@@ -1,23 +1,25 @@
 ﻿using GeoJSON.Text.Geometry;
 using MapToolkit.DataCells;
+using Pmad.Geometry.Shapes;
+using Pmad.Geometry;
 
 namespace MapToolkit.Drawing.Topographic
 {
     public interface ITopoMapData
     {
-        string Title { get; }
+        TopoMapMetadata Metadata { get; }
 
-        Dictionary<TopoMapPathType, MultiLineString>? Roads { get; }
+        Dictionary<TopoMapPathType, MultiPath<double, Vector2D>>? Roads { get; }
 
-        Dictionary<TopoMapPathType, MultiLineString>? Bridges { get; }
+        Dictionary<TopoMapPathType, MultiPath<double, Vector2D>>? Bridges { get; }
 
-        MultiPolygon? ForestPolygons { get; }
+        MultiPolygon<double, Vector2D>? ForestPolygons { get; }
 
-        MultiPolygon? RockPolygons { get; }
+        MultiPolygon<double, Vector2D>? RockPolygons { get; }
 
-        MultiPolygon? BuildingPolygons { get; }
+        MultiPolygon<double, Vector2D>? BuildingPolygons { get; }
 
-        MultiPolygon? WaterPolygons { get; }
+        MultiPolygon<double, Vector2D>? WaterPolygons { get; }
 
         IDemDataView DemDataCell { get; }
 
@@ -25,8 +27,12 @@ namespace MapToolkit.Drawing.Topographic
 
         List<TopoIcon>? Icons { get; }
 
-        MultiLineString? Powerlines { get; }
+        MultiPath<double, Vector2D>? Powerlines { get; }
 
-        MultiPolygon? FortPolygons { get; }
+        MultiPath<double, Vector2D>? Railways { get; }
+
+        MultiPolygon<double, Vector2D>? FortPolygons { get; }
+
+        List<DemDataPoint>? PlottedPoints { get; }
     }
 }

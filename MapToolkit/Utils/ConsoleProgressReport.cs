@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace DemUtility
 {
+    [Obsolete("Use Pmad.ProgressTracking instead. See https://github.com/jetelain/ProgressToolkit")]
     public class ConsoleProgressReport : IDisposable, IProgress<double>
     {
         private readonly string taskName;

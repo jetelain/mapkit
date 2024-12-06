@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Numerics;
 using System.Text.Json.Serialization;
+using Pmad.Geometry;
 
 namespace MapToolkit
 {
-    public sealed class Vector : IEquatable<Vector>
+    public struct Vector : IEquatable<Vector>
     {
+        private readonly Vector2D vector;
+
         public static readonly Vector Zero = new Vector(0, 0);
 
         public static readonly Vector One = new Vector(1, 1);
@@ -13,14 +16,17 @@ namespace MapToolkit
         [JsonConstructor]
         public Vector(double x, double y)
         {
-            Y = y;
-            X = x;
+            vector = new Vector2D(x, y);
+        }
+
+        public Vector(Vector2D vector)
+        {
+            this.vector = vector;
         }
 
         public Vector(Vector2 floatVector)
         {
-            Y = floatVector.Y;
-            X = floatVector.X;
+            vector = new Vector2D(floatVector.X, floatVector.Y);
         }
 
         public static Vector FromLatLonDelta(double lat, double lon)
@@ -34,10 +40,10 @@ namespace MapToolkit
         }
 
         [JsonPropertyName("y")]
-        public double Y { get; }
+        public double Y => vector.Y;
 
         [JsonPropertyName("x")]
-        public double X { get; }
+        public double X => vector.X;
 
         [JsonIgnore]
         public double DeltaLon => X;
@@ -47,37 +53,38 @@ namespace MapToolkit
 
         public double LengthSquared()
         {
-            return (X * X) + (Y * Y);
+            return vector.LengthSquared();
         }
+
+        public Vector2D Vector2D => vector;
 
         internal double Surface()
         {
-            return X * Y;
+            return vector.Area();
         }
 
-        public bool Equals(Vector? other)
+        public bool Equals(Vector other)
         {
-            if (other != null)
-            {
-                return other.Y == Y 
-                    && other.X == X;
-            }
-            return false;
+            return other.vector == this.vector;
         }
 
         public override bool Equals(object? obj)
         {
-            return Equals(obj as Vector);
+            if (obj is Vector v)
+            {
+                return Equals(v);
+            }
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return Y.GetHashCode() ^ X.GetHashCode();
+            return vector.GetHashCode();
         }
 
         public double Atan2()
         {
-            return Math.Atan2(Y, X);
+            return vector.Atan2();
         }
 
         public Vector2 ToFloat()
@@ -87,27 +94,29 @@ namespace MapToolkit
 
         public static Vector operator *(Vector v, double f)
         {
-            return new Vector(v.X * f, v.Y * f);
+            return new Vector(v.vector * f);
         }
         public static Vector operator /(Vector v, double f)
         {
-            return new Vector(v.X / f, v.Y / f);
+            return new Vector(v.vector / f);
         }
         public static Vector operator /(Vector a, Vector b)
         {
-            return new Vector(a.X / b.X, a.Y / b.Y);
+            return new Vector(a.vector / b.vector);
         }
         public static Vector operator *(Vector a, Vector b)
         {
-            return new Vector(a.X * b.X, a.Y * b.Y);
+            return new Vector(a.vector * b.vector);
         }
+
         public static Vector operator +(Vector a, Vector b)
         {
-            return new Vector(a.X + b.X, a.Y + b.Y);
+            return new Vector(a.vector + b.vector);
         }
+
         public static Vector operator -(Vector a, Vector b)
         {
-            return new Vector(a.X - b.X, a.Y - b.Y);
+            return new Vector(a.vector - b.vector);
         }
         public override string ToString()
         {

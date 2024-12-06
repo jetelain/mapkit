@@ -1,11 +1,10 @@
-﻿using MapToolkit.Drawing;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.Topographic
 {
-    internal class IconsRender
+    internal static class IconsRender
     {
-        internal static IDrawIcon Dot(IDrawSurface w)
+        public static IDrawIcon Dot(IDrawSurface w)
         {
             var style = w.AllocateBrushStyle(Color.Black);
             return w.AllocateIcon(new Vector(5, 5), (target) =>
@@ -14,7 +13,7 @@ namespace MapToolkit.Drawing.Topographic
             });
         }
 
-        internal static IDrawIcon Hospital(IDrawSurface w)
+        public static IDrawIcon Hospital(IDrawSurface w)
         {
             var border = w.AllocateStyle("FFFFFF", "FF0033");
             var cross = w.AllocatePenStyle("FF0033", 2);
@@ -26,13 +25,13 @@ namespace MapToolkit.Drawing.Topographic
             });
         }
 
-        internal static IDrawIcon WaterTower(IDrawSurface w)
+        public static IDrawIcon WaterTower(IDrawSurface w)
         {
             var style = w.AllocateBrushStyle("0080FF");
             return w.AllocateIcon(new Vector(13, 13), (target) => target.DrawCircle(new Vector(6, 6), 6, style));
         }
 
-        internal static IDrawIcon TechnicalTower(IDrawSurface w)
+        public static IDrawIcon TechnicalTower(IDrawSurface w)
         {
             var style = w.AllocateStyle(Color.White, Color.Black, 1);
             var stylea = w.AllocatePenStyle(Color.Black, 1);
@@ -43,7 +42,7 @@ namespace MapToolkit.Drawing.Topographic
                 target.DrawPolyline(new[] { new Vector(10.24, 1.76), new Vector(1.76, 10.24) }, stylea);
             });
         }
-        internal static IDrawIcon Transmitter(IDrawSurface w)
+        public static IDrawIcon Transmitter(IDrawSurface w)
         {
             var full = w.AllocateBrushStyle(Color.White);
             var center = w.AllocateStyle(Color.Black, Color.Black, 1);
@@ -61,7 +60,7 @@ namespace MapToolkit.Drawing.Topographic
             });
         }
 
-        internal static IDrawIcon WindTurbine(IDrawSurface w)
+        public static IDrawIcon WindTurbine(IDrawSurface w)
         {
             var style = w.AllocatePenStyle(Color.Black, 2);
             var stylea = w.AllocatePenStyle(Color.Black, 1);
@@ -69,7 +68,7 @@ namespace MapToolkit.Drawing.Topographic
             return w.AllocateIcon(new Vector(32, 32), (target) => WindTurbine(target, style, stylea, stylec));
         }
 
-        internal static void WindTurbine(IDrawSurface w, IDrawStyle style, IDrawStyle stylea, IDrawStyle stylec)
+        public static void WindTurbine(IDrawSurface w, IDrawStyle style, IDrawStyle stylea, IDrawStyle stylec)
         {
             var center = new Vector(16, 16);
             w.DrawPolyline(
@@ -93,6 +92,36 @@ namespace MapToolkit.Drawing.Topographic
             w.DrawArc(center, 10, -45, 80, stylea);
             w.DrawArc(center, 15, -50, 90, stylea);
             w.DrawCircle(center, 1, stylec);
+        }
+
+        public static IDrawIcon LightHouse(IDrawSurface w)
+        {
+            var style = w.AllocateBrushStyle(Color.Black);
+            return w.AllocateIcon(new Vector(32 * .8, 32 * .8), (target) => LightHouse(target, style));
+        }
+
+        private static void LightHouse(IDrawSurface target, IDrawStyle style)
+        {
+            target.DrawPolygon(
+                [new(12 * .8, 10 * .8), new(20 * .8, 10 * .8), new(22 * .8, 30 * .8), new(17.5 * .8, 30 * .8), new(17.5 * .8, 25 * .8), new(14.5 * .8, 25 * .8), new(14.5 * .8, 30 * .8), new(10 * .8, 30 * .8), new(12 * .8, 10 * .8)],
+                [[new(14.5 * .8, 13 * .8), new(14.5 * .8, 17 * .8), new(17.5 * .8, 17 * .8), new(17.5 * .8, 13 * .8), new(14.5 * .8, 13 * .8)]], style);
+            target.DrawPolygon([[new(14 * .8, 8 * .8), new(6 * .8, 5 * .8), new(6 * .8, 10 * .8), new(14 * .8, 8 * .8)]], style);
+            target.DrawPolygon([[new(18 * .8, 8 * .8), new(26 * .8, 5 * .8), new(26 * .8, 10 * .8), new(18 * .8, 8 * .8)]], style);
+            target.DrawPolygon([[new(16 * .8, 1 * .8), new(21 * .8, 6 * .8), new(11 * .8, 6 * .8), new(16 * .8, 1 * .8)]], style);
+        }
+
+        public static IDrawIcon Church(IDrawSurface w)
+        {
+            var pen = w.AllocatePenStyle(Color.Black);
+            var fill = w.AllocateStyle(Color.White, Color.Black);
+            return w.AllocateIcon(new Vector(18, 18), (target) => Church(target, pen, fill));
+        }
+
+        private static void Church(IDrawSurface target, IDrawStyle pen, IDrawStyle fill)
+        {
+            target.DrawPolyline(new[] { new Vector(9, 0), new Vector(9, 9) }, pen);
+            target.DrawPolyline(new[] { new Vector(5, 4), new Vector(13, 4) }, pen);
+            target.DrawCircle(new Vector(9, 13), 3.5f, fill);
         }
     }
 }

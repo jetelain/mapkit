@@ -98,7 +98,7 @@ namespace MapToolkit.DataCells
             for (var lon = startLon; lon < lonEnd; ++lon)
             {
                 yield return new DemDataPoint(
-                    new Coordinates(realStartLat + (lat * PixelSizeLat),
+                    new CoordinatesValue(realStartLat + (lat * PixelSizeLat),
                     realStartLon + (lon * PixelSizeLon)),
                     PixelFormat.ToDouble(Data[lat, lon]));
             }

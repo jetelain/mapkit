@@ -58,20 +58,6 @@ namespace MapToolkit.Drawing.ImageRender
             target.DrawImage(scaled, new Point((int)pos.X, (int)pos.Y), (float)alpha);
         }
 
-        public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
-        {
-            var istyle = (ImageStyle)style;
-            var ipoints = points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray();
-            if (istyle.Brush != null)
-            {
-                target.FillPolygon(istyle.Brush, ipoints);
-            }
-            if (istyle.Pen != null)
-            {
-                target.DrawPolygon(istyle.Pen, ipoints);
-            }
-        }
-
         public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
@@ -115,17 +101,11 @@ namespace MapToolkit.Drawing.ImageRender
             target.SetDrawingTransform(Matrix3x2.Identity);
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
-            if (!holes.Any())
-            {
-                DrawPolygon(contour, style);
-                return;
-            }
             var istyle = (ImageStyle)style;
             var pb = new PathBuilder();
-            pb.AddLines(contour.Select(p => new PointF((float)p.X, (float)p.Y))).CloseFigure();
-            foreach(var hole in holes)
+            foreach(var hole in paths)
             {
                 pb.AddLines(hole.Select(p => new PointF((float)p.X, (float)p.Y))).CloseFigure();
             }

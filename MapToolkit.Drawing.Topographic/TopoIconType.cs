@@ -6,6 +6,11 @@
         WaterTower,
         Transmitter,
         ElectricityPylon,
-        Hospital
+        Hospital,
+        LightHouse,
+        TechnicalTower,
+        Church,
+        // Synagogue,
+        // Mosquee
     }
 }

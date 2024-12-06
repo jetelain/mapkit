@@ -2,7 +2,7 @@
 {
     internal class TopoMapPdfTile
     {
-        public TopoMapPdfTile(string name, Coordinates min, Coordinates max)
+        public TopoMapPdfTile(string name, CoordinatesValue min, CoordinatesValue max)
         {
             Name = name;
             Min = min;
@@ -10,7 +10,7 @@
         }
 
         public string Name { get; }
-        public Coordinates Min { get; }
-        public Coordinates Max { get; }
+        public CoordinatesValue Min { get; }
+        public CoordinatesValue Max { get; }
     }
 }

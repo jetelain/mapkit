@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Xml;
 using MapToolkit.Drawing.MemoryRender;
 using MapToolkit.Drawing.PdfRender;
 using MapToolkit.Utils;
@@ -25,7 +22,7 @@ namespace MapToolkit.Drawing
             }
         }
 
-        public static TilingInfos ToSvgTiled(string file, Vector size, bool generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
+        public static TilingInfos ToSvgTiled(string file, Vector size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
         {
             var maxZoom = ImageTiler.MaxZoom(size);
             var count = ImageTiler.Count(maxZoom, Math.Max(0, maxZoom - 6));
@@ -93,14 +90,14 @@ namespace MapToolkit.Drawing
             TransparentColorMode = WebpTransparentColorMode.Clear 
         };
 
-        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size, BasicProgress rel, bool generateWebpFallback)
+        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size, BasicProgress rel, SvgFallBackFormats generateWebpFallback)
         {
             var chunks = 1 << zoomLevel;
             var tileSize = size / chunks;
 
             Parallel.For(0, chunks, x =>
             {
-                using var image = generateWebpFallback ? new Image<Rgba32>((int)tileSize.X, (int)tileSize.Y) : null;
+                using var image = generateWebpFallback != SvgFallBackFormats.None ? new Image<Rgba32>((int)tileSize.X, (int)tileSize.Y) : null;
 
                 Directory.CreateDirectory(Path.Combine(targetDirectory, $"{zoomLevel}/{x}"));
 
@@ -118,7 +115,14 @@ namespace MapToolkit.Drawing
                             p.Clear(Color.White);
                             new MemDrawClipped(surface, new ImageRender.ImageSurface(p), pos, pos + tileSize).Draw();
                         });
-                        image.SaveAsWebp(Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.webp"), WebpEncoder90);
+                        if ((generateWebpFallback & SvgFallBackFormats.Webp) != 0)
+                        {
+                            image.SaveAsWebp(Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.webp"), WebpEncoder90);
+                        }
+                        if ((generateWebpFallback & SvgFallBackFormats.Png) != 0)
+                        {
+                            image.SaveAsPng(Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.png"));
+                        }
                     }
                     rel.AddOne();
                 }

@@ -51,12 +51,7 @@ namespace MapToolkit.Drawing.MemoryRender
             throw new System.NotImplementedException();
         }
 
-        public void DrawPolygon(IEnumerable<Vector> contour, IDrawStyle style)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void DrawPolygon(IEnumerable<Vector> contour, IEnumerable<IEnumerable<Vector>> holes, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
         {
             throw new System.NotImplementedException();
         }

@@ -2,6 +2,7 @@
 using MapToolkit.Projections;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
+using Pmad.ProgressTracking;
 using SixLabors.ImageSharp;
 
 namespace MapToolkit.Drawing.Topographic
@@ -17,7 +18,7 @@ namespace MapToolkit.Drawing.Topographic
         private const double LegendWidthWithAllsMargins = LegendWidth + (3 * Margin);
         private const double DoubleLegendWidthWithBothMargin = LegendWidthWithBothMargin * 2;
 
-        public static void RenderPDF(ITopoMapPdfRenderOptions opts, ITopoMapData data, int scale = 25)
+        public static List<PdfFileInfo> RenderPDF(string targetDirectory, string name, ITopoMapData data, IProgressScope scope, int scale = 25)
         {
             var sizeInMeters = new Vector(
                 data.DemDataCell.End.Longitude - data.DemDataCell.Start.Longitude,
@@ -26,6 +27,8 @@ namespace MapToolkit.Drawing.Topographic
             var sizeInPoints = new Vector(
                 sizeInMeters.X / scale * PaperSize.OneMilimeter,
                 sizeInMeters.Y / scale * PaperSize.OneMilimeter);
+
+            var result = new List<PdfFileInfo>();
 
             if (sizeInPoints.X > PaperSize.ArchEHeight || sizeInPoints.Y > PaperSize.ArchEWidth)
             {
@@ -36,20 +39,21 @@ namespace MapToolkit.Drawing.Topographic
 
                 foreach (var tile in tiles)
                 {
-                    var subdata = data.Crop(tile.Min, tile.Max, data.Title + " - " + tile.Name);
-                    var file = Path.Combine(opts.TargetDirectory, $"{opts.FileName}_{tile.Name}.pdf");
-                    RenderSinglePdf(subdata, scale, paperSize, file, opts, data, tiles, tile);
+                    var subdata = data.Crop(tile.Min, tile.Max, data.Metadata.WithTitle(data.Metadata.Title + " - " + tile.Name));
+                    var file = Path.Combine(targetDirectory, $"{name}_{tile.Name}.pdf");
+                    result.Add(RenderSinglePdf(subdata, scale, paperSize, file, scope, data, tiles, tile));
                 }
             }
             else
             {
                 var paperSize = GetPaperSize(sizeInPoints.X, sizeInPoints.Y);
-                var file = Path.Combine(opts.TargetDirectory, opts.FileName + ".pdf");
-                RenderSinglePdf(data, scale, paperSize, file, opts);
+                var file = Path.Combine(targetDirectory, name + ".pdf");
+                result.Add(RenderSinglePdf(data, scale, paperSize, file, scope));
             }
+            return result;
         }
 
-        public static void RenderPDFBook(ITopoMapPdfRenderOptions opts, ITopoMapData data, int scale = 25)
+        public static PdfFileInfo RenderPDFBook(string file, ITopoMapData data, IProgressScope scope, int scale = 25)
         {
             var sizeInMeters = new Vector(
                 data.DemDataCell.End.Longitude - data.DemDataCell.Start.Longitude,
@@ -63,16 +67,12 @@ namespace MapToolkit.Drawing.Topographic
 
             var paperSurface = new Vector(paperSize.X - (Margin * 2), paperSize.Y - (Margin * 2));
 
-            var file = Path.Combine(opts.TargetDirectory, opts.FileName + "-book.pdf");
-
             var tiles = GetTiles(data.DemDataCell.Start, scale, sizeInMeters, sizeInPoints, paperSurface);
 
             var document = new PdfDocument();
-            document.Info.Title = data.Title;
-            document.Info.Creator = "MapToolkit Topo Map - Print Map created by GrueArbre";
-            document.Info.Author = $"Original Map {opts.Attribution}";
-
-            Console.WriteLine($"{tiles.Count} tiles");
+            document.Info.Title = data.Metadata.Title;
+            document.Info.Creator = data.Metadata.ExportCreator;
+            document.Info.Author = $"Original Map {data.Metadata.Attribution}";
 
             var page = document.AddPage();
             page.Width = paperSize.X;
@@ -80,21 +80,25 @@ namespace MapToolkit.Drawing.Topographic
 
             var legendTopCenter = new Vector((paperSize.X - LegendWidth - LegendHeight - Margin) / 2, (paperSize.Y - LegendHeight) / 2);
 
-            ToPdfPage(page, legendTopCenter, w => LegendRender.RenderLegend(w, data, opts, scale));
+            ToPdfPage(page, legendTopCenter, w => LegendRender.RenderLegend(w, data.Metadata, scale));
             ToPdfPage(page, legendTopCenter + new Vector(LegendWidth + Margin, 0), w => LegendRender.DrawMiniMap(w, data, tiles, null, LegendRender.LegendHeight));
+
+            var pages = new List<PdfPageInfo>();
 
             foreach (var tile in tiles.OrderBy(t => t.Name))
             {
-                var subdata = data.Crop(tile.Min, tile.Max, tile.Name);
+                var subdata = data.Crop(tile.Min, tile.Max, data.Metadata.WithTitle(tile.Name));
 
-                var rdata = TopoMapRenderData.Create(subdata);
+                var rdata = TopoMapRenderData.Create(subdata, scope);
 
-                RenderPage(rdata, scale, paperSize, opts, data, tiles, tile, document);
+                pages.Add(RenderPage(rdata, scale, paperSize, data, tiles, tile, document));
             }
             document.Save(file);
+
+            return new PdfFileInfo(true, file, string.Empty, scale, paperSize, pages);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(Coordinates start, int scale, Vector sizeInMeters, Vector sizeInPoints, Vector paperSurface)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, int scale, Vector sizeInMeters, Vector sizeInPoints, Vector paperSurface)
         {
             var w = Math.Ceiling(sizeInPoints.X / paperSurface.X);
             var h = Math.Ceiling(sizeInPoints.Y / paperSurface.Y);
@@ -108,7 +112,7 @@ namespace MapToolkit.Drawing.Topographic
             return GetTiles(start, w, h, overlapInMeters, baseSize);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(Coordinates start, double w, double h, Vector overlapInMeters, Vector baseSize)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, double w, double h, Vector overlapInMeters, Vector baseSize)
         {
             var tiles = new List<TopoMapPdfTile>();
             for (var x = 0; x < w; ++x)
@@ -151,20 +155,22 @@ namespace MapToolkit.Drawing.Topographic
             return tiles;
         }
 
-        private static void RenderSinglePdf(ITopoMapData data, int scale, Vector paperSize, string file, ITopoMapPdfRenderOptions opts, ITopoMapData? fulldata = null, List<TopoMapPdfTile>? tiles = null, TopoMapPdfTile? current = null)
+        private static PdfFileInfo RenderSinglePdf(ITopoMapData data, int scale, Vector paperSize, string file, IProgressScope scope, ITopoMapData? fulldata = null, List<TopoMapPdfTile>? tiles = null, TopoMapPdfTile? current = null)
         {
             var document = new PdfDocument();
-            document.Info.Title = data.Title;
-            document.Info.Creator = "MapToolkit Topographic Map";
-            document.Info.Author = $"Original Map {opts.Attribution}";
+            document.Info.Title = data.Metadata.Title;
+            document.Info.Creator = data.Metadata.ExportCreator;
+            document.Info.Author = $"Original Map {data.Metadata.Attribution}";
 
-            var rdata = TopoMapRenderData.Create(data);
+            var rdata = TopoMapRenderData.Create(data, scope);
 
-            RenderPage(rdata, scale, paperSize, opts, fulldata, tiles, current, document);
+            var page = RenderPage(rdata, scale, paperSize, fulldata, tiles, current, document);
             document.Save(file);
+
+            return new PdfFileInfo(false, file, current?.Name ?? string.Empty, scale, paperSize, [page]);
         }
 
-        private static void RenderPage(TopoMapRenderData rdata, int scale, Vector paperSizeInPoints, ITopoMapPdfRenderOptions opts, ITopoMapData? fulldata, List<TopoMapPdfTile>? tiles, TopoMapPdfTile? current, PdfDocument document)
+        private static PdfPageInfo RenderPage(TopoMapRenderData rdata, int scale, Vector paperSizeInPoints, ITopoMapData? fulldata, List<TopoMapPdfTile>? tiles, TopoMapPdfTile? current, PdfDocument document)
         {
             var page = document.AddPage();
             page.Width = paperSizeInPoints.X;
@@ -208,10 +214,10 @@ namespace MapToolkit.Drawing.Topographic
                 }
             }
 
-            ToPdfPage(page, mapTopLeft, w => TopoMapRender.RenderWithExternGraticule(w, rdata, proj));
+            ToPdfPage(page, mapTopLeft, w => new TopoMapRender(rdata, proj).RenderWithExternGraticule(w));
             if (drawLegend)
             {
-                ToPdfPage(page, legendTopCenter - new Vector(LegendHalfWidth, 0), w => LegendRender.RenderLegend(w, rdata.Data, opts, scale));
+                ToPdfPage(page, legendTopCenter - new Vector(LegendHalfWidth, 0), w => LegendRender.RenderLegend(w, rdata.Data.Metadata, scale));
                 if (miniMap)
                 {
                     ToPdfPage(page, legendTopCenter + new Vector(-LegendHalfWidth, LegendHeight + Margin), w => LegendRender.DrawMiniMap(w, fulldata ?? rdata.Data, tiles, current));
@@ -222,14 +228,16 @@ namespace MapToolkit.Drawing.Topographic
                 ToPdfPage(page, mapTopLeft, w =>
                 {
                     var style = w.AllocateTextStyle(new[] { "Calibri" }, SixLabors.Fonts.FontStyle.Regular, 30, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterLeft);
-                    w.DrawText(new Vector(0, -30), rdata.Data.Title, style);
-                    w.DrawText(new Vector(0, proj.Size.Y + 30), rdata.Data.Title, style);
+                    w.DrawText(new Vector(0, -30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector(0, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
 
                     style = w.AllocateTextStyle(new[] { "Calibri" }, SixLabors.Fonts.FontStyle.Regular, 30, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterRight);
-                    w.DrawText(new Vector(proj.Size.X, -30), rdata.Data.Title, style);
-                    w.DrawText(new Vector(proj.Size.X, proj.Size.Y + 30), rdata.Data.Title, style);
+                    w.DrawText(new Vector(proj.Size.X, -30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector(proj.Size.X, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
                 });
             }
+
+            return new PdfPageInfo(rdata.Start, rdata.End, mapTopLeft);
         }
 
 

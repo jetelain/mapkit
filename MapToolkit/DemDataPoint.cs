@@ -1,33 +1,46 @@
 ﻿using System;
 using System.Diagnostics;
 using GeoJSON.Text.Geometry;
+using Pmad.Geometry;
 
 namespace MapToolkit
 {
     [DebuggerDisplay("{Coordinates} => {Elevation}")]
     public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition
     {
+        private readonly CoordinatesValue vector;
+
         public DemDataPoint(Coordinates coordinates, double elevation)
         {
-            Coordinates = coordinates ?? throw new ArgumentNullException(nameof(coordinates));
+            vector = (coordinates ?? throw new ArgumentNullException(nameof(coordinates)));
             Elevation = elevation;
         }
 
-        public Coordinates Coordinates { get; }
+        public DemDataPoint(CoordinatesValue vector, double elevation)
+        {
+            this.vector = vector;
+            Elevation = elevation;
+        }
+
+        public Coordinates Coordinates => new Coordinates(vector);
 
         public double Elevation { get; }
 
         double? IPosition.Altitude => Elevation;
 
-        double IPosition.Latitude => Coordinates.Latitude;
+        public double Latitude => vector.Latitude;
 
-        double IPosition.Longitude => Coordinates.Longitude;
+        public double Longitude => vector.Longitude;
+
+        public Vector2D Vector2D => vector.Vector2D;
+
+        public CoordinatesValue CoordinatesS => vector;
 
         public bool Equals(DemDataPoint? other)
         {
             if (other != null)
             {
-                return Coordinates.Equals(other.Coordinates)
+                return vector.Vector2D == other.vector.Vector2D
                     && Elevation == other.Elevation;
             }
             return false;
@@ -40,7 +53,7 @@ namespace MapToolkit
 
         public override int GetHashCode()
         {
-            return Coordinates.GetHashCode() ^ Elevation.GetHashCode();
+            return vector.Vector2D.GetHashCode() ^ Elevation.GetHashCode();
         }
     }
 }

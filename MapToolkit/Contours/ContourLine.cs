@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Pmad.Geometry;
+using Pmad.Geometry.Algorithms;
+using Pmad.Geometry.Collections;
 
 namespace MapToolkit.Contours
 {
     public sealed class ContourLine
     {
+        private ReadOnlyArrayBuilder<CoordinatesValue> points = new ReadOnlyArrayBuilder<CoordinatesValue>();
+
         internal ContourLine(ContourSegment segment)
         {
 #if DEBUG
@@ -14,16 +18,16 @@ namespace MapToolkit.Contours
                 throw new ArgumentException();
             }
 #endif
-            Points.Add(segment.Point1);
-            Points.Add(segment.Point2);
+            this.points.Add(segment.Point1);
+            this.points.Add(segment.Point2);
             Level = segment.Level;
         }
 
-        public ContourLine(IEnumerable<Coordinates> points, double level)
+        public ContourLine(IEnumerable<CoordinatesValue> points, double level)
         {
-            Points.AddRange(points);
+            this.points.AddRange(points);
             Level = level;
-            UpdateIsClosed(Coordinates.DefaultThresholdSquared);
+            UpdateIsClosed(Coordinates.LatLonSettings.NegligibleDistanceSquared);
         }
 
         /// <summary>
@@ -34,13 +38,13 @@ namespace MapToolkit.Contours
         /// 
         /// Points are clockwise for basin.
         /// </remarks>
-        public List<Coordinates> Points { get; } = new List<Coordinates>();
+        public ReadOnlyArrayBuilder<CoordinatesValue> Points => points;
 
         public double Level { get; }
 
-        public Coordinates First => Points[0];
+        public CoordinatesValue First => points[0];
 
-        public Coordinates Last => Points[Points.Count - 1];
+        public CoordinatesValue Last => points[points.Count-1];
 
         public bool IsClosed { get; private set; }
 
@@ -49,7 +53,7 @@ namespace MapToolkit.Contours
         public bool IsDiscarded => IsClosed && Points.Count == 0;
 
 
-        internal bool TryAdd(ContourSegment segment, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        internal bool TryAdd(ContourSegment segment, double thresholdSqared)
         {
 #if DEBUG
             if (!segment.IsValidHypothesis)
@@ -67,7 +71,7 @@ namespace MapToolkit.Contours
             }
             else if (segment.Point2.AlmostEquals(First, thresholdSqared))
             {
-                Points.Insert(0, segment.Point1);
+                Points.Prepend(segment.Point1);
             }
             else
             {
@@ -78,7 +82,7 @@ namespace MapToolkit.Contours
             return true;
         }
 
-        internal bool TryMerge(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        internal bool TryMerge(ContourLine other, double thresholdSqared)
         {
             if (IsClosed || other.IsClosed || other.Level != Level || other == this)
             {
@@ -86,14 +90,13 @@ namespace MapToolkit.Contours
             }
             if (Last.AlmostEquals(other.First, thresholdSqared))
             {
-                Points.AddRange(other.Points.Skip(1));
+                Points.AddRange(other.Points.Slice(1));
                 other.Discard();
             }
             else if (First.AlmostEquals(other.Last, thresholdSqared))
             {
-                other.Points.AddRange(Points.Skip(1));
-                Points.Clear();
-                Points.AddRange(other.Points);
+                other.Points.AddRange(Points.Slice(1));
+                points = other.Points;
                 other.Discard();
             }
             else
@@ -104,7 +107,7 @@ namespace MapToolkit.Contours
             return true;
         }
 
-        public void Append(ContourLine other, double thresholdSqared = Coordinates.DefaultThresholdSquared)
+        public void Append(ContourLine other, double thresholdSqared)
         {
             if (other == this)
             {
@@ -117,10 +120,15 @@ namespace MapToolkit.Contours
             UpdateIsClosed(thresholdSqared);
         }
 
+        public void Close(double thresholdSqared)
+        {
+            UpdateIsClosed(thresholdSqared);
+        }
+
         private void Discard()
         {
             IsClosed = true;
-            Points.Clear();
+            points = new ReadOnlyArrayBuilder<CoordinatesValue>();
         }
 
         internal void UpdateIsClosed(double thresholdSqared)
@@ -131,6 +139,17 @@ namespace MapToolkit.Contours
             }
         }
 
-        public bool IsCounterClockWise => Points.IsCounterClockWise();
+        public bool IsCounterClockWise => SignedArea<double, Vector2D>.GetSignedAreaD(points.AsSpan<CoordinatesValue,Vector2D>()) > 0;
+
+
+        public bool IsPointInside(CoordinatesValue point)
+        {
+            return points.AsSpan<CoordinatesValue,Vector2D>().TestPointInPolygon(point.Vector2D) == Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsInside;
+        }
+
+        public bool IsPointInsideOrOnBoundary(CoordinatesValue point)
+        {
+            return points.AsSpan<CoordinatesValue, Vector2D>().TestPointInPolygon(point.Vector2D) != Pmad.Geometry.Clipper2Lib.PointInPolygonResult.IsOutside;
+        }
     }
 }
