@@ -4,6 +4,7 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using Pmad.ProgressTracking;
 using SixLabors.ImageSharp;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.Topographic
 {
@@ -120,33 +121,33 @@ namespace Pmad.Cartography.Drawing.Topographic
                 for (var y = 0; y < h; ++y)
                 {
                     var name = $"{(char)('A' + x)}{h - y}";
-                    var min = start + new Vector(baseSize.X * x, baseSize.Y * y);
-                    var max = start + new Vector(baseSize.X * (x + 1), baseSize.Y * (y + 1));
+                    var min = start + new Vector2D(baseSize.X * x, baseSize.Y * y);
+                    var max = start + new Vector2D(baseSize.X * (x + 1), baseSize.Y * (y + 1));
                     if (x == 0)
                     {
-                        max = max + new Vector(overlapInMeters.X, 0);
+                        max = max + new Vector2D(overlapInMeters.X, 0);
                     }
                     else if (x == w - 1)
                     {
-                        min = min - new Vector(overlapInMeters.X, 0);
+                        min = min - new Vector2D(overlapInMeters.X, 0);
                     }
                     else
                     {
-                        min = min - new Vector(overlapInMeters.X / 2, 0);
-                        max = max + new Vector(overlapInMeters.X / 2, 0);
+                        min = min - new Vector2D(overlapInMeters.X / 2, 0);
+                        max = max + new Vector2D(overlapInMeters.X / 2, 0);
                     }
                     if (y == 0)
                     {
-                        max = max + new Vector(0, overlapInMeters.Y);
+                        max = max + new Vector2D(0, overlapInMeters.Y);
                     }
                     else if (y == h - 1)
                     {
-                        min = min - new Vector(0, overlapInMeters.Y);
+                        min = min - new Vector2D(0, overlapInMeters.Y);
                     }
                     else
                     {
-                        min = min - new Vector(0, overlapInMeters.Y / 2);
-                        max = max + new Vector(0, overlapInMeters.Y / 2);
+                        min = min - new Vector2D(0, overlapInMeters.Y / 2);
+                        max = max + new Vector2D(0, overlapInMeters.Y / 2);
                     }
                     tiles.Add(new TopoMapPdfTile(name, min, max));
                 }

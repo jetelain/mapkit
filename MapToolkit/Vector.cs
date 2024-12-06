@@ -5,6 +5,7 @@ using Pmad.Geometry;
 
 namespace Pmad.Cartography
 {
+    [Obsolete("Use Pmad.Geometry.Vector2D instead.")]
     public struct Vector : IEquatable<Vector>
     {
         private readonly Vector2D vector;
@@ -122,5 +123,9 @@ namespace Pmad.Cartography
         {
             return FormattableString.Invariant($"({X};{Y})");
         }
+
+        public static implicit operator Vector(Vector2D d) => new Vector(d);
+
+        public static implicit operator Vector2D(Vector d) => d.Vector2D;
     }
 }

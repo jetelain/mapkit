@@ -103,7 +103,7 @@ namespace Pmad.Cartography.Databases
         public async Task<bool> HasFullData(Coordinates start, Coordinates end)
         {
             await EnsureIndexIsLoadedAsync().ConfigureAwait(false);
-            var surface = (end - start).Surface();
+            var surface = (end - start).Area();
             var coverage = 0d;
             foreach(var entry in entries.Where(e => e.Overlaps(start, end)))
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.DataCells
 {
@@ -15,8 +16,8 @@ namespace Pmad.Cartography.DataCells
             PixelSizeLon = SizeLon / (PointsLon - 1);
         }
 
-        public DemDataCellPixelIsPoint(Coordinates start, Vector pixelSize, TPixel[,] data) // TODO: TEST !!!
-            : this(start, start + (pixelSize * new Vector(data.GetLength(0) - 1, data.GetLength(1) - 1)), data)
+        public DemDataCellPixelIsPoint(Coordinates start, Vector2D pixelSize, TPixel[,] data) // TODO: TEST !!!
+            : this(start, start + (pixelSize * new Vector2D(data.GetLength(0) - 1, data.GetLength(1) - 1)), data)
         {
             Debug.Assert(PixelSizeLat == pixelSize.Y);
             Debug.Assert(PixelSizeLon == pixelSize.X);

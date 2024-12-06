@@ -98,19 +98,19 @@ namespace Pmad.Cartography
             return vector.IsInRange(start.vector, end.vector);
         }
 
-        public static Coordinates operator+ (Coordinates c, Vector v)
+        public static Coordinates operator+ (Coordinates c, Vector2D v)
         {
-            return new Coordinates(c.vector + v.Vector2D);
+            return new Coordinates(c.vector + v);
         }
 
-        public static Coordinates operator -(Coordinates c, Vector v)
+        public static Coordinates operator -(Coordinates c, Vector2D v)
         {
-            return new Coordinates(c.vector - v.Vector2D);
+            return new Coordinates(c.vector - v);
         }
 
-        public static Vector operator -(Coordinates a, Coordinates b)
+        public static Vector2D operator -(Coordinates a, Coordinates b)
         {
-            return new Vector(a.vector - b.vector);
+            return a.vector - b.vector;
         }
 
         public Coordinates Round(int digits)

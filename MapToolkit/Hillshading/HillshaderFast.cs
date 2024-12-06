@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -13,11 +14,11 @@ namespace Pmad.Cartography.Hillshading
         private readonly double cosAltSinAz;
         private readonly double cosAltCosAz;
 
-        public HillshaderFast(Vector? resolution = null, double elevation = 35, double azimuth = 225, double factor = 1)
+        public HillshaderFast(Vector2D? resolution = null, double elevation = 35, double azimuth = 225, double factor = 1)
         {
             var azimuthRad = Math.PI / 180 * azimuth;
             var elevationRad = Math.PI / 180 * elevation;
-            gradient = new ZevenbergenThorne(resolution ?? Vector.One, factor);
+            gradient = new ZevenbergenThorne(resolution ?? Vector2D.One, factor);
             sinAlt = Math.Sin(elevationRad);
             cosAltSinAz = Math.Cos(elevationRad) * Math.Sin(azimuthRad);
             cosAltCosAz = Math.Cos(elevationRad) * Math.Cos(azimuthRad);
