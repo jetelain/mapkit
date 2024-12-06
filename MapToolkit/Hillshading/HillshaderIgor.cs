@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -7,9 +8,9 @@ namespace Pmad.Cartography.Hillshading
         private readonly GradientBase gradient;
         private readonly double azimuthRad;
 
-        public HillshaderIgor(Vector? resolution = null, double azimuth = 315, double factor = 1)
+        public HillshaderIgor(Vector2D? resolution = null, double azimuth = 315, double factor = 1)
         {
-            gradient = new Horn(resolution ?? Vector.One, factor);
+            gradient = new Horn(resolution ?? Vector2D.One, factor);
             azimuthRad = azimuth * Math.PI / 180.0;
         }
 

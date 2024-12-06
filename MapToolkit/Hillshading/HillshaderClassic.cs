@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -9,7 +10,7 @@ namespace Pmad.Cartography.Hillshading
         private readonly double zenithSin;
         private readonly double azimuthRad;
 
-        public HillshaderClassic(Vector? resolution = null, double elevation = 35, double azimuth = 315, double factor = 1)
+        public HillshaderClassic(Vector2D? resolution = null, double elevation = 35, double azimuth = 315, double factor = 1)
         {
             var zenithRad = (90.0 - elevation) * Math.PI / 180.0;
             zenithCos = Math.Cos(zenithRad);
@@ -22,7 +23,7 @@ namespace Pmad.Cartography.Hillshading
             }
             azimuthRad = azimuthMath * Math.PI / 180.0;
 
-            this.gradient = new Horn(resolution ?? Vector.One, factor);
+            this.gradient = new Horn(resolution ?? Vector2D.One, factor);
         }
 
         protected override double Flat => zenithCos;
