@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Drawing.PdfRender
+namespace Pmad.Cartography.Drawing.PdfRender
 {
     internal class PdfIcon : IDrawIcon
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     internal sealed class TranslateDraw : IDrawSurface
     {

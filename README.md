@@ -1,7 +1,7 @@
-# Map Toolkit
+# Pmad.Cartography
 
-Intend to provide :
-- a simple and read-to-use Digital Elevation Model for everyone based on Open Data with minimalist credits,
-- a simple topographic map rendering toolkit.
+## Pmad.Cartography
+A simple and read-to-use Digital Elevation Model for everyone based on Open Data with minimalist credits
 
-Warning: Code is untested, and design is still in progress.
+## Pmad.Cartography.Drawing and Pmad.Cartography.Drawing.Topographic
+A simple topographic map rendering toolkit.

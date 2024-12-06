@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using SixLabors.Fonts;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawTextPath : IDrawOperation
     {

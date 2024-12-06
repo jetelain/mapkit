@@ -1,7 +1,7 @@
 ﻿using System.Xml;
-using MapToolkit.Drawing.MemoryRender;
-using MapToolkit.Drawing.PdfRender;
-using MapToolkit.Utils;
+using Pmad.Cartography.Drawing.MemoryRender;
+using Pmad.Cartography.Drawing.PdfRender;
+using Pmad.Cartography.Utils;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using SixLabors.ImageSharp;
@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     public static class Render
     {

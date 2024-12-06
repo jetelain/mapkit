@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public sealed class RasterPixelIsArea : RasterMapping
     {

@@ -1,6 +1,6 @@
 ﻿using SixLabors.Fonts;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     internal class FontHelper
     {

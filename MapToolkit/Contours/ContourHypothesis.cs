@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     internal class ContourHypothesis
     {

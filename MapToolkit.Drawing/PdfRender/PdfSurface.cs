@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing.PdfRender
+namespace Pmad.Cartography.Drawing.PdfRender
 {
     internal class PdfSurface : IDrawSurface
     {

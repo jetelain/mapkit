@@ -4,7 +4,7 @@ using System.Numerics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     internal class DemLegend
     {

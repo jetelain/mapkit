@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     public interface IDemStorage
     {

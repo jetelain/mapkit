@@ -3,17 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapToolkit", "MapToolkit\MapToolkit.csproj", "{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography", "MapToolkit\Pmad.Cartography.csproj", "{A7C154E7-F4A6-49AD-91DD-C1CF32650B50}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemUtility", "DemUtility\DemUtility.csproj", "{76B611A8-6A27-4338-8F84-BA4C74F2E518}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapToolkit.Test", "MapToolkit.Test\MapToolkit.Test.csproj", "{F797D011-4BE7-435F-9F5F-0E52140B787A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Test", "MapToolkit.Test\Pmad.Cartography.Test.csproj", "{F797D011-4BE7-435F-9F5F-0E52140B787A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapToolkit.Drawing", "MapToolkit.Drawing\MapToolkit.Drawing.csproj", "{CD89FBC4-5213-4908-9B77-421C73CFFB6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Drawing", "MapToolkit.Drawing\Pmad.Cartography.Drawing.csproj", "{CD89FBC4-5213-4908-9B77-421C73CFFB6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapToolkit.Drawing.Test", "MapToolkit.Drawing.Test\MapToolkit.Drawing.Test.csproj", "{789FFCD4-375D-4201-BCEA-776B3A8D2EAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Drawing.Test", "MapToolkit.Drawing.Test\Pmad.Cartography.Drawing.Test.csproj", "{789FFCD4-375D-4201-BCEA-776B3A8D2EAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapToolkit.Drawing.Topographic", "MapToolkit.Drawing.Topographic\MapToolkit.Drawing.Topographic.csproj", "{A4A7588A-0141-4D37-A614-4E889006CF1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing.Topographic", "MapToolkit.Drawing.Topographic\Pmad.Cartography.Drawing.Topographic.csproj", "{A4A7588A-0141-4D37-A614-4E889006CF1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{C99F2FD4-2553-47CE-A103-395CE9F148CB}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet-linux-pr.yml = .github\workflows\dotnet-linux-pr.yml
+		.github\workflows\dotnet-linux-pub.yml = .github\workflows\dotnet-linux-pub.yml
+		.github\workflows\dotnet-linux.yml = .github\workflows\dotnet-linux.yml
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

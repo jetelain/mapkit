@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.Drawing.Topographic
+﻿namespace Pmad.Cartography.Drawing.Topographic
 {
     public sealed class TopoLocation
     {

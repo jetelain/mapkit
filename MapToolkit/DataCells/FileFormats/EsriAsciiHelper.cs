@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace MapToolkit.DataCells.FileFormats
+namespace Pmad.Cartography.DataCells.FileFormats
 {
     public static class EsriAsciiHelper
     {

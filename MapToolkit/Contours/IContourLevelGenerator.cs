@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     public interface IContourLevelGenerator
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     /// <summary>
     /// Triangle Meshing using basic triangles from NW to SE

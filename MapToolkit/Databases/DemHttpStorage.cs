@@ -3,9 +3,9 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     public class DemHttpStorage : IDemStorage
     {

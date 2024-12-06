@@ -1,8 +1,8 @@
-﻿using MapToolkit.Contours;
-using MapToolkit.Projections;
+﻿using Pmad.Cartography.Contours;
+using Pmad.Cartography.Projections;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Contours
+namespace Pmad.Cartography.Drawing.Contours
 {
     public class ContourRender
     {

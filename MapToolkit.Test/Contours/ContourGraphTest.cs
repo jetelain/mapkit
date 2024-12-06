@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MapToolkit.Contours;
-using MapToolkit.DataCells;
+using Pmad.Cartography.Contours;
+using Pmad.Cartography.DataCells;
 using Pmad.Geometry;
 using Pmad.Geometry.Collections;
 using Pmad.Geometry.Shapes;
 
-namespace MapToolkit.Test.Contours
+namespace Pmad.Cartography.Test.Contours
 {
     public class ContourGraphTest
     {

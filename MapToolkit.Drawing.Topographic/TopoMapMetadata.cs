@@ -1,5 +1,5 @@
 ﻿
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public class TopoMapMetadata
     {

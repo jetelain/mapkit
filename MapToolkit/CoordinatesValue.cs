@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Pmad.Geometry;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     [DebuggerDisplay("({Latitude};{Longitude})")]
     public struct CoordinatesValue : IEquatable<CoordinatesValue>

@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
 using System.Numerics;
 using GeoJSON.Text.Geometry;
-using MapToolkit.Drawing.Contours;
-using MapToolkit.Projections;
+using Pmad.Cartography.Drawing.Contours;
+using Pmad.Cartography.Projections;
 using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
 using Pmad.Geometry.Collections;
 using Pmad.Geometry.Shapes;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public class TopoMapRender
     {

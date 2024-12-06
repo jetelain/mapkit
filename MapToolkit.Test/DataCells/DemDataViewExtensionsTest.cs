@@ -1,7 +1,7 @@
-﻿using MapToolkit.DataCells;
+﻿using Pmad.Cartography.DataCells;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace MapToolkit.Test.DataCells
+namespace Pmad.Cartography.Test.DataCells
 {
     public class DemDataViewExtensionsTest
     {

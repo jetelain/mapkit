@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using MapToolkit.DataCells.PixelFormats;
+using Pmad.Cartography.DataCells.PixelFormats;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public abstract class DemDataCellBase<TPixel> : IDemDataCell
         where TPixel : unmanaged

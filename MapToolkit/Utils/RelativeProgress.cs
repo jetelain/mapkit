@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Utils
+namespace Pmad.Cartography.Utils
 {
     public class RelativeProgress : IProgress<double>
     {

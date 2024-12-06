@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     public interface IInterpolation
     {

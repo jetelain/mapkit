@@ -1,6 +1,6 @@
 ﻿using Pmad.Geometry;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public static class TopoMapDataExtensions
     {

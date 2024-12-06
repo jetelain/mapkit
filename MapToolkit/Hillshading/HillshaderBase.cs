@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace MapToolkit.Hillshading
+namespace Pmad.Cartography.Hillshading
 {
     public abstract class HillshaderBase
     {

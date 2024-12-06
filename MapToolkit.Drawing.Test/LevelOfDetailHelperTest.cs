@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MapToolkit.Drawing;
+using Pmad.Cartography.Drawing;
 
-namespace MapToolkit.Test.Drawing
+namespace Pmad.Cartography.Drawing.Test
 {
     public class LevelOfDetailHelperTest
     {

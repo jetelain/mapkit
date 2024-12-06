@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MapToolkit.DataCells.PixelFormats
+namespace Pmad.Cartography.DataCells.PixelFormats
 {
     internal sealed class DoublePixel : DemPixel<double>
     {

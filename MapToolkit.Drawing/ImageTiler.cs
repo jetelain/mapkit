@@ -3,7 +3,7 @@ using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     /// <summary>
     /// Takes a large image to generate tiles for Leaflet or similar

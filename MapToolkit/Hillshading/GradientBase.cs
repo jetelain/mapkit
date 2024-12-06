@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MapToolkit.Hillshading
+namespace Pmad.Cartography.Hillshading
 {
     public abstract class GradientBase 
     {

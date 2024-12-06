@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MapToolkit.Test
+namespace Pmad.Cartography.Test
 {
     public class DefaultInterpolationTest
     {

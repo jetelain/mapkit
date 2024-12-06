@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Drawing.SvgRender
+namespace Pmad.Cartography.Drawing.SvgRender
 {
     internal class SvgIcon : IDrawIcon
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MapToolkit.GeodeticSystems
+namespace Pmad.Cartography.GeodeticSystems
 {
     public sealed class WSG84ApproximateDistance : IDistanceAlgorithm
     {

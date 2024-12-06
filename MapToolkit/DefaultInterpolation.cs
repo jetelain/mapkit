@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     public sealed class DefaultInterpolation : IInterpolation
     {

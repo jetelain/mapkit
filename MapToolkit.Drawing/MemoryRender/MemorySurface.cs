@@ -5,7 +5,7 @@ using System.Text;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class MemorySurface : IDrawSurface
     {

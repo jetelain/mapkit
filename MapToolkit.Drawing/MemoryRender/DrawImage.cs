@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawImage : IDrawOperation
     {

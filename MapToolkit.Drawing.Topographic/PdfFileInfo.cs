@@ -1,6 +1,6 @@
-﻿using MapToolkit.Drawing.PdfRender;
+﻿using Pmad.Cartography.Drawing.PdfRender;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public class PdfFileInfo
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MapToolkit.DataCells;
-using MapToolkit.Utils;
+using Pmad.Cartography.DataCells;
+using Pmad.Cartography.Utils;
 using Pmad.Geometry;
 using Pmad.Geometry.Collections;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     public static class ContourMaximaMinima
     {

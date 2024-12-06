@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public class DemDataView<TPixel> : IDemDataView
         where TPixel : unmanaged

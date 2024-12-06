@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.Contours
+﻿namespace Pmad.Cartography.Contours
 {
     internal class ContourSegment
     {

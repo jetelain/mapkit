@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class TranslateStylesSurface : IDrawSurface
     {

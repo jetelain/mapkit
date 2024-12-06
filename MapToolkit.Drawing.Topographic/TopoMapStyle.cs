@@ -1,8 +1,8 @@
-﻿using MapToolkit.Drawing;
-using MapToolkit.Drawing.Contours;
+﻿using Pmad.Cartography.Drawing;
+using Pmad.Cartography.Drawing.Contours;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     internal class TopoMapStyle
     {

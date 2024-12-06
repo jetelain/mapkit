@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.Drawing
+﻿namespace Pmad.Cartography.Drawing
 {
     public enum TextAnchor
     {

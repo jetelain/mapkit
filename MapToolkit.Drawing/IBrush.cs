@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     public interface IBrush : IEquatable<IBrush>
     {

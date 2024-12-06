@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SixLabors.Fonts;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawText : IDrawOperation
     {

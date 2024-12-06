@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MapToolkit.Utils
+namespace Pmad.Cartography.Utils
 {
     public sealed class BasicProgress : IDisposable
     {

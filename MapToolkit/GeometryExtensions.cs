@@ -6,7 +6,7 @@ using ClipperLib;
 using GeoJSON.Text.Geometry;
 using Pmad.Geometry;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     public static class GeometryExtensions
     {

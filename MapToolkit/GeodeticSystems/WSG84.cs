@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.GeodeticSystems
+namespace Pmad.Cartography.GeodeticSystems
 {
     public class WSG84
     {

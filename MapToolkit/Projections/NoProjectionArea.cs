@@ -1,7 +1,7 @@
 ﻿using System;
 using Pmad.Geometry;
 
-namespace MapToolkit.Projections
+namespace Pmad.Cartography.Projections
 {
     public class NoProjectionArea : IProjectionArea
     {
