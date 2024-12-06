@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Hillshading
+namespace Pmad.Cartography.Hillshading
 {
     /// <summary>
     /// Almost same result of <see cref="HillshaderClassic"/> but twice as fast

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MapToolkit.Contours;
+using Pmad.Cartography.Contours;
 
-namespace MapToolkit.Test.Contours
+namespace Pmad.Cartography.Test.Contours
 {
     public class ContourLineTest
     {

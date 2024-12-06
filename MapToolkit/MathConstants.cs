@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     internal static class MathConstants
     {

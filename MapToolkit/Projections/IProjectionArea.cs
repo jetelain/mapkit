@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Projections
+namespace Pmad.Cartography.Projections
 {
     public interface IProjectionArea
     {

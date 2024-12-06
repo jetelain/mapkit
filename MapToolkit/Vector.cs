@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text.Json.Serialization;
 using Pmad.Geometry;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     public struct Vector : IEquatable<Vector>
     {

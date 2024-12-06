@@ -1,6 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     internal static class IconsRender
     {

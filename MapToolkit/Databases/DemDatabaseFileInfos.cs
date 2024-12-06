@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using System.Text.Json.Serialization;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     public class DemDatabaseFileInfos
     {

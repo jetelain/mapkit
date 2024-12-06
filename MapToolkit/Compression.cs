@@ -1,4 +1,4 @@
-﻿namespace MapToolkit
+﻿namespace Pmad.Cartography
 {
     public enum Compression
     {

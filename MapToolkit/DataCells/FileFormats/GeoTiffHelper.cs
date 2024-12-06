@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
-using MapToolkit.GeodeticSystems;
+using Pmad.Cartography.GeodeticSystems;
 
-namespace MapToolkit.DataCells.FileFormats
+namespace Pmad.Cartography.DataCells.FileFormats
 {
     internal class GeoTiffHelper
     {

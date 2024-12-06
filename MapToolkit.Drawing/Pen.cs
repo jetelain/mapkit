@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     public class Pen : IEquatable<Pen>
     {

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MapToolkit\MapToolkit.csproj" />
+    <ProjectReference Include="..\MapToolkit\Pmad.Cartography.csproj" />
   </ItemGroup>
 
 </Project>

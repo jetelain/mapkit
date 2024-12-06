@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     [JsonSerializable(typeof(DemDatabaseIndex))]
     internal partial class DemDatabaseIndexContext : JsonSerializerContext

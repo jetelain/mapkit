@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace MapToolkit.DataCells.FileFormats
+namespace Pmad.Cartography.DataCells.FileFormats
 {
     internal class SRTMHelper
     {

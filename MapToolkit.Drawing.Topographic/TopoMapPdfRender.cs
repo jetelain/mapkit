@@ -1,11 +1,11 @@
-﻿using MapToolkit.Drawing.PdfRender;
-using MapToolkit.Projections;
+﻿using Pmad.Cartography.Drawing.PdfRender;
+using Pmad.Cartography.Projections;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using Pmad.ProgressTracking;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public static class TopoMapPdfRender
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using MapToolkit.DataCells.FileFormats;
+using Pmad.Cartography.DataCells.FileFormats;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public static class DemDataCell
     {

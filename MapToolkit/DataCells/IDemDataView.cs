@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public interface IDemDataView : IDemDataCellMetadata
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     /// <summary>
     /// "Marching square algorithm" applied to 4 points that form a square

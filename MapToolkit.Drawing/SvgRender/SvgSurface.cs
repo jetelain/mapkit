@@ -8,7 +8,7 @@ using System.Xml;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.SvgRender
+namespace Pmad.Cartography.Drawing.SvgRender
 {
 
     internal sealed class SvgSurface : IDrawSurface, IDisposable

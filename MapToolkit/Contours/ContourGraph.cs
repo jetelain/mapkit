@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using Pmad.Geometry;
 using Pmad.Geometry.Collections;
 using Pmad.Geometry.Shapes;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     public class ContourGraph
     {

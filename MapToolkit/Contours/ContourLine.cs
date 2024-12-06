@@ -4,7 +4,7 @@ using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
 using Pmad.Geometry.Collections;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     public sealed class ContourLine
     {

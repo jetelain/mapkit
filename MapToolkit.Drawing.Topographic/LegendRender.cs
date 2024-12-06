@@ -1,12 +1,12 @@
-﻿using MapToolkit.Drawing;
-using MapToolkit.Drawing.PdfRender;
-using MapToolkit.Projections;
+﻿using Pmad.Cartography.Drawing;
+using Pmad.Cartography.Drawing.PdfRender;
+using Pmad.Cartography.Projections;
 using Pmad.Geometry.Collections;
 using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     internal class LegendRender
     {

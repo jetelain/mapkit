@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json.Serialization;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public class DemDataCellMetadata : IDemDataCellMetadata
     {

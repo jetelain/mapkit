@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.DataCells.PixelFormats
+﻿namespace Pmad.Cartography.DataCells.PixelFormats
 {
     internal class DemPixel
     {

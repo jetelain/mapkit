@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public static class DemDataViewExtensions
     {

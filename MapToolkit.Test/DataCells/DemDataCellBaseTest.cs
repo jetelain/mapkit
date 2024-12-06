@@ -1,6 +1,6 @@
-﻿using MapToolkit.DataCells;
+﻿using Pmad.Cartography.DataCells;
 
-namespace MapToolkit.Test.DataCells
+namespace Pmad.Cartography.Test.DataCells
 {
     public class DemDataCellBaseTest
     {

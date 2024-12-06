@@ -1,9 +1,9 @@
 ﻿using GeoJSON.Text.Geometry;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using Pmad.Geometry.Shapes;
 using Pmad.Geometry;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     internal class TopoMapData : ITopoMapData
     {

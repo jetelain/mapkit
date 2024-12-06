@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MapToolkit.Contours
+namespace Pmad.Cartography.Contours
 {
     public class ContourFixedLevel : IContourLevelGenerator
     {

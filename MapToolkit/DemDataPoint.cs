@@ -3,7 +3,7 @@ using System.Diagnostics;
 using GeoJSON.Text.Geometry;
 using Pmad.Geometry;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     [DebuggerDisplay("{Coordinates} => {Elevation}")]
     public sealed class DemDataPoint : IEquatable<DemDataPoint>, IPosition

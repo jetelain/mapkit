@@ -1,14 +1,14 @@
-﻿using MapToolkit.Contours;
-using MapToolkit.DataCells;
-using MapToolkit.GeodeticSystems;
-using MapToolkit.Hillshading;
+﻿using Pmad.Cartography.Contours;
+using Pmad.Cartography.DataCells;
+using Pmad.Cartography.GeodeticSystems;
+using Pmad.Cartography.Hillshading;
 using Pmad.Geometry;
 using Pmad.Geometry.Collections;
 using Pmad.ProgressTracking;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace MapToolkit.Drawing.Topographic
+namespace Pmad.Cartography.Drawing.Topographic
 {
     public sealed class TopoMapRenderData
     {

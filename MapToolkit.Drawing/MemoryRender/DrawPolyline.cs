@@ -1,6 +1,6 @@
 ﻿using Pmad.Geometry.Clipper2Lib;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawPolyline : IDrawOperation
     {

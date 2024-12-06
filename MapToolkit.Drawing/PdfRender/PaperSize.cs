@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.Drawing.PdfRender
+﻿namespace Pmad.Cartography.Drawing.PdfRender
 {
     /// <summary>
     /// Various size given in PostScript points

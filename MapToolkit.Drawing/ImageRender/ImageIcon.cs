@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing.ImageRender
+namespace Pmad.Cartography.Drawing.ImageRender
 {
     internal class ImageIcon : IDrawIcon
     {

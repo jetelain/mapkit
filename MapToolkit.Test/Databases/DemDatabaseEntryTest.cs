@@ -1,7 +1,7 @@
-﻿using MapToolkit.Databases;
-using MapToolkit.DataCells;
+﻿using Pmad.Cartography.Databases;
+using Pmad.Cartography.DataCells;
 
-namespace MapToolkit.Test.Databases
+namespace Pmad.Cartography.Test.Databases
 {
     public class DemDatabaseEntryTest
     {

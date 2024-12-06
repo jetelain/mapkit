@@ -1,7 +1,7 @@
-﻿using MapToolkit.Drawing;
+﻿using Pmad.Cartography.Drawing;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing.Contours
+namespace Pmad.Cartography.Drawing.Contours
 {
     public class ContourRenderStyle : IContourRenderStyle
     {

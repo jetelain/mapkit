@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MapToolkit.DataCells.PixelFormats
+namespace Pmad.Cartography.DataCells.PixelFormats
 {
     internal abstract class DemPixel<T> : DemPixel 
         where T : unmanaged

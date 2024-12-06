@@ -6,7 +6,7 @@ using GeoJSON.Text.Geometry;
 using Pmad.Geometry;
 using Pmad.Geometry.Shapes;
 
-namespace MapToolkit
+namespace Pmad.Cartography
 {
     [DebuggerDisplay("({Latitude};{Longitude})")]
     public class Coordinates : IEquatable<Coordinates>, IPosition

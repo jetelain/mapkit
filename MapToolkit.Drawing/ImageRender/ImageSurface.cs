@@ -8,7 +8,7 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
 
-namespace MapToolkit.Drawing.ImageRender
+namespace Pmad.Cartography.Drawing.ImageRender
 {
     internal class ImageSurface : IDrawSurface
     {

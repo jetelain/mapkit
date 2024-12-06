@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace MapToolkit.DataCells
+namespace Pmad.Cartography.DataCells
 {
     public sealed class DemDataCellPixelIsPoint<TPixel>
         : DemDataCellBase<TPixel> where TPixel : unmanaged

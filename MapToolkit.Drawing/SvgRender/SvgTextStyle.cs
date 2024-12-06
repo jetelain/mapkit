@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.Drawing.SvgRender
+﻿namespace Pmad.Cartography.Drawing.SvgRender
 {
     internal class SvgTextStyle : SvgStyle, IDrawTextStyle
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     public class DemDatabase
     {

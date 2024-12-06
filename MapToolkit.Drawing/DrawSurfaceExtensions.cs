@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SixLabors.ImageSharp;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     public static class DrawSurfaceExtensions
     {

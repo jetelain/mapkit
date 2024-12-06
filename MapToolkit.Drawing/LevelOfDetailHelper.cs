@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MapToolkit.Drawing
+namespace Pmad.Cartography.Drawing
 {
     public static class LevelOfDetailHelper
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MapToolkit.Drawing.MemoryRender
+namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal interface IDrawOperation
     {

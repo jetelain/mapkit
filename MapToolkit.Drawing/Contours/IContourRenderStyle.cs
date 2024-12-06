@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MapToolkit.Drawing;
+using Pmad.Cartography.Drawing;
 
-namespace MapToolkit.Drawing.Contours
+namespace Pmad.Cartography.Drawing.Contours
 {
     public interface IContourRenderStyle
     {

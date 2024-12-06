@@ -1,4 +1,4 @@
-﻿namespace MapToolkit.DataCells
+﻿namespace Pmad.Cartography.DataCells
 {
     public enum DemRasterType
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MapToolkit.Hillshading
+namespace Pmad.Cartography.Hillshading
 {
     public sealed class HillshaderClassic : HillshaderBase
     {

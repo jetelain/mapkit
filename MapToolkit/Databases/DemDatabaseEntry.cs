@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using MapToolkit.DataCells;
+using Pmad.Cartography.DataCells;
 using System;
 
-namespace MapToolkit.Databases
+namespace Pmad.Cartography.Databases
 {
     internal class DemDatabaseEntry
     {
