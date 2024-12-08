@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -8,7 +9,7 @@ namespace Pmad.Cartography.Hillshading
     public sealed class ZevenbergenThorne : GradientBase
     {
 
-        public ZevenbergenThorne(Vector resolution, double factor = 1)
+        public ZevenbergenThorne(Vector2D resolution, double factor = 1)
             : base(resolution, factor, 2)
         {
 

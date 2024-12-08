@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -16,7 +17,7 @@ namespace Pmad.Cartography.Hillshading
         /// <param name="resolution">Resolution of a pixel in meters</param>
         /// <param name="altFactor">Elevation exageration factor</param>
         /// <param name="points">Number of points per sample for current algorithm</param>
-        private protected GradientBase(Vector resolution, double altFactor, int points)
+        private protected GradientBase(Vector2D resolution, double altFactor, int points)
         {
             xFactor = altFactor / points / resolution.X;
             yFactor = altFactor / points / resolution.Y;
