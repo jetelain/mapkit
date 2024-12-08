@@ -2,6 +2,9 @@
 
 namespace Pmad.Cartography.Hillshading
 {
+    /// <summary>
+    /// Hillshader that uses Igor's algorithm.
+    /// </summary>
     public sealed class HillshaderIgor : HillshaderBase
     {
         private readonly GradientBase gradient;

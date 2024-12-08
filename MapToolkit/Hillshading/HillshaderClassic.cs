@@ -2,6 +2,9 @@
 
 namespace Pmad.Cartography.Hillshading
 {
+    /// <summary>
+    /// Classic hillshader.
+    /// </summary>
     public sealed class HillshaderClassic : HillshaderBase
     {
         private readonly GradientBase gradient;
