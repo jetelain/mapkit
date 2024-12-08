@@ -2,7 +2,7 @@
 
 namespace Pmad.Cartography.GeodeticSystems
 {
-    public class WSG84
+    public static class WSG84
     {
         public const ushort EPSG = 4326;
 
@@ -75,6 +75,12 @@ namespace Pmad.Cartography.GeodeticSystems
             return R * (2.0 * Math.Atan2(Math.Sqrt(x), Math.Sqrt(1.0 - x)));
         }
 
+        /// <summary>
+        /// Heading from a to b in radians
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double Heading(Coordinates a, Coordinates b)
         {
             var aLat = a.Latitude * MathConstants.PIDiv180;

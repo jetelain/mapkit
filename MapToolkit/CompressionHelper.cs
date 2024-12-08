@@ -4,7 +4,7 @@ using System.IO.Compression;
 
 namespace Pmad.Cartography
 {
-    public class CompressionHelper
+    public static class CompressionHelper
     {
         public const string ExtensionGZip = ".gz";
         public const string ExtensionZStd = ".zst";

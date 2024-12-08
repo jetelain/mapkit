@@ -77,5 +77,51 @@ namespace Pmad.Cartography.Test.DataCells
                 new DemDataPoint(new Coordinates(0.75, 0.75), 8),
             }, dataCell.GetPointsOnParallel(1, 0, 2).ToList());
         }
+
+        [Fact]
+        public void Downsample()
+        {
+            var dataCell = new DemDataCellPixelIsArea<short>(new Coordinates(0, 0), new Coordinates(2, 2), new short[4, 4] {
+                    { 1, 2, 3, 4 },
+                    { 5, 6, 7, 8 },
+                    { 9, 10, 11, 12 },
+                    { 13, 14, 15, 16 },
+                });
+
+            var downsampled = dataCell.Downsample(2);
+
+            Assert.Equal(2, downsampled.Data.GetLength(0));
+            Assert.Equal(2, downsampled.Data.GetLength(1));
+
+            Assert.Equal(3, downsampled.Data[0, 0]);
+            Assert.Equal(5, downsampled.Data[0, 1]);
+
+            Assert.Equal(11, downsampled.Data[1, 0]);
+            Assert.Equal(13, downsampled.Data[1, 1]);
+        }
+
+        [Fact]
+        public void Crop()
+        {
+            var dataCell = new DemDataCellPixelIsArea<short>(new Coordinates(0, 0), new Coordinates(2, 2), new short[4, 4] {
+                    { 1, 2, 3, 4 },
+                    { 5, 6, 7, 8 },
+                    { 9, 10, 11, 12 },
+                    { 13, 14, 15, 16 },
+                });
+
+            var subCell = dataCell.Crop(new Coordinates(0, 0), new Coordinates(1, 1));
+            Assert.Equal(new Coordinates(0, 0), subCell.Start);
+            Assert.Equal(new Coordinates(1, 1), subCell.End);
+
+            Assert.Equal(2, subCell.Data.GetLength(0));
+            Assert.Equal(2, subCell.Data.GetLength(1));
+
+            Assert.Equal(1, subCell.Data[0, 0]);
+            Assert.Equal(2, subCell.Data[0, 1]);
+
+            Assert.Equal(5, subCell.Data[1, 0]);
+            Assert.Equal(6, subCell.Data[1, 1]);
+        }
     }
 }

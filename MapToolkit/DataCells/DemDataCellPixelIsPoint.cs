@@ -17,7 +17,7 @@ namespace Pmad.Cartography.DataCells
         }
 
         public DemDataCellPixelIsPoint(Coordinates start, Vector2D pixelSize, TPixel[,] data) // TODO: TEST !!!
-            : this(start, start + (pixelSize * new Vector2D(data.GetLength(0) - 1, data.GetLength(1) - 1)), data)
+            : this(start, start + (pixelSize * new Vector2D(data.GetLength(1) - 1, data.GetLength(0) - 1)), data)
         {
             Debug.Assert(PixelSizeLat == pixelSize.Y);
             Debug.Assert(PixelSizeLon == pixelSize.X);
@@ -152,7 +152,7 @@ namespace Pmad.Cartography.DataCells
         }
 
 
-        public DemDataCellPixelIsPoint<TPixel> Downsample(int factor, DemDataCellPixelIsPoint<TPixel> north, DemDataCellPixelIsPoint<TPixel> northEast, DemDataCellPixelIsPoint<TPixel> east)
+        public DemDataCellPixelIsPoint<TPixel> Downsample(int factor, DemDataCellPixelIsPoint<TPixel>? north, DemDataCellPixelIsPoint<TPixel>? northEast, DemDataCellPixelIsPoint<TPixel>? east)
         {
             var newPointsLat = ((PointsLat - 1) / factor) + 1;
             var newPointsLon = ((PointsLon - 1) / factor) + 1;
@@ -173,7 +173,7 @@ namespace Pmad.Cartography.DataCells
             return new DemDataCellPixelIsPoint<TPixel>(Start, End, newData);
         }
 
-        private void DownsampleNorthEastPoint(int factor, DemDataCellPixelIsPoint<TPixel> northEast, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
+        private void DownsampleNorthEastPoint(int factor, DemDataCellPixelIsPoint<TPixel>? northEast, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (northEast != null)
             {
@@ -190,7 +190,7 @@ namespace Pmad.Cartography.DataCells
             }
         }
 
-        private void DownsampleEastEdge(int factor, DemDataCellPixelIsPoint<TPixel> east, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
+        private void DownsampleEastEdge(int factor, DemDataCellPixelIsPoint<TPixel>? east, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (east != null)
             {
@@ -215,7 +215,7 @@ namespace Pmad.Cartography.DataCells
             }
         }
 
-        private void DownsampleNorthEdge(int factor, DemDataCellPixelIsPoint<TPixel> north, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
+        private void DownsampleNorthEdge(int factor, DemDataCellPixelIsPoint<TPixel>? north, TPixel[,] newData, TPixel[] samples, int northLat, int eastLon)
         {
             if (north != null)
             {

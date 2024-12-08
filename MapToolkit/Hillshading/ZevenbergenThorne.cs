@@ -3,6 +3,9 @@ using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
+    /// <summary>
+    /// ZevenbergenThorne gradient calculation.
+    /// </summary>
     public sealed class ZevenbergenThorne : GradientBase
     {
 

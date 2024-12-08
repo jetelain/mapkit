@@ -18,6 +18,11 @@ namespace Pmad.Cartography
 
         public static readonly Coordinates Zero = new Coordinates(0, 0);
 
+        /// <summary>
+        /// Creates a new instance of Coordinates
+        /// </summary>
+        /// <param name="latitude">Latitude (Y)</param>
+        /// <param name="longitude">Longitude (X)</param>
         [JsonConstructor]
         public Coordinates(double latitude, double longitude)
         {

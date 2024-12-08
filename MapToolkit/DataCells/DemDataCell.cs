@@ -134,10 +134,7 @@ namespace Pmad.Cartography.DataCells
         {
             var dataSize = reader.ReadUInt32();
             var bytes = new byte[dataSize];
-            if (reader.BaseStream.Read(bytes, 0, (int)dataSize) != dataSize)
-            {
-                throw new IOException($"Premature end of file.");
-            }
+            reader.BaseStream.ReadExactly(bytes, 0, (int)dataSize);
 
             var data = new T[metadata.PointsLat, metadata.PointsLon];
             if (BitConverter.IsLittleEndian)
