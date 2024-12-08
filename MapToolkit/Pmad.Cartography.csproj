@@ -25,7 +25,7 @@
 		<PackageReference Include="GeoJSON.Text" Version="1.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
 		<PackageReference Include="System.Text.Json" Version="8.0.5" />
-		<PackageReference Include="ZstdSharp.Port" Version="0.7.5" />
+		<PackageReference Include="ZstdSharp.Port" Version="0.8.3" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 		<PackageReference Include="Pmad.Geometry" Version="0.1.46" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
