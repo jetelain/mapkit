@@ -65,10 +65,11 @@ namespace Pmad.Cartography.DataCells.FileFormats
             return DemDataCell.Create(metadata.Start, metadata.End, metadata.RasterType, data);
         }
 
-        private static DemDataCellMetadata LoadDataCellMetadata(TextReader stream, out float nodata)
+        internal static DemDataCellMetadata LoadDataCellMetadata(TextReader stream, out float nodata)
         {
             var header = Enumerable.Range(0, 6)
                 .Select(_ => stream.ReadLine() ?? string.Empty)
+                .Where(l => !string.IsNullOrEmpty(l))
                 .Select(l => l.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 .ToDictionary(l => l[0].ToLowerInvariant(), l => l.Length > 1 ? l[1] : string.Empty);
 

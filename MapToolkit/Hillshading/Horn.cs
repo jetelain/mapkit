@@ -2,6 +2,9 @@
 
 namespace Pmad.Cartography.Hillshading
 {
+    /// <summary>
+    /// Horn's method for calculating the gradient of a surface.
+    /// </summary>
     public sealed class Horn : GradientBase
     {
         public Horn(Vector resolution, double factor = 1) 

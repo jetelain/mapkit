@@ -2,6 +2,9 @@
 
 namespace Pmad.Cartography.Hillshading
 {
+    /// <summary>
+    /// Hillshader that uses Igor's algorithm.
+    /// </summary>
     public sealed class HillshaderIgor : HillshaderBase
     {
         private readonly GradientBase gradient;
@@ -26,7 +29,7 @@ namespace Pmad.Cartography.Hillshading
 
         protected override double Flat => 1;
 
-        static double NormalizeAngle(double angle, double normalizer)
+        internal static double NormalizeAngle(double angle, double normalizer)
         {
             angle = angle % normalizer;
             if (angle < 0)
@@ -37,7 +40,7 @@ namespace Pmad.Cartography.Hillshading
             return angle;
         }
 
-        static double DifferenceBetweenAngles(double angle1, double angle2, double normalizer)
+        internal static double DifferenceBetweenAngles(double angle1, double angle2, double normalizer)
         {
             var diff = Math.Abs(NormalizeAngle(angle1, normalizer) - NormalizeAngle(angle2, normalizer));
             if (diff > normalizer / 2)
