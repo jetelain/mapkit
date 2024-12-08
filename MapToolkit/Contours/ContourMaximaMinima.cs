@@ -8,13 +8,30 @@ using Pmad.Geometry.Collections;
 
 namespace Pmad.Cartography.Contours
 {
+    /// <summary>
+    /// Finds the minima and maxima points of a <see cref="IDemDataView"/> using contour lines.
+    /// </summary>
     public static class ContourMaximaMinima
     {
+        /// <summary>
+        /// Finds the minima points of a <see cref="IDemDataView"/> using contour lines.
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="lines"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
         public static List<DemDataPoint> FindMinima(IDemDataView cell, IEnumerable<ContourLine> lines, IProgress<double>? progress = null)
         {
             return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && !l.IsCounterClockWise), -1, cell, progress);
         }
 
+        /// <summary>
+        /// Finds the maxima points of a <see cref="IDemDataView"/> using contour lines.
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="lines"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
         public static List<DemDataPoint> FindMaxima(IDemDataView cell, IEnumerable<ContourLine> lines, IProgress<double>? progress = null)
         {
             return FindMinimaOrMaxima(lines.Where(l => l.IsClosed && l.Level > 0 && l.IsCounterClockWise), 1, cell, progress);

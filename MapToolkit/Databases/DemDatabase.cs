@@ -8,6 +8,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Pmad.Cartography.Databases
 {
+    /// <summary>
+    /// Represents a database of Digital Elevation Model data.
+    /// </summary>
     public class DemDatabase
     {
         private readonly IMemoryCache cache;
