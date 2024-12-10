@@ -1,5 +1,6 @@
 ﻿using Pmad.Cartography.Drawing;
 using Pmad.Cartography.Drawing.Contours;
+using Pmad.Geometry;
 using SixLabors.ImageSharp;
 
 namespace Pmad.Cartography.Drawing.Topographic
@@ -45,8 +46,8 @@ namespace Pmad.Cartography.Drawing.Topographic
             var rocksFill = writer.AllocateBrushStyle(palette.RocksSymbol);
             var rocks = writer.AllocateStyle(new VectorBrush(writer, 20, 20, d =>
             {
-                d.DrawCircle(new Vector(5, 5), 3, rocksFill);
-                d.DrawCircle(new Vector(15, 15), 3, rocksFill);
+                d.DrawCircle(new Vector2D(5, 5), 3, rocksFill);
+                d.DrawCircle(new Vector2D(15, 15), 3, rocksFill);
             }), new Pen(new SolidColorBrush(palette.RocksBorder)));
 
             var forest = writer.AllocateStyle(palette.ForestFill, palette.ForestBorder);

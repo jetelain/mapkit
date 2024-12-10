@@ -21,11 +21,11 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         public static List<PdfFileInfo> RenderPDF(string targetDirectory, string name, ITopoMapData data, IProgressScope scope, int scale = 25)
         {
-            var sizeInMeters = new Vector(
+            var sizeInMeters = new Vector2D(
                 data.DemDataCell.End.Longitude - data.DemDataCell.Start.Longitude,
                 data.DemDataCell.End.Latitude - data.DemDataCell.Start.Latitude);
 
-            var sizeInPoints = new Vector(
+            var sizeInPoints = new Vector2D(
                 sizeInMeters.X / scale * PaperSize.OneMilimeter,
                 sizeInMeters.Y / scale * PaperSize.OneMilimeter);
 
@@ -33,8 +33,8 @@ namespace Pmad.Cartography.Drawing.Topographic
 
             if (sizeInPoints.X > PaperSize.ArchEHeight || sizeInPoints.Y > PaperSize.ArchEWidth)
             {
-                var paperSize = new Vector(PaperSize.ArchEHeight, PaperSize.ArchEWidth);
-                var paperSurface = new Vector(PaperSize.ArchEHeight - (LegendWidth + (Margin * 3)) - 5, PaperSize.ArchEWidth - (Margin * 2));
+                var paperSize = new Vector2D(PaperSize.ArchEHeight, PaperSize.ArchEWidth);
+                var paperSurface = new Vector2D(PaperSize.ArchEHeight - (LegendWidth + (Margin * 3)) - 5, PaperSize.ArchEWidth - (Margin * 2));
 
                 var tiles = GetTiles(data.DemDataCell.Start, scale, sizeInMeters, sizeInPoints, paperSurface);
 
@@ -56,17 +56,17 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         public static PdfFileInfo RenderPDFBook(string file, ITopoMapData data, IProgressScope scope, int scale = 25)
         {
-            var sizeInMeters = new Vector(
+            var sizeInMeters = new Vector2D(
                 data.DemDataCell.End.Longitude - data.DemDataCell.Start.Longitude,
                 data.DemDataCell.End.Latitude - data.DemDataCell.Start.Latitude);
 
-            var sizeInPoints = new Vector(
+            var sizeInPoints = new Vector2D(
                 sizeInMeters.X / scale * PaperSize.OneMilimeter,
                 sizeInMeters.Y / scale * PaperSize.OneMilimeter);
 
-            var paperSize = new Vector(PaperSize.A3Height, PaperSize.A3Width);
+            var paperSize = new Vector2D(PaperSize.A3Height, PaperSize.A3Width);
 
-            var paperSurface = new Vector(paperSize.X - (Margin * 2), paperSize.Y - (Margin * 2));
+            var paperSurface = new Vector2D(paperSize.X - (Margin * 2), paperSize.Y - (Margin * 2));
 
             var tiles = GetTiles(data.DemDataCell.Start, scale, sizeInMeters, sizeInPoints, paperSurface);
 
@@ -79,10 +79,10 @@ namespace Pmad.Cartography.Drawing.Topographic
             page.Width = paperSize.X;
             page.Height = paperSize.Y;
 
-            var legendTopCenter = new Vector((paperSize.X - LegendWidth - LegendHeight - Margin) / 2, (paperSize.Y - LegendHeight) / 2);
+            var legendTopCenter = new Vector2D((paperSize.X - LegendWidth - LegendHeight - Margin) / 2, (paperSize.Y - LegendHeight) / 2);
 
             ToPdfPage(page, legendTopCenter, w => LegendRender.RenderLegend(w, data.Metadata, scale));
-            ToPdfPage(page, legendTopCenter + new Vector(LegendWidth + Margin, 0), w => LegendRender.DrawMiniMap(w, data, tiles, null, LegendRender.LegendHeight));
+            ToPdfPage(page, legendTopCenter + new Vector2D(LegendWidth + Margin, 0), w => LegendRender.DrawMiniMap(w, data, tiles, null, LegendRender.LegendHeight));
 
             var pages = new List<PdfPageInfo>();
 
@@ -99,21 +99,21 @@ namespace Pmad.Cartography.Drawing.Topographic
             return new PdfFileInfo(true, file, string.Empty, scale, paperSize, pages);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, int scale, Vector sizeInMeters, Vector sizeInPoints, Vector paperSurface)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, int scale, Vector2D sizeInMeters, Vector2D sizeInPoints, Vector2D paperSurface)
         {
             var w = Math.Ceiling(sizeInPoints.X / paperSurface.X);
             var h = Math.Ceiling(sizeInPoints.Y / paperSurface.Y);
 
-            var overlapInMeters = new Vector(
+            var overlapInMeters = new Vector2D(
                 (w * paperSurface.X - sizeInPoints.X) / w / PaperSize.OneMilimeter * scale,
                 (h * paperSurface.Y - sizeInPoints.Y) / h / PaperSize.OneMilimeter * scale);
 
-            var baseSize = new Vector(sizeInMeters.X / w, sizeInMeters.Y / h);
+            var baseSize = new Vector2D(sizeInMeters.X / w, sizeInMeters.Y / h);
 
             return GetTiles(start, w, h, overlapInMeters, baseSize);
         }
 
-        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, double w, double h, Vector overlapInMeters, Vector baseSize)
+        private static List<TopoMapPdfTile> GetTiles(CoordinatesValue start, double w, double h, Vector2D overlapInMeters, Vector2D baseSize)
         {
             var tiles = new List<TopoMapPdfTile>();
             for (var x = 0; x < w; ++x)
@@ -156,7 +156,7 @@ namespace Pmad.Cartography.Drawing.Topographic
             return tiles;
         }
 
-        private static PdfFileInfo RenderSinglePdf(ITopoMapData data, int scale, Vector paperSize, string file, IProgressScope scope, ITopoMapData? fulldata = null, List<TopoMapPdfTile>? tiles = null, TopoMapPdfTile? current = null)
+        private static PdfFileInfo RenderSinglePdf(ITopoMapData data, int scale, Vector2D paperSize, string file, IProgressScope scope, ITopoMapData? fulldata = null, List<TopoMapPdfTile>? tiles = null, TopoMapPdfTile? current = null)
         {
             var document = new PdfDocument();
             document.Info.Title = data.Metadata.Title;
@@ -171,21 +171,21 @@ namespace Pmad.Cartography.Drawing.Topographic
             return new PdfFileInfo(false, file, current?.Name ?? string.Empty, scale, paperSize, [page]);
         }
 
-        private static PdfPageInfo RenderPage(TopoMapRenderData rdata, int scale, Vector paperSizeInPoints, ITopoMapData? fulldata, List<TopoMapPdfTile>? tiles, TopoMapPdfTile? current, PdfDocument document)
+        private static PdfPageInfo RenderPage(TopoMapRenderData rdata, int scale, Vector2D paperSizeInPoints, ITopoMapData? fulldata, List<TopoMapPdfTile>? tiles, TopoMapPdfTile? current, PdfDocument document)
         {
             var page = document.AddPage();
             page.Width = paperSizeInPoints.X;
             page.Height = paperSizeInPoints.Y;
 
-            var projSizeInPoints = new Vector(rdata.WidthInMeters / scale * PaperSize.OneMilimeter, rdata.HeightInMeters / scale * PaperSize.OneMilimeter);
+            var projSizeInPoints = new Vector2D(rdata.WidthInMeters / scale * PaperSize.OneMilimeter, rdata.HeightInMeters / scale * PaperSize.OneMilimeter);
 
             var proj = new NoProjectionArea(rdata.Start, rdata.End, projSizeInPoints / 0.24);
 
             var dX = paperSizeInPoints.X - projSizeInPoints.X;
             var dY = paperSizeInPoints.Y - projSizeInPoints.Y;
 
-            Vector mapTopLeft;
-            Vector legendTopCenter;
+            Vector2D mapTopLeft;
+            Vector2D legendTopCenter;
             bool miniMap = false;
             bool drawLegend = true;
 
@@ -193,24 +193,24 @@ namespace Pmad.Cartography.Drawing.Topographic
             {
                 var delta = (dX - LegendWidthWithAllsMargins) / 2;
                 // | Margin | ... Legend ... | Margin | ... Map ... | Margin |
-                mapTopLeft = new Vector(delta + (Margin * 2) + LegendWidth, dY / 2);
-                legendTopCenter = new Vector(delta + LegendHalfWidth + Margin, dY / 2);
+                mapTopLeft = new Vector2D(delta + (Margin * 2) + LegendWidth, dY / 2);
+                legendTopCenter = new Vector2D(delta + LegendHalfWidth + Margin, dY / 2);
                 miniMap = true;
             }
             else
             {
-                mapTopLeft = new Vector(dX / 2, dY / 2);
+                mapTopLeft = new Vector2D(dX / 2, dY / 2);
                 if (dX < DoubleLegendWidthWithBothMargin)
                 {
                     // |              ... Map ...               | 
                     // |              | ... Legend ... | Margin | 
-                    legendTopCenter = new Vector(paperSizeInPoints.X - (dX / 2) - LegendHalfWidth - Margin, paperSizeInPoints.Y - (dY / 2) - LegendHeight - Margin);
+                    legendTopCenter = new Vector2D(paperSizeInPoints.X - (dX / 2) - LegendHalfWidth - Margin, paperSizeInPoints.Y - (dY / 2) - LegendHeight - Margin);
                     drawLegend = paperSizeInPoints.X > PaperSize.A3Height;
                 }
                 else
                 {
                     // | Margin | ... Legend ... | Margin | ... Map ... | Margin | ... Space for legend ...| Margin |
-                    legendTopCenter = new Vector(dX / 4, dY / 2);
+                    legendTopCenter = new Vector2D(dX / 4, dY / 2);
                     miniMap = true;
                 }
             }
@@ -218,10 +218,10 @@ namespace Pmad.Cartography.Drawing.Topographic
             ToPdfPage(page, mapTopLeft, w => new TopoMapRender(rdata, proj).RenderWithExternGraticule(w));
             if (drawLegend)
             {
-                ToPdfPage(page, legendTopCenter - new Vector(LegendHalfWidth, 0), w => LegendRender.RenderLegend(w, rdata.Data.Metadata, scale));
+                ToPdfPage(page, legendTopCenter - new Vector2D(LegendHalfWidth, 0), w => LegendRender.RenderLegend(w, rdata.Data.Metadata, scale));
                 if (miniMap)
                 {
-                    ToPdfPage(page, legendTopCenter + new Vector(-LegendHalfWidth, LegendHeight + Margin), w => LegendRender.DrawMiniMap(w, fulldata ?? rdata.Data, tiles, current));
+                    ToPdfPage(page, legendTopCenter + new Vector2D(-LegendHalfWidth, LegendHeight + Margin), w => LegendRender.DrawMiniMap(w, fulldata ?? rdata.Data, tiles, current));
                 }
             }
             else
@@ -229,12 +229,12 @@ namespace Pmad.Cartography.Drawing.Topographic
                 ToPdfPage(page, mapTopLeft, w =>
                 {
                     var style = w.AllocateTextStyle(new[] { "Calibri" }, SixLabors.Fonts.FontStyle.Regular, 30, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterLeft);
-                    w.DrawText(new Vector(0, -30), rdata.Data.Metadata.Title, style);
-                    w.DrawText(new Vector(0, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector2D(0, -30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector2D(0, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
 
                     style = w.AllocateTextStyle(new[] { "Calibri" }, SixLabors.Fonts.FontStyle.Regular, 30, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterRight);
-                    w.DrawText(new Vector(proj.Size.X, -30), rdata.Data.Metadata.Title, style);
-                    w.DrawText(new Vector(proj.Size.X, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector2D(proj.Size.X, -30), rdata.Data.Metadata.Title, style);
+                    w.DrawText(new Vector2D(proj.Size.X, proj.Size.Y + 30), rdata.Data.Metadata.Title, style);
                 });
             }
 
@@ -243,34 +243,34 @@ namespace Pmad.Cartography.Drawing.Topographic
 
 
 
-        private static Vector GetPaperSize(double widthInPoints, double heightInPoints)
+        private static Vector2D GetPaperSize(double widthInPoints, double heightInPoints)
         {
             if (heightInPoints > PaperSize.A0Width)
             {
                 // Arch E / Maxmimum size
-                return new Vector(PaperSize.ArchEHeight, PaperSize.ArchEWidth);
+                return new Vector2D(PaperSize.ArchEHeight, PaperSize.ArchEWidth);
             }
             if (widthInPoints > PaperSize.A1Height || heightInPoints > PaperSize.A1Width)
             {
                 // A0
-                return new Vector(PaperSize.A0Height, PaperSize.A0Width);
+                return new Vector2D(PaperSize.A0Height, PaperSize.A0Width);
             }
             if (widthInPoints > PaperSize.A2Height || heightInPoints > PaperSize.A2Width)
             {
                 // A1
-                return new Vector(PaperSize.A1Height, PaperSize.A1Width);
+                return new Vector2D(PaperSize.A1Height, PaperSize.A1Width);
             }
             if (widthInPoints > PaperSize.A3Height || heightInPoints > PaperSize.A3Width)
             {
                 // A2
-                return new Vector(PaperSize.A2Height, PaperSize.A2Width);
+                return new Vector2D(PaperSize.A2Height, PaperSize.A2Width);
             }
             // A3
-            return new Vector(PaperSize.A3Height, PaperSize.A3Width);
+            return new Vector2D(PaperSize.A3Height, PaperSize.A3Width);
         }
 
 
-        public static void ToPdfPage(PdfPage page, Vector shiftInPoints, Action<IDrawSurface> draw)
+        public static void ToPdfPage(PdfPage page, Vector2D shiftInPoints, Action<IDrawSurface> draw)
         {
             using (var xgfx = XGraphics.FromPdfPage(page))
             {

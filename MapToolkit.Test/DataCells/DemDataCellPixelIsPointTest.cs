@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Pmad.Cartography.DataCells;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Test.DataCells
 {
@@ -192,7 +193,7 @@ namespace Pmad.Cartography.Test.DataCells
                 { 5, 8, 4 },
                 { 4, 7, 2 }
             };
-            var pixelSize = new Vector(0.5, 0.5);
+            var pixelSize = new Vector2D(0.5, 0.5);
             var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), pixelSize, data);
 
             Assert.Equal(0, dataCell.Start.Latitude);
@@ -212,7 +213,7 @@ namespace Pmad.Cartography.Test.DataCells
                 { 6, 3, 0 },
                 { 4, 7, 2 }
             };
-            var pixelSize = new Vector(0.5, 0.5);
+            var pixelSize = new Vector2D(0.5, 0.5);
             var dataCell = new DemDataCellPixelIsPoint<short>(new Coordinates(0, 0), pixelSize, data);
 
             Assert.Equal(0, dataCell.Start.Latitude);

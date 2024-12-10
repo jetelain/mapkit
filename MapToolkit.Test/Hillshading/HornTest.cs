@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using Pmad.Cartography.Hillshading;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Test.Hillshading
 {
@@ -10,7 +11,7 @@ namespace Pmad.Cartography.Test.Hillshading
         public void GetDeltaUnscaled_CalculatesCorrectly()
         {
             // Arrange
-            var resolution = new Vector(1, 1);
+            var resolution = new Vector2D(1, 1);
             var horn = new Horn(resolution);
             double[] southLine = { 1, 2, 3 };
             double[] line = { 4, 5, 6 };
@@ -29,7 +30,7 @@ namespace Pmad.Cartography.Test.Hillshading
         public void GetDeltaUnscaled_HandlesEdgeCases()
         {
             // Arrange
-            var resolution = new Vector(1, 1);
+            var resolution = new Vector2D(1, 1);
             var horn = new Horn(resolution);
             double[] southLine = { 1, 2, 3 };
             double[] line = { 4, 5, 6 };

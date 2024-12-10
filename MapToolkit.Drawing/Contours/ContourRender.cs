@@ -26,7 +26,7 @@ namespace Pmad.Cartography.Drawing.Contours
         {
             if (hillshade != null)
             {
-                writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
+                writer.DrawImage(hillshade, Vector2D.Zero, projection.Size, 0.5);
             }
             var masters = new List<ContourLine>();
             var done = 0;
@@ -62,7 +62,7 @@ namespace Pmad.Cartography.Drawing.Contours
         {
             if (hillshade != null)
             {
-                writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
+                writer.DrawImage(hillshade, Vector2D.Zero, projection.Size, 0.5);
             }
             foreach (var line in graph.Lines)
             {

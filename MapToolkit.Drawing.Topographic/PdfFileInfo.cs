@@ -1,10 +1,10 @@
-﻿using Pmad.Cartography.Drawing.PdfRender;
+﻿using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.Topographic
 {
     public class PdfFileInfo
     {
-        public PdfFileInfo(bool isBook, string fileName, string name, int scale, Vector paperSize, List<PdfPageInfo> pages)
+        public PdfFileInfo(bool isBook, string fileName, string name, int scale, Vector2D paperSize, List<PdfPageInfo> pages)
         {
             Name = name;
             FileName = fileName;
@@ -20,7 +20,7 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         public int Scale { get; }
 
-        public Vector PaperSize { get; }
+        public Vector2D PaperSize { get; }
 
         public List<PdfPageInfo> Pages { get; }
 

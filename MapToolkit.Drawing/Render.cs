@@ -9,12 +9,13 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing
 {
     public static class Render
     {
-        public static void ToSvg(string file, Vector size, Action<IDrawSurface> draw, string stylePrefix = "")
+        public static void ToSvg(string file, Vector2D size, Action<IDrawSurface> draw, string stylePrefix = "")
         {
             using (var surface = new SvgRender.SvgSurface(XmlWriter.Create(File.CreateText(file), new XmlWriterSettings() { CloseOutput = true }), size, file, stylePrefix))
             {
@@ -22,7 +23,7 @@ namespace Pmad.Cartography.Drawing
             }
         }
 
-        public static TilingInfos ToSvgTiled(string file, Vector size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
+        public static TilingInfos ToSvgTiled(string file, Vector2D size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
         {
             var maxZoom = ImageTiler.MaxZoom(size);
             var count = ImageTiler.Count(maxZoom, Math.Max(0, maxZoom - 6));
@@ -90,7 +91,7 @@ namespace Pmad.Cartography.Drawing
             TransparentColorMode = WebpTransparentColorMode.Clear 
         };
 
-        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector size, BasicProgress rel, SvgFallBackFormats generateWebpFallback)
+        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector2D size, BasicProgress rel, SvgFallBackFormats generateWebpFallback)
         {
             var chunks = 1 << zoomLevel;
             var tileSize = size / chunks;
@@ -104,7 +105,7 @@ namespace Pmad.Cartography.Drawing
                 for (int y = 0; y < chunks; ++y)
                 {
                     var file = Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.svg");
-                    var pos = new Vector(tileSize.X * x, tileSize.Y * y);
+                    var pos = new Vector2D(tileSize.X * x, tileSize.Y * y);
 
                     ToSvg(file, tileSize, t => new MemDrawClipped(surface, t, pos, pos + tileSize).Draw());
 
@@ -129,7 +130,7 @@ namespace Pmad.Cartography.Drawing
             });
         }
 
-        public static void ToPng(string file, Vector size, Action<IDrawSurface> draw)
+        public static void ToPng(string file, Vector2D size, Action<IDrawSurface> draw)
         {
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
@@ -138,7 +139,7 @@ namespace Pmad.Cartography.Drawing
             }
         }
 
-        public static void ToImage(string file, Vector size, Action<IDrawSurface> draw)
+        public static void ToImage(string file, Vector2D size, Action<IDrawSurface> draw)
         {
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
@@ -152,7 +153,7 @@ namespace Pmad.Cartography.Drawing
             draw(new ImageRender.ImageSurface(target));
         }
 
-        public static TilingInfos ToPngTiled(string targetDirectory, Vector size,  Action<IDrawSurface> draw)
+        public static TilingInfos ToPngTiled(string targetDirectory, Vector2D size,  Action<IDrawSurface> draw)
         {
             using (var image = new Image<Rgba32>((int)size.X, (int)size.Y, new Rgba32(255, 255, 255, 255)))
             {
@@ -161,7 +162,7 @@ namespace Pmad.Cartography.Drawing
             }
         }
 
-        public static void ToPdf(string file, Vector sizeInPixels, Action<IDrawSurface> draw)
+        public static void ToPdf(string file, Vector2D sizeInPixels, Action<IDrawSurface> draw)
         {
             var document = new PdfDocument();
             var page = document.AddPage();
