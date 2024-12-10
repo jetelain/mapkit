@@ -23,6 +23,16 @@ namespace Pmad.Cartography.Drawing
             }
         }
 
+        public static string ToSvgString(Vector2D size, Action<IDrawSurface> draw, string stylePrefix = "")
+        {
+            var stringWriter = new StringWriter();
+            using (var surface = new SvgRender.SvgSurface(XmlWriter.Create(stringWriter, new XmlWriterSettings() { CloseOutput = true }), size, null, stylePrefix))
+            {
+                draw(surface);
+            }
+            return stringWriter.ToString();
+        }
+
         public static TilingInfos ToSvgTiled(string file, Vector2D size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
         {
             var maxZoom = ImageTiler.MaxZoom(size);
