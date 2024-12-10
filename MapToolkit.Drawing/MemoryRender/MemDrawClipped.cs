@@ -1,10 +1,11 @@
-﻿using Pmad.Geometry.Clipper2Lib;
+﻿using Pmad.Geometry;
+using Pmad.Geometry.Clipper2Lib;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class MemDrawClipped : MemDrawContext
     {
-        internal MemDrawClipped(MemorySurface source, IDrawSurface target, Vector min, Vector max) : base(source, target)
+        internal MemDrawClipped(MemorySurface source, IDrawSurface target, Vector2D min, Vector2D max) : base(source, target)
         {
             ClipMin = min;
             ClipMax = max;
@@ -20,13 +21,13 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                     (long)(ClipMax.X * 100) + 200, (long)(ClipMax.Y * 100) + 200);
         }
 
-        public Vector ClipMax { get; }
+        public Vector2D ClipMax { get; }
 
         public Rect64 Clip { get; }
 
-        public Vector ClipMin { get; }
+        public Vector2D ClipMin { get; }
 
-        internal Vector Translate(Vector p)
+        internal Vector2D Translate(Vector2D p)
         {
             return p - ClipMin;
         }

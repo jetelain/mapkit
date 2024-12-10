@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawArc : IDrawOperation
     {
-        public DrawArc(Vector center, float radius, float startAngle, float sweepAngle, MemDrawStyle style)
+        public DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, MemDrawStyle style)
         {
             Center = center;
             Radius = radius;
             StartAngle = startAngle;
             SweepAngle = sweepAngle;
             Style = style;
-            Min = Center - new Vector(radius, radius);
-            Max = Center + new Vector(radius, radius);
+            Min = Center - new Vector2D(radius, radius);
+            Max = Center + new Vector2D(radius, radius);
         }
 
-        public Vector Center { get; }
+        public Vector2D Center { get; }
 
         public float Radius { get; }
 
@@ -25,9 +26,9 @@ namespace Pmad.Cartography.Drawing.MemoryRender
 
         public MemDrawStyle Style { get; }
 
-        public Vector Min { get; }
+        public Vector2D Min { get; }
 
-        public Vector Max { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {

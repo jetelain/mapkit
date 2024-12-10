@@ -1,6 +1,5 @@
-using System;
-using Xunit;
 using Pmad.Cartography.Projections;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Test.Projections
 {
@@ -10,21 +9,21 @@ namespace Pmad.Cartography.Test.Projections
         public void Constructor_WithFullSizeAndRounding_SetsProperties()
         {
             var area = new WebMercatorArea(256, 2);
-            Assert.Equal(new Vector(256, 256), area.Size);
+            Assert.Equal(new (256, 256), area.Size);
         }
 
         [Fact]
         public void Constructor_WithFullSizeDXDYSizeAndRounding_SetsProperties()
         {
-            var area = new WebMercatorArea(256, 1.5, 2.5, new Vector(512, 512), 3);
-            Assert.Equal(new Vector(512, 512), area.Size);
+            var area = new WebMercatorArea(256, 1.5, 2.5, new (512, 512), 3);
+            Assert.Equal(new (512, 512), area.Size);
         }
 
         [Fact]
         public void Min_ReturnsZeroVector()
         {
             var area = new WebMercatorArea(256);
-            Assert.Equal(Vector.Zero, area.Min);
+            Assert.Equal(Vector2D.Zero, area.Min);
         }
 
         [Fact]
@@ -40,7 +39,7 @@ namespace Pmad.Cartography.Test.Projections
             var area = new WebMercatorArea(256, 2);
             var point = new CoordinatesValue(45, 90);
             var result = area.Project(point);
-            Assert.Equal(new Vector(92.09, 192), result);
+            Assert.Equal(new (92.09, 192), result);
         }
 
         [Fact]
@@ -49,7 +48,7 @@ namespace Pmad.Cartography.Test.Projections
             var area = new WebMercatorArea(256);
             var point = new CoordinatesValue(45, 90);
             var result = area.Project(point);
-            Assert.Equal(new Vector(92.08960945029247,192), result);
+            Assert.Equal(new (92.08960945029247,192), result);
         }
 
         [Fact]
@@ -63,8 +62,8 @@ namespace Pmad.Cartography.Test.Projections
             };
             var result = area.Project(points);
             Assert.Equal(2, result.Length);
-            Assert.Equal(new Vector(92.09, 192), result[0]);
-            Assert.Equal(new Vector(163.91, 64), result[1]);
+            Assert.Equal(new (92.09, 192), result[0]);
+            Assert.Equal(new (163.91, 64), result[1]);
         }
     }
 }

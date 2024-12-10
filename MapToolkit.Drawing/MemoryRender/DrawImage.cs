@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Pmad.Geometry;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -7,7 +6,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawImage : IDrawOperation
     {
-        public DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             Image = image;
             Pos = pos;
@@ -16,11 +15,11 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             Min = pos;
             Max = pos + size;
         }
-        public Vector Min { get; }
-        public Vector Max { get; }
+        public Vector2D Min { get; }
+        public Vector2D Max { get; }
         public Image Image { get; }
-        public Vector Pos { get; }
-        public Vector Size { get; }
+        public Vector2D Pos { get; }
+        public Vector2D Size { get; }
         public double Alpha { get; }
 
         public void Draw(MemDrawContext context)
@@ -30,7 +29,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
 
         public void DrawClipped(MemDrawClipped context)
         {
-            var scale = Size / new Vector(Image.Width, Image.Height);
+            var scale = Size / new Vector2D(Image.Width, Image.Height);
 
             var target = context.Translate(Pos);
             var posX = target.X;
@@ -73,7 +72,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             var posH = (cropH * Size.Y / Image.Height);
 
             var clipped = Image.Clone(i => i.Crop(new Rectangle(cropX, cropY, cropW, cropH)));
-            context.Target.DrawImage(clipped, new Vector(posX, posY), new Vector(posW, posH), Alpha);
+            context.Target.DrawImage(clipped, new Vector2D(posX, posY), new Vector2D(posW, posH), Alpha);
         }
 
         public IDrawOperation Scale(MemDrawScale context)

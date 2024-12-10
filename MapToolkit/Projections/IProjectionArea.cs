@@ -1,15 +1,16 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Projections
 {
     public interface IProjectionArea
     {
-        Vector Project(CoordinatesValue coordinates);
+        Vector2D Project(CoordinatesValue coordinates);
 
-        Vector[] Project(ReadOnlySpan<CoordinatesValue> coordinates);
+        Vector2D[] Project(ReadOnlySpan<CoordinatesValue> coordinates);
 
-        Vector Min { get; }
+        Vector2D Min { get; }
 
-        Vector Size { get; }
+        Vector2D Size { get; }
     }
 }

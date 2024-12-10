@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Pmad.Geometry;
 using SixLabors.ImageSharp;
 
 namespace Pmad.Cartography.Drawing
@@ -25,25 +23,25 @@ namespace Pmad.Cartography.Drawing
         public static IDrawStyle AllocateStyle(this IDrawSurface surface, string fillHexColor, string penHexColor, double width = 1, IEnumerable<double>? pattern = null)
             => surface.AllocateStyle(new SolidColorBrush(Color.ParseHex(fillHexColor)), new Pen(Color.ParseHex(penHexColor), width, pattern));
 
-        public static void DrawRectangle(this IDrawSurface surface, Vector topLeft, Vector bottomRight, IDrawStyle style)
+        public static void DrawRectangle(this IDrawSurface surface, Vector2D topLeft, Vector2D bottomRight, IDrawStyle style)
         {
-            surface.DrawPolygon([new Vector[] {
+            surface.DrawPolygon([new Vector2D[] {
                     topLeft,
-                    new Vector(bottomRight.X, topLeft.Y),
+                    new Vector2D(bottomRight.X, topLeft.Y),
                     bottomRight,
-                    new Vector(topLeft.X, bottomRight.Y),
+                    new Vector2D(topLeft.X, bottomRight.Y),
                     topLeft
                 }], style);
         }
 
-        public static void DrawPolygon(this IDrawSurface surface, Vector[] contour, IDrawStyle style)
+        public static void DrawPolygon(this IDrawSurface surface, Vector2D[] contour, IDrawStyle style)
         {
             surface.DrawPolygon([contour], style);
         }
 
-        public static void DrawPolygon(this IDrawSurface surface, Vector[] contour, IEnumerable<Vector[]> holes, IDrawStyle style)
+        public static void DrawPolygon(this IDrawSurface surface, Vector2D[] contour, IEnumerable<Vector2D[]> holes, IDrawStyle style)
         {
-            var paths = new List<Vector[]>();
+            var paths = new List<Vector2D[]>();
             paths.Add(contour);
             paths.AddRange(holes);
             surface.DrawPolygon(paths, style);

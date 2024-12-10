@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -29,12 +30,12 @@ namespace Pmad.Cartography.Drawing.ImageRender
             return new ImageTextStyle(fill, pen, FontHelper.GetFont(fontNames, style, size), fillCoverPen, textAnchor);
         }
 
-        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        public IDrawIcon AllocateIcon(Vector2D size, Action<IDrawSurface> draw)
         {
             return new ImageIcon(size, draw);
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector2D center, float radius, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
             var ipoints = new EllipsePolygon(new PointF((float)center.X, (float)center.Y), radius);
@@ -48,7 +49,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             }
         }
 
-        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public void DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             var scaled = image;
             if (scaled.Width != size.X || scaled.Height != size.Y )
@@ -58,7 +59,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             target.DrawImage(scaled, new Point((int)pos.X, (int)pos.Y), (float)alpha);
         }
 
-        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolyline(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
             var ipoints = points.Select(p => new PointF((float)p.X, (float)p.Y)).ToArray();
@@ -68,7 +69,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             }
         }
 
-        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        public void DrawText(Vector2D point, string text, IDrawTextStyle style)
         {
             var istyle = (ImageTextStyle)style;
 
@@ -88,7 +89,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             }
         }
 
-        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        public void DrawTextPath(IEnumerable<Vector2D> points, string text, IDrawTextStyle style)
         {
             var first = points.First();
             var last = points.Last();
@@ -101,7 +102,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             target.SetDrawingTransform(Matrix3x2.Identity);
         }
 
-        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D[]> paths, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
             var pb = new PathBuilder();
@@ -120,7 +121,7 @@ namespace Pmad.Cartography.Drawing.ImageRender
             }
         }
 
-        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
             var istyle = (ImageStyle)style;
             if (istyle.Pen != null)
@@ -131,13 +132,13 @@ namespace Pmad.Cartography.Drawing.ImageRender
             }
         }
 
-        public void DrawIcon(Vector center, IDrawIcon icon)
+        public void DrawIcon(Vector2D center, IDrawIcon icon)
         {
             var iicon = (ImageIcon)icon;
             target.DrawImage(iicon.Image, new Point( (int)(center.X - (iicon.Image.Width / 2)), (int)(center.Y - (iicon.Image.Height / 2))), 1);
         }
 
-        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        public void DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, IDrawStyle style, float radius)
         {
             var istyle = (ImageStyle)style;
 

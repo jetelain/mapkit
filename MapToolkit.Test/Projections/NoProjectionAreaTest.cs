@@ -1,7 +1,5 @@
-using System;
 using Pmad.Cartography.Projections;
 using Pmad.Geometry;
-using Xunit;
 
 namespace Pmad.Cartography.Test.Projections
 {
@@ -12,12 +10,12 @@ namespace Pmad.Cartography.Test.Projections
         {
             var min = new Coordinates(0, 0);
             var max = new Coordinates(10, 10);
-            var size = new Vector(100, 100);
+            var size = new Vector2D(100, 100);
 
             var projectionArea = new NoProjectionArea(min, max, size);
 
             Assert.Equal(size, projectionArea.Size);
-            Assert.Equal(Vector.Zero, projectionArea.Min);
+            Assert.Equal(Vector2D.Zero, projectionArea.Min);
         }
 
         [Fact]
@@ -25,13 +23,13 @@ namespace Pmad.Cartography.Test.Projections
         {
             var min = new Coordinates(0, 0);
             var max = new Coordinates(10, 10);
-            var size = new Vector(100, 100);
+            var size = new Vector2D(100, 100);
             var projectionArea = new NoProjectionArea(min, max, size);
 
             var point = new CoordinatesValue(5, 5);
             var projected = projectionArea.Project(point);
 
-            Assert.Equal(new Vector(50, 50), projected);
+            Assert.Equal(new (50, 50), projected);
         }
 
         [Fact]
@@ -39,7 +37,7 @@ namespace Pmad.Cartography.Test.Projections
         {
             var min = new Coordinates(0, 0);
             var max = new Coordinates(10, 10);
-            var size = new Vector(100, 100);
+            var size = new Vector2D(100, 100);
             var projectionArea = new NoProjectionArea(min, max, size);
 
             var points = new CoordinatesValue[]
@@ -52,9 +50,9 @@ namespace Pmad.Cartography.Test.Projections
             var projected = projectionArea.Project(points);
 
             Assert.Equal(3, projected.Length);
-            Assert.Equal(new Vector(50, 50), projected[0]);
-            Assert.Equal(new Vector(25, 75), projected[1]);
-            Assert.Equal(new Vector(75, 25), projected[2]);
+            Assert.Equal(new (50, 50), projected[0]);
+            Assert.Equal(new (25, 75), projected[1]);
+            Assert.Equal(new (75, 25), projected[2]);
         }
     }
 }

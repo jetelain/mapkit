@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawTextPath : IDrawOperation
     {
-        public DrawTextPath(List<Vector> points, string text, MemDrawTextStyle style)
+        public DrawTextPath(List<Vector2D> points, string text, MemDrawTextStyle style)
         {
             Points = points;
             Text = text;
@@ -32,19 +33,19 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                 new Vector2((float)first.X, (float)first.Y+measure.Width)
                 }.Select(p => Vector2.Transform(p, matrix)).ToList();
 
-            Min = new Vector(measurePoints.Min(v => v.X - 2), measurePoints.Min(v => v.Y - 2));
-            Max = new Vector(measurePoints.Max(v => v.X + 2), measurePoints.Max(v => v.Y + 2));
+            Min = new Vector2D(measurePoints.Min(v => v.X - 2), measurePoints.Min(v => v.Y - 2));
+            Max = new Vector2D(measurePoints.Max(v => v.X + 2), measurePoints.Max(v => v.Y + 2));
         }
 
-        public List<Vector> Points { get; }
+        public List<Vector2D> Points { get; }
 
         public string Text { get; }
 
         public MemDrawTextStyle TextStyle { get; }
 
-        public Vector Min { get; }
+        public Vector2D Min { get; }
 
-        public Vector Max { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {

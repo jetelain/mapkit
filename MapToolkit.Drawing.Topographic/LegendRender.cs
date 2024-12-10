@@ -51,19 +51,19 @@ namespace Pmad.Cartography.Drawing.Topographic
             var smallText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 25, new SolidColorBrush(Color.Black), null, false, TextAnchor.TopCenter);
             var normalTextLeft = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 32, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterLeft);
 
-            w.DrawRectangle(new Vector(0, 0), new Vector(LegendWidth, LegendHeight), w.AllocateStyle(Color.White, Color.Black, 2));
+            w.DrawRectangle(new Vector2D(0, 0), new Vector2D(LegendWidth, LegendHeight), w.AllocateStyle(Color.White, Color.Black, 2));
 
-            w.DrawText(new Vector(LegendContentCenter, 20), data.UpperTitle, subTitleText);
-            w.DrawText(new Vector(LegendContentCenter, 90), data.Title, titleText);
+            w.DrawText(new Vector2D(LegendContentCenter, 20), data.UpperTitle, subTitleText);
+            w.DrawText(new Vector2D(LegendContentCenter, 90), data.Title, titleText);
             if (scale == -1)
             {
-                w.DrawText(new Vector(LegendContentCenter, 300), $"Dynamic scale : see bottom left of map", normalText);
+                w.DrawText(new Vector2D(LegendContentCenter, 300), $"Dynamic scale : see bottom left of map", normalText);
             }
             else
             {
-                w.DrawText(new Vector(LegendContentCenter, 300), $"Scale 1 : {scale} 000 - 1 cm = {scale * 10} m", normalText);
+                w.DrawText(new Vector2D(LegendContentCenter, 300), $"Scale 1 : {scale} 000 - 1 cm = {scale * 10} m", normalText);
             }
-            w.DrawText(new Vector(LegendContentCenter, 345), $"Version {DateTime.Now:yyyy-MM-dd}", smallText);
+            w.DrawText(new Vector2D(LegendContentCenter, 345), $"Version {DateTime.Now:yyyy-MM-dd}", smallText);
 
             RoadLegend(w, style, normalTextLeft, 500, TopoMapPathType.Main, "Main road");
             RoadLegend(w, style, normalTextLeft, 560, TopoMapPathType.Secondary, "Secondary road");
@@ -71,46 +71,46 @@ namespace Pmad.Cartography.Drawing.Topographic
             RoadLegend(w, style, normalTextLeft, 680, TopoMapPathType.Track, "Vehicle track");
             RoadLegend(w, style, normalTextLeft, 740, TopoMapPathType.Trail, "Foot trail");
 
-            w.DrawText(new Vector(LegendContentStart, 800), "Bridges Main, Secondary, Road", normalTextLeft);
-            RenderBridge(w, style, TopoMapPathType.Main, new Vector(LegendContentP1, 800), new Vector(LegendContentP2, 800));
-            RenderBridge(w, style, TopoMapPathType.Secondary, new Vector(LegendContentP3, 800), new Vector(LegendContentP4, 800));
-            RenderBridge(w, style, TopoMapPathType.Road, new Vector(LegendContentP5, 800), new Vector(LegendContentP6, 800));
+            w.DrawText(new Vector2D(LegendContentStart, 800), "Bridges Main, Secondary, Road", normalTextLeft);
+            RenderBridge(w, style, TopoMapPathType.Main, new Vector2D(LegendContentP1, 800), new Vector2D(LegendContentP2, 800));
+            RenderBridge(w, style, TopoMapPathType.Secondary, new Vector2D(LegendContentP3, 800), new Vector2D(LegendContentP4, 800));
+            RenderBridge(w, style, TopoMapPathType.Road, new Vector2D(LegendContentP5, 800), new Vector2D(LegendContentP6, 800));
 
-            w.DrawText(new Vector(LegendContentStart, 860), "Forest, Rocks, Water", normalTextLeft);
-            w.DrawRectangle(new Vector(LegendContentP1, 840), new Vector(LegendContentP2, 880), style.forest);
-            w.DrawRectangle(new Vector(LegendContentP3, 840), new Vector(LegendContentP4, 880), style.rocks);
-            w.DrawRectangle(new Vector(LegendContentP5, 840), new Vector(LegendContentP6, 880), style.water);
+            w.DrawText(new Vector2D(LegendContentStart, 860), "Forest, Rocks, Water", normalTextLeft);
+            w.DrawRectangle(new Vector2D(LegendContentP1, 840), new Vector2D(LegendContentP2, 880), style.forest);
+            w.DrawRectangle(new Vector2D(LegendContentP3, 840), new Vector2D(LegendContentP4, 880), style.rocks);
+            w.DrawRectangle(new Vector2D(LegendContentP5, 840), new Vector2D(LegendContentP6, 880), style.water);
 
-            w.DrawText(new Vector(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
-            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 920), style.GetIcon(TopoIconType.WindPowerPlant)!);
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower)!);
-            w.DrawIcon(new Vector((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter)!);
+            w.DrawText(new Vector2D(LegendContentStart, 920), "Wind turbine, Water tower, Transmitter", normalTextLeft);
+            w.DrawIcon(new Vector2D((LegendContentP1 + LegendContentP2) / 2, 920), style.GetIcon(TopoIconType.WindPowerPlant)!);
+            w.DrawIcon(new Vector2D((LegendContentP3 + LegendContentP4) / 2, 920), style.GetIcon(TopoIconType.WaterTower)!);
+            w.DrawIcon(new Vector2D((LegendContentP5 + LegendContentP6) / 2, 920), style.GetIcon(TopoIconType.Transmitter)!);
             
-            w.DrawText(new Vector(LegendContentStart, 980), "Hospital, Church", normalTextLeft);
-            w.DrawIcon(new Vector((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital)!);
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.Church)!);
+            w.DrawText(new Vector2D(LegendContentStart, 980), "Hospital, Church", normalTextLeft);
+            w.DrawIcon(new Vector2D((LegendContentP1 + LegendContentP2) / 2, 980), style.GetIcon(TopoIconType.Hospital)!);
+            w.DrawIcon(new Vector2D((LegendContentP3 + LegendContentP4) / 2, 980), style.GetIcon(TopoIconType.Church)!);
 
-            w.DrawText(new Vector(LegendContentStart, 1040), "Railway, Pylon, Powerline", normalTextLeft);
+            w.DrawText(new Vector2D(LegendContentStart, 1040), "Railway, Pylon, Powerline", normalTextLeft);
             if (style.Railway != null)
             {
-                TopoMapRender.DrawRailway(w, style.Railway, [new Vector(LegendContentP1, 1040), new Vector(LegendContentP2, 1040)]);
+                TopoMapRender.DrawRailway(w, style.Railway, [new Vector2D(LegendContentP1, 1040), new Vector2D(LegendContentP2, 1040)]);
             }
-            w.DrawIcon(new Vector((LegendContentP3 + LegendContentP4) / 2, 1040), style.GetIcon(TopoIconType.ElectricityPylon)!);
+            w.DrawIcon(new Vector2D((LegendContentP3 + LegendContentP4) / 2, 1040), style.GetIcon(TopoIconType.ElectricityPylon)!);
             if (style.Powerline != null)
             {
-                w.DrawPolyline([new Vector(LegendContentP5, 1040), new Vector(LegendContentP6, 1040)], style.Powerline);
+                w.DrawPolyline([new Vector2D(LegendContentP5, 1040), new Vector2D(LegendContentP6, 1040)], style.Powerline);
             }
 
 
-            w.DrawText(new Vector(LegendContentCenter, 1810), $"Original Map {data.Attribution}", smallText);
-            w.DrawText(new Vector(LegendContentCenter, 1890), data.ExportCreator, smallText);
+            w.DrawText(new Vector2D(LegendContentCenter, 1810), $"Original Map {data.Attribution}", smallText);
+            w.DrawText(new Vector2D(LegendContentCenter, 1890), data.ExportCreator, smallText);
             if (!string.IsNullOrEmpty(data.LicenseNotice))
             {
-                w.DrawText(new Vector(LegendContentCenter, 1930), data.LicenseNotice, smallText);
+                w.DrawText(new Vector2D(LegendContentCenter, 1930), data.LicenseNotice, smallText);
             }
         }
 
-        private static void RenderBridge(IDrawSurface w, TopoMapStyle style, TopoMapPathType type, Vector begin, Vector end)
+        private static void RenderBridge(IDrawSurface w, TopoMapStyle style, TopoMapPathType type, Vector2D begin, Vector2D end)
         {
             var bg = style.roadBackground[(int)type];
             var fg = style.roadForeground[(int)type];
@@ -143,23 +143,23 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         private static void RoadLegend(IDrawSurface w, TopoMapStyle style, IDrawTextStyle textStyle, double top, TopoMapPathType type, string label)
         {
-            w.DrawText(new Vector(LegendContentStart, top), label, textStyle);
+            w.DrawText(new Vector2D(LegendContentStart, top), label, textStyle);
 
             var bg = style.roadBackground[(int)type];
             var fg = style.roadForeground[(int)type];
             if (bg != null)
             {
-                w.DrawPolyline(new[] { new Vector(LegendContentP1, top), new Vector(LegendContentP6, top) }, bg);
+                w.DrawPolyline(new[] { new Vector2D(LegendContentP1, top), new Vector2D(LegendContentP6, top) }, bg);
             }
             if (fg != null)
             {
-                w.DrawPolyline(new[] { new Vector(LegendContentP1, top), new Vector(LegendContentP6, top) }, fg);
+                w.DrawPolyline(new[] { new Vector2D(LegendContentP1, top), new Vector2D(LegendContentP6, top) }, fg);
             }
         }
 
         public static void DrawMiniMap(IDrawSurface w, ITopoMapData data, List<TopoMapPdfTile>? tiles, TopoMapPdfTile? current, double size = LegendWidth)
         {
-            var projection = new NoProjectionArea(data.DemDataCell.Start, data.DemDataCell.End, new Vector(size, size));
+            var projection = new NoProjectionArea(data.DemDataCell.Start, data.DemDataCell.End, new Vector2D(size, size));
 
             var tileNameText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 12 / 0.24, new SolidColorBrush(Color.Black), null, false, TextAnchor.BottomCenter);
             var cityNameText = w.AllocateTextStyle(new[] { "Calibri", "sans-serif" }, SixLabors.Fonts.FontStyle.Regular, 8 / 0.24, new SolidColorBrush(Color.Black), null, false, TextAnchor.CenterLeft);
@@ -217,7 +217,7 @@ namespace Pmad.Cartography.Drawing.Topographic
                     {
                         var pc = projection.Project(city.Position);
                         w.DrawCircle(pc, 1.5f, cityCircle);
-                        w.DrawText(pc + new Vector(15, 0), city.Name, cityNameText);
+                        w.DrawText(pc + new Vector2D(15, 0), city.Name, cityNameText);
                     }
                 }
             }
@@ -230,10 +230,10 @@ namespace Pmad.Cartography.Drawing.Topographic
                 }
             }
 
-            w.DrawRectangle(new Vector(0, 0), new Vector(size, size), w.AllocatePenStyle(Color.Black, 2));
+            w.DrawRectangle(new Vector2D(0, 0), new Vector2D(size, size), w.AllocatePenStyle(Color.Black, 2));
         }
 
-        private static Vector[] GetTile(NoProjectionArea projection, TopoMapPdfTile tile)
+        private static Vector2D[] GetTile(NoProjectionArea projection, TopoMapPdfTile tile)
         {
             return new[]{
                         projection.Project(tile.Min),

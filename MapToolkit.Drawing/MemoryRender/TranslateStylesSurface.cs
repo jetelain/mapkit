@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -16,7 +17,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             this.s = s;
         }
 
-        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        public IDrawIcon AllocateIcon(Vector2D size, Action<IDrawSurface> draw)
         {
             throw new NotImplementedException();
         }
@@ -31,47 +32,47 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             throw new System.NotImplementedException();
         }
 
-        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
             s.DrawArc(center, radius, startAngle, sweepAngle, memDrawContext.MapStyle((MemDrawStyle)style));
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector2D center, float radius, IDrawStyle style)
         {
             s.DrawCircle(center, radius, memDrawContext.MapStyle((MemDrawStyle)style));
         }
 
-        public void DrawIcon(Vector center, IDrawIcon icon)
+        public void DrawIcon(Vector2D center, IDrawIcon icon)
         {
             throw new NotImplementedException();
         }
 
-        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public void DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D[]> paths, IDrawStyle style)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolyline(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        public void DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, IDrawStyle style, float radius)
         {
             s.DrawRoundedRectangle(topLeft, bottomRight, memDrawContext.MapStyle((MemDrawStyle)style), radius);
         }
 
-        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        public void DrawText(Vector2D point, string text, IDrawTextStyle style)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        public void DrawTextPath(IEnumerable<Vector2D> points, string text, IDrawTextStyle style)
         {
             throw new System.NotImplementedException();
         }

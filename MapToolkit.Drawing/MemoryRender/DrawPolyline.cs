@@ -1,22 +1,23 @@
-﻿using Pmad.Geometry.Clipper2Lib;
+﻿using Pmad.Geometry;
+using Pmad.Geometry.Clipper2Lib;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawPolyline : IDrawOperation
     {
-        public DrawPolyline(List<Vector> points, MemDrawStyle style)
+        public DrawPolyline(List<Vector2D> points, MemDrawStyle style)
         {
             Points = points;
             Style = style;
-            Min = new Vector(points.Min(v => v.X), points.Min(v => v.Y));
-            Max = new Vector(points.Max(v => v.X), points.Max(v => v.Y));
+            Min = new Vector2D(points.Min(v => v.X), points.Min(v => v.Y));
+            Max = new Vector2D(points.Max(v => v.X), points.Max(v => v.Y));
         }
 
-        public List<Vector> Points { get; }
+        public List<Vector2D> Points { get; }
 
         public MemDrawStyle Style { get; }
-        public Vector Min { get; }
-        public Vector Max { get; }
+        public Vector2D Min { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {
@@ -41,7 +42,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                 //clipper.Execute(ClipType.ctIntersection, result);
                 //foreach (var c in result.Childs)
                 //{
-                //    context.Target.DrawPolyline(c.Contour.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                //    context.Target.DrawPolyline(c.Contour.Select(p => context.Translate(new Vector2D(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
                 //}
 
                 var subject = new Paths64(1);
@@ -51,7 +52,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                 {
                     if (line.Count > 1)
                     {
-                        context.Target.DrawPolyline(line.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
+                        context.Target.DrawPolyline(line.Select(p => context.Translate(new Vector2D(p.X / 100.0, p.Y / 100.0))), context.MapStyle(Style));
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
@@ -8,9 +9,9 @@ namespace Pmad.Cartography.Drawing.MemoryRender
 
         void Draw(MemDrawContext context);
 
-        Vector Min { get; }
+        Vector2D Min { get; }
 
-        Vector Max { get; }
+        Vector2D Max { get; }
 
         IDrawOperation Scale(MemDrawScale context);
 

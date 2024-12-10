@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawIcon : IDrawOperation
     {
-        public DrawIcon(Vector center, MemDrawIcon icon)
+        public DrawIcon(Vector2D center, MemDrawIcon icon)
         {
             Center = center;
             Icon = icon;
@@ -12,13 +13,13 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             Max = Center + (icon.Size / 2);
         }
 
-        public Vector Center { get; }
+        public Vector2D Center { get; }
 
         public MemDrawIcon Icon { get; }
 
-        public Vector Min { get; }
+        public Vector2D Min { get; }
 
-        public Vector Max { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {
