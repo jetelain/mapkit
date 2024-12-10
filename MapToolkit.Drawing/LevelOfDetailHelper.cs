@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing
 {
     public static class LevelOfDetailHelper
     {
 
-        public static double AngleInRadians(Vector a, Vector b)
+        public static double AngleInRadians(Vector2D a, Vector2D b)
         {
             return Math.Atan2(b.Y - a.Y, b.X - a.X);
         }
 
-        public static double DistanceSquared(Vector a, Vector b)
+        public static double DistanceSquared(Vector2D a, Vector2D b)
         {
             return (b - a).LengthSquared();
         }
 
-        public static List<Vector> SimplifyAngles(IReadOnlyList<Vector> points, double thresholdInRadians = Math.PI / 36) // 5°
+        public static List<Vector2D> SimplifyAngles(IReadOnlyList<Vector2D> points, double thresholdInRadians = Math.PI / 36) // 5°
         {
             return SimplifyAngles(points, AngleInRadians, thresholdInRadians);
         }
 
-        public static List<Vector> SimplifyAnglesAndDistances(List<Vector> points, double distanceSquaredThreshold = 1.5, double thresholdInRadians = Math.PI / 36) // 5°
+        public static List<Vector2D> SimplifyAnglesAndDistances(List<Vector2D> points, double distanceSquaredThreshold = 1.5, double thresholdInRadians = Math.PI / 36) // 5°
         {
             return SimplifyAnglesAndDistances(points, DistanceSquared, distanceSquaredThreshold, AngleInRadians, thresholdInRadians);
         }
@@ -102,20 +103,20 @@ namespace Pmad.Cartography.Drawing
             return result;
         }
 
-        public static List<Vector> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector> enumerable, double lengthSquared)
+        public static List<Vector2D> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector2D> enumerable, double lengthSquared)
         {
             var simplified = SimplifyAnglesAndDistances(enumerable.ToList(), lengthSquared);
             if (simplified.Count > 3)
             {
                 return simplified;
             }
-            return new List<Vector>();
+            return new List<Vector2D>();
         }
 
-        public static List<Vector[]> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector[]> enumerable, double lengthSquared)
+        public static List<Vector2D[]> SimplifyAnglesAndDistancesClosed(IEnumerable<Vector2D[]> enumerable, double lengthSquared)
         {
-            var result = new List<Vector[]>();
-            foreach(var item in enumerable)
+            var result = new List<Vector2D[]>();
+            foreach (var item in enumerable)
             {
                 var simplified = SimplifyAnglesAndDistances(item.ToList(), lengthSquared);
                 if (simplified.Count > 3)
@@ -126,7 +127,7 @@ namespace Pmad.Cartography.Drawing
             return result;
         }
 
-        internal static List<Vector> SimplifyDistances(List<Vector> list, double lengthSquared)
+        internal static List<Vector2D> SimplifyDistances(List<Vector2D> list, double lengthSquared)
         {
             return SimplifyDistances(list, DistanceSquared, lengthSquared);
         }

@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawCircle : IDrawOperation
     {
-        public DrawCircle(Vector center, float radius, MemDrawStyle style)
+        public DrawCircle(Vector2D center, float radius, MemDrawStyle style)
         {
             Center = center;
             Radius = radius;
             Style = style;
 
-            Min = Center - new Vector(radius, radius);
-            Max = Center + new Vector(radius, radius);
+            Min = Center - new Vector2D(radius, radius);
+            Max = Center + new Vector2D(radius, radius);
         }
 
-        public Vector Center { get; }
+        public Vector2D Center { get; }
 
         public float Radius { get; }
 
         public MemDrawStyle Style { get; }
-        public Vector Min { get; }
-        public Vector Max { get; }
+        public Vector2D Min { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {

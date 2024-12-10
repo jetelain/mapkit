@@ -71,19 +71,19 @@ namespace Pmad.Cartography
             return Vector2D.GetHashCode();
         }
 
-        public static CoordinatesValue operator +(CoordinatesValue c, Vector v)
+        public static CoordinatesValue operator +(CoordinatesValue c, Vector2D v)
         {
-            return new CoordinatesValue(c.Vector2D + v.Vector2D);
+            return new CoordinatesValue(c.Vector2D + v);
         }
 
-        public static CoordinatesValue operator -(CoordinatesValue c, Vector v)
+        public static CoordinatesValue operator -(CoordinatesValue c, Vector2D v)
         {
-            return new CoordinatesValue(c.Vector2D - v.Vector2D);
+            return new CoordinatesValue(c.Vector2D - v);
         }
 
-        public static Vector operator -(CoordinatesValue a, CoordinatesValue b)
+        public static Vector2D operator -(CoordinatesValue a, CoordinatesValue b)
         {
-            return new Vector(a.Vector2D - b.Vector2D);
+            return a.Vector2D - b.Vector2D;
         }
 
         public static implicit operator Coordinates(CoordinatesValue d) => new Coordinates(d.Vector2D);

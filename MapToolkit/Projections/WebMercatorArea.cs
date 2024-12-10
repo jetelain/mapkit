@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Projections
 {
@@ -13,10 +14,10 @@ namespace Pmad.Cartography.Projections
         {
             this.rounding = rounding;
             halfFullSize = fullSize / 2;
-            Size = new Vector(fullSize, fullSize);
+            Size = new Vector2D(fullSize, fullSize);
         }
 
-        public WebMercatorArea(int fullSize, double dX, double dY, Vector size, int rounding = 0)
+        public WebMercatorArea(int fullSize, double dX, double dY, Vector2D size, int rounding = 0)
         {
             this.rounding = rounding;
             halfFullSize = fullSize / 2;
@@ -25,26 +26,26 @@ namespace Pmad.Cartography.Projections
             this.dY = dY;
         }
 
-        public Vector Min => Vector.Zero;
+        public Vector2D Min => Vector2D.Zero;
 
-        public Vector Size { get; }
+        public Vector2D Size { get; }
 
         public double Scale => 1;
 
-        public Vector Project(CoordinatesValue point)
+        public Vector2D Project(CoordinatesValue point)
         {
             var y = halfFullSize * (point.Longitude + 180) / 180;
             var x = halfFullSize * (Math.PI - Math.Log(Math.Tan((point.Latitude + 90) * MathConstants.PIDiv180 / 2))) / Math.PI;
             if (rounding != -1)
             {
-                return new Vector(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
+                return new Vector2D(Math.Round(x - dX, rounding), Math.Round(y - dY, rounding));
             }
-            return new Vector(x - dX, y - dY);
+            return new Vector2D(x - dX, y - dY);
         }
 
-        public Vector[] Project(ReadOnlySpan<CoordinatesValue> coordinates)
+        public Vector2D[] Project(ReadOnlySpan<CoordinatesValue> coordinates)
         {
-            var result = new Vector[coordinates.Length];
+            var result = new Vector2D[coordinates.Length];
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = Project(coordinates[i]);

@@ -1,11 +1,13 @@
 ﻿
 
 
+using Pmad.Geometry;
+
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawRoundedRectangle : IDrawOperation
     {
-        public DrawRoundedRectangle(Vector topLeft, Vector bottomRight, MemDrawStyle style, float radius)
+        public DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, MemDrawStyle style, float radius)
         {
             TopLeft = topLeft;
             BottomRight = bottomRight;
@@ -13,17 +15,17 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             Radius = radius;
         }
 
-        public Vector TopLeft { get; }
+        public Vector2D TopLeft { get; }
 
-        public Vector BottomRight { get; }
+        public Vector2D BottomRight { get; }
 
         public MemDrawStyle Style { get; }
 
         public float Radius { get; }
 
-        public Vector Min => TopLeft;
+        public Vector2D Min => TopLeft;
 
-        public Vector Max => BottomRight;
+        public Vector2D Max => BottomRight;
 
         public void Draw(MemDrawContext context)
         {

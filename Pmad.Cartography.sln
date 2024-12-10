@@ -23,6 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing.Topographic.Test", "Pmad.Cartography.Drawing.Topographic.Test\Pmad.Cartography.Drawing.Topographic.Test.csproj", "{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BBD068A-5F5B-49FE-B391-B762ECDB31C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,9 +57,18 @@ Global
 		{A4A7588A-0141-4D37-A614-4E889006CF1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A7588A-0141-4D37-A614-4E889006CF1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A7588A-0141-4D37-A614-4E889006CF1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F797D011-4BE7-435F-9F5F-0E52140B787A} = {1BBD068A-5F5B-49FE-B391-B762ECDB31C9}
+		{789FFCD4-375D-4201-BCEA-776B3A8D2EAB} = {1BBD068A-5F5B-49FE-B391-B762ECDB31C9}
+		{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7} = {1BBD068A-5F5B-49FE-B391-B762ECDB31C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2496CF15-57E0-4409-AD08-7A98882B0088}

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -26,7 +27,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
         private readonly StringBuilder styles = new StringBuilder();
         private readonly string stylePrefix;
 
-        public SvgSurface(XmlWriter writer, Vector size, string? path = null, string stylePrefix = "")
+        public SvgSurface(XmlWriter writer, Vector2D size, string? path = null, string stylePrefix = "")
         {
             this.writer = writer;
             this.path = path;
@@ -34,7 +35,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             StartSvg(size);
         }
 
-        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        public IDrawIcon AllocateIcon(Vector2D size, Action<IDrawSurface> draw)
         {
             return new SvgIcon(size, draw);
         }
@@ -142,7 +143,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             return new SvgTextStyle(name, null);
         }
 
-        private void StartSvg(Vector size)
+        private void StartSvg(Vector2D size)
         {
             writer.WriteStartElement("svg", SvgXmlns);
             writer.WriteAttributeString("viewBox", FormattableString.Invariant($"0 0 {size.X} {size.Y}"));
@@ -191,15 +192,15 @@ namespace Pmad.Cartography.Drawing.SvgRender
             {
                 case SolidColorBrush solid:
                     return "#" + solid.Color.ToHex();
-                case VectorBrush vector:
-                    return Serialize(vector);
+                case VectorBrush vectorBrush:
+                    return Serialize(vectorBrush);
             }
             return null;
         }
 
-        private string Serialize(VectorBrush vector)
+        private string Serialize(VectorBrush vectorBrush)
         {
-            var icon = (SvgIcon)vector.Icon;
+            var icon = (SvgIcon)vectorBrush.Icon;
             var id = "b" + nextBrushId++;
             writer.WriteStartElement("pattern", SvgXmlns);
             writer.WriteAttributeString("id", id);
@@ -211,7 +212,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             return $"url(#{id})";
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector2D center, float radius, IDrawStyle style)
         {
             FlushStyles();
             writer.WriteStartElement("circle", SvgXmlns);
@@ -222,7 +223,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.WriteEndElement();
         }
 
-        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public void DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             FlushStyles();
             string href;
@@ -258,7 +259,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             return str;
         }
 
-        public void DrawPolygon(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             FlushStyles();
             writer.WriteStartElement("path", SvgXmlns);
@@ -267,7 +268,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.WriteEndElement();
         }
 
-        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolyline(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             FlushStyles();
 
@@ -285,7 +286,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             }
         }
 
-        private string GeneratePath(IEnumerable<Vector> points, bool closed)
+        private string GeneratePath(IEnumerable<Vector2D> points, bool closed)
         {
             sharedStringBuilder.Clear();
             KeepSharedStringBuilderLightweight();
@@ -293,7 +294,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             return sharedStringBuilder.ToString();
         }
 
-        private string GeneratePathWithHoles(IEnumerable<Vector[]> paths)
+        private string GeneratePathWithHoles(IEnumerable<Vector2D[]> paths)
         {
             sharedStringBuilder.Clear();
             KeepSharedStringBuilderLightweight();
@@ -304,13 +305,13 @@ namespace Pmad.Cartography.Drawing.SvgRender
             return sharedStringBuilder.ToString();
         }
 
-        private void AppendPath(IEnumerable<Vector> points, bool closed)
+        private void AppendPath(IEnumerable<Vector2D> points, bool closed)
         {
-            Vector previous = Vector.Zero;
+            Vector2D previous = Vector2D.Zero;
             bool first = true;
             foreach (var p in points)
             {
-                var px = new Vector(Math.Round(p.X, rounding), Math.Round(p.Y, rounding));
+                var px = new Vector2D(Math.Round(p.X, rounding), Math.Round(p.Y, rounding));
                 if (first)
                 {
                     if (sharedStringBuilder.Length > 0)
@@ -332,7 +333,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             }
         }
 
-        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        public void DrawTextPath(IEnumerable<Vector2D> points, string text, IDrawTextStyle style)
         {
             var sstyle = (SvgTextStyle)style;
             FlushStyles();
@@ -365,7 +366,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.WriteEndElement();
         }
 
-        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        public void DrawText(Vector2D point, string text, IDrawTextStyle style)
         {
             var sstyle = (SvgTextStyle)style;
             FlushStyles();
@@ -394,7 +395,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.Dispose();
         }
 
-        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D[]> paths, IDrawStyle style)
         {
             FlushStyles();
 
@@ -404,7 +405,7 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.WriteEndElement();
         }
 
-        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
             // Source : https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
             var start = PolarToCartesian(center, radius, startAngle + sweepAngle);
@@ -416,20 +417,20 @@ namespace Pmad.Cartography.Drawing.SvgRender
             writer.WriteEndElement();
         }
 
-        private static Vector PolarToCartesian(Vector center, float radius, float angleInDegrees)
+        private static Vector2D PolarToCartesian(Vector2D center, float radius, float angleInDegrees)
         {
             var angleInRadians = angleInDegrees * Math.PI / 180.0;
-            return new Vector(center.X + (radius * Math.Cos(angleInRadians)), center.Y + (radius * Math.Sin(angleInRadians)));
+            return new Vector2D(center.X + (radius * Math.Cos(angleInRadians)), center.Y + (radius * Math.Sin(angleInRadians)));
         }
 
-        public void DrawIcon(Vector center, IDrawIcon icon)
+        public void DrawIcon(Vector2D center, IDrawIcon icon)
         {
             var sicon = (SvgIcon)icon;
             var top = center - (sicon.Size / 2);
             sicon.Draw(new TranslateDraw(this, top.X, top.Y));
         }
 
-        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        public void DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, IDrawStyle style, float radius)
         {
             FlushStyles();
             writer.WriteStartElement("rect", SvgXmlns);

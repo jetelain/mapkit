@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawText : IDrawOperation
     {
-        public DrawText(Vector point, string text, MemDrawTextStyle style)
+        public DrawText(Vector2D point, string text, MemDrawTextStyle style)
         {
             Point = point;
             Text = text;
@@ -16,15 +17,15 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             to.HorizontalAlignment = style.HorizontalAlignment;
 
             var measure = TextMeasurer.MeasureBounds(Text, to);
-            Min = new Vector(point.X + measure.X, point.Y + measure.Y);
-            Max = new Vector(point.X + measure.X + measure.Width * 1.25, point.Y + measure.Y + measure.Height * 1.25); // 25% margin due to different raster engines
+            Min = new Vector2D(point.X + measure.X, point.Y + measure.Y);
+            Max = new Vector2D(point.X + measure.X + measure.Width * 1.25, point.Y + measure.Y + measure.Height * 1.25); // 25% margin due to different raster engines
         }
 
-        public Vector Point { get; }
+        public Vector2D Point { get; }
         public string Text { get; }
         public MemDrawTextStyle TextStyle { get; }
-        public Vector Min { get; }
-        public Vector Max { get; }
+        public Vector2D Min { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {

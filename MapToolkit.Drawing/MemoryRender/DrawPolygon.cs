@@ -5,19 +5,19 @@ namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class DrawPolygon : IDrawOperation
     {
-        public DrawPolygon(List<Vector[]> paths, MemDrawStyle style)
+        public DrawPolygon(List<Vector2D[]> paths, MemDrawStyle style)
         {
             Paths = paths;
             Style = style;
-            Min = new Vector(paths.SelectMany(p => p).Min(v => v.X), paths.SelectMany(p => p).Min(v => v.Y));
-            Max = new Vector(paths.SelectMany(p => p).Max(v => v.X), paths.SelectMany(p => p).Max(v => v.Y));
+            Min = new Vector2D(paths.SelectMany(p => p).Min(v => v.X), paths.SelectMany(p => p).Min(v => v.Y));
+            Max = new Vector2D(paths.SelectMany(p => p).Max(v => v.X), paths.SelectMany(p => p).Max(v => v.Y));
         }
 
-        public List<Vector[]> Paths { get; }
+        public List<Vector2D[]> Paths { get; }
 
         public MemDrawStyle Style { get; }
-        public Vector Min { get; }
-        public Vector Max { get; }
+        public Vector2D Min { get; }
+        public Vector2D Max { get; }
 
         public void Draw(MemDrawContext context)
         {
@@ -50,8 +50,8 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                 //foreach (var c in result.Childs)
                 //{
                 //    context.Target.DrawPolygon(
-                //        c.Contour.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))),
-                //        c.Childs.Select(c => c.Contour.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0)))),
+                //        c.Contour.Select(p => context.Translate(new Vector2D(p.X / 100.0, p.Y / 100.0))),
+                //        c.Childs.Select(c => c.Contour.Select(p => context.Translate(new Vector2D(p.X / 100.0, p.Y / 100.0)))),
                 //        context.MapStyle(Style));
                 //}
 
@@ -61,7 +61,7 @@ namespace Pmad.Cartography.Drawing.MemoryRender
                 if (result.Count > 0)
                 {
                     context.Target.DrawPolygon(
-                        result.Where(p => p.Count > 2).Select(c => c.Select(p => context.Translate(new Vector(p.X / 100.0, p.Y / 100.0))).ToArray()),
+                        result.Where(p => p.Count > 2).Select(c => c.Select(p => context.Translate(new Vector2D(p.X / 100.0, p.Y / 100.0))).ToArray()),
                         context.MapStyle(Style));
                 }
             }

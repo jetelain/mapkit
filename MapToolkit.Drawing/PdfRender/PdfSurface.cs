@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Utils;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
@@ -22,7 +23,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             this.pixelSize = pixelSize;
         }
 
-        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        public IDrawIcon AllocateIcon(Vector2D size, Action<IDrawSurface> draw)
         {
             return new PdfIcon(size, draw);
         }
@@ -51,7 +52,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             return new PdfTextStyle(fill, pen, pixelSize, new XFont(fontNames[0], size * pixelSize, xstyle), fillCoverPen, textAnchor, style);
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector2D center, float radius, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
             if (pstyle.Pen != null && pstyle.Brush != null)
@@ -68,7 +69,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             }
         }
 
-        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public void DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             var rgba32 = image.CloneAs<Rgba32>();
             if (alpha != 1.0)
@@ -84,14 +85,14 @@ namespace Pmad.Cartography.Drawing.PdfRender
                 size.Y * pixelSize);
         }
 
-        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolyline(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
             var xpoints = points.Select(p => new XPoint(p.X * pixelSize, p.Y * pixelSize)).ToArray();
             graphics.DrawLines(pstyle.Pen, xpoints);
         }
 
-        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        public void DrawText(Vector2D point, string text, IDrawTextStyle style)
         {
             var pstyle = (PdfTextStyle)style;
 
@@ -125,7 +126,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             }
         }
 
-        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        public void DrawTextPath(IEnumerable<Vector2D> points, string text, IDrawTextStyle style)
         {
             var first = points.First();
             var last = points.Last();
@@ -138,7 +139,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             graphics.Restore(state);
         }
 
-        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D[]> paths, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
             var pb = new XGraphicsPath();
@@ -165,7 +166,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             }
         }
 
-        private void FillPolygon(XGraphicsPath path, IEnumerable<Vector> contour, VectorBrush vbrush)
+        private void FillPolygon(XGraphicsPath path, IEnumerable<Vector2D> contour, VectorBrush vbrush)
         {
             var state = graphics.Save();
             graphics.IntersectClip(path);
@@ -187,7 +188,7 @@ namespace Pmad.Cartography.Drawing.PdfRender
             graphics.Restore(state);
         }
 
-        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
             var pstyle = (PdfStyle)style;
 
@@ -200,14 +201,14 @@ namespace Pmad.Cartography.Drawing.PdfRender
                 sweepAngle);
         }
 
-        public void DrawIcon(Vector center, IDrawIcon icon)
+        public void DrawIcon(Vector2D center, IDrawIcon icon)
         {
             var picon = (PdfIcon)icon;
             var top = center - (picon.Size / 2);
             picon.Draw(new TranslateDraw(this, top.X, top.Y));
         }
 
-        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        public void DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, IDrawStyle style, float radius)
         {
             var pstyle = (PdfStyle)style;
 

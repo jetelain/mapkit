@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Hillshading
 {
@@ -7,7 +8,7 @@ namespace Pmad.Cartography.Hillshading
     /// </summary>
     public sealed class Horn : GradientBase
     {
-        public Horn(Vector resolution, double factor = 1) 
+        public Horn(Vector2D resolution, double factor = 1) 
             : base(resolution, factor, 8)
         {
 

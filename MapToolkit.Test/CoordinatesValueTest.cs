@@ -120,7 +120,7 @@ namespace Pmad.Cartography.Test
         public void OperatorPlus_ShouldReturnCorrectSum()
         {
             var coordinates = new CoordinatesValue(10.0, 20.0);
-            var vector = new Vector(5.0, 5.0);
+            var vector = new Vector2D(5.0, 5.0);
             var result = coordinates + vector;
             Assert.Equal(15.0, result.Latitude);
             Assert.Equal(25.0, result.Longitude);
@@ -130,7 +130,7 @@ namespace Pmad.Cartography.Test
         public void OperatorMinus_ShouldReturnCorrectDifference()
         {
             var coordinates = new CoordinatesValue(10.0, 20.0);
-            var vector = new Vector(5.0, 5.0);
+            var vector = new Vector2D(5.0, 5.0);
             var result = coordinates - vector;
             Assert.Equal(5.0, result.Latitude);
             Assert.Equal(15.0, result.Longitude);
@@ -142,8 +142,8 @@ namespace Pmad.Cartography.Test
             var coordinates1 = new CoordinatesValue(10.0, 20.0);
             var coordinates2 = new CoordinatesValue(5.0, 15.0);
             var result = coordinates1 - coordinates2;
-            Assert.Equal(5.0, result.DeltaLat);
-            Assert.Equal(5.0, result.DeltaLon);
+            Assert.Equal(5.0, result.X);
+            Assert.Equal(5.0, result.Y);
         }
 
         [Fact]

@@ -38,7 +38,7 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         public static TopoMapRenderData Create(ITopoMapData data, IProgressScope scope)
         {
-            var img = new HillshaderFast(new Vector(10, 10)).GetPixelsAlphaBelowFlat(data.DemDataCell);
+            var img = new HillshaderFast(new Vector2D(10, 10)).GetPixelsAlphaBelowFlat(data.DemDataCell);
             
             var contour = new ContourGraph();
             using (var report = scope.CreatePercent("Contours"))

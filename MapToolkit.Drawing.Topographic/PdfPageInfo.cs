@@ -1,9 +1,11 @@
 ﻿
+using Pmad.Geometry;
+
 namespace Pmad.Cartography.Drawing.Topographic
 {
     public class PdfPageInfo
     {
-        public PdfPageInfo(Coordinates start, Coordinates end, Vector mapTopLeft)
+        public PdfPageInfo(Coordinates start, Coordinates end, Vector2D mapTopLeft)
         {
             Start = start;
             End = end;
@@ -14,6 +16,6 @@ namespace Pmad.Cartography.Drawing.Topographic
 
         public Coordinates End { get; }
 
-        public Vector MapTopLeft { get; }
+        public Vector2D MapTopLeft { get; }
     }
 }

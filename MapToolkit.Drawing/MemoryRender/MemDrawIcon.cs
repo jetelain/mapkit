@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.MemoryRender
 {
     internal class MemDrawIcon : IDrawIcon
     {
-        public MemDrawIcon(Vector size, List<IDrawOperation> drawOperations)
+        public MemDrawIcon(Vector2D size, List<IDrawOperation> drawOperations)
         {
             Size = size;
             DrawOperations = drawOperations;
         }
 
-        public Vector Size { get; }
+        public Vector2D Size { get; }
 
         public List<IDrawOperation> DrawOperations { get; }
 

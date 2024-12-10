@@ -1,5 +1,6 @@
 ﻿using Pmad.Cartography.Contours;
 using Pmad.Cartography.Projections;
+using Pmad.Geometry;
 using SixLabors.ImageSharp;
 
 namespace Pmad.Cartography.Drawing.Contours
@@ -25,7 +26,7 @@ namespace Pmad.Cartography.Drawing.Contours
         {
             if (hillshade != null)
             {
-                writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
+                writer.DrawImage(hillshade, Vector2D.Zero, projection.Size, 0.5);
             }
             var masters = new List<ContourLine>();
             var done = 0;
@@ -61,7 +62,7 @@ namespace Pmad.Cartography.Drawing.Contours
         {
             if (hillshade != null)
             {
-                writer.DrawImage(hillshade, Vector.Zero, projection.Size, 0.5);
+                writer.DrawImage(hillshade, Vector2D.Zero, projection.Size, 0.5);
             }
             foreach (var line in graph.Lines)
             {
@@ -79,13 +80,13 @@ namespace Pmad.Cartography.Drawing.Contours
 
         private void RenderMajorLine(IProjectionArea projection, ContourLine line)
         {
-            var points = new List<Vector>();
-            var elevationMarks = new List<List<Vector>>();
-            var elevationMark = new List<Vector>();
+            var points = new List<Vector2D>();
+            var elevationMarks = new List<List<Vector2D>>();
+            var elevationMark = new List<Vector2D>();
 
             var len = 0.0;
             var reg = 0.0;
-            Vector? prev = null;
+            Vector2D? prev = null;
             foreach (var point in line.Points)
             {
                 var p = projection.Project(point);
@@ -104,7 +105,7 @@ namespace Pmad.Cartography.Drawing.Contours
                 if (reg > 1000)
                 {
                     elevationMarks.Add(elevationMark);
-                    elevationMark = new List<Vector>();
+                    elevationMark = new List<Vector2D>();
                     reg = 0;
                 }
                 prev = p;

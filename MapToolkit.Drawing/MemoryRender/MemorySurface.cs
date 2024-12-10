@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
@@ -52,39 +53,39 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             return sub.Operations;
         }
 
-        public IDrawIcon AllocateIcon(Vector size, Action<IDrawSurface> draw)
+        public IDrawIcon AllocateIcon(Vector2D size, Action<IDrawSurface> draw)
         {
             var icon = new MemDrawIcon(size, DrawAttachedSurface(draw));
             Icons.Add(icon);
             return icon;
         }
 
-        public void DrawCircle(Vector center, float radius, IDrawStyle style)
+        public void DrawCircle(Vector2D center, float radius, IDrawStyle style)
         {
             Operations.Add(new DrawCircle(center, radius, (MemDrawStyle)style));
         }
 
-        public void DrawImage(Image image, Vector pos, Vector size, double alpha)
+        public void DrawImage(Image image, Vector2D pos, Vector2D size, double alpha)
         {
             Operations.Add(new DrawImage(image, pos, size, alpha));
         }
 
-        public void DrawPolygon(IEnumerable<Vector[]> paths, IDrawStyle style)
+        public void DrawPolygon(IEnumerable<Vector2D[]> paths, IDrawStyle style)
         {
             Operations.Add(new DrawPolygon(paths.ToList(),(MemDrawStyle)style));
         }
 
-        public void DrawPolyline(IEnumerable<Vector> points, IDrawStyle style)
+        public void DrawPolyline(IEnumerable<Vector2D> points, IDrawStyle style)
         {
             Operations.Add(new DrawPolyline(points.ToList(), (MemDrawStyle)style));
         }
 
-        public void DrawText(Vector point, string text, IDrawTextStyle style)
+        public void DrawText(Vector2D point, string text, IDrawTextStyle style)
         {
             Operations.Add(new DrawText(point, text, (MemDrawTextStyle)style));
         }
 
-        public void DrawTextPath(IEnumerable<Vector> points, string text, IDrawTextStyle style)
+        public void DrawTextPath(IEnumerable<Vector2D> points, string text, IDrawTextStyle style)
         {
             Operations.Add(new DrawTextPath(points.ToList(), text, (MemDrawTextStyle)style));
         }
@@ -113,17 +114,17 @@ namespace Pmad.Cartography.Drawing.MemoryRender
             }
         }
 
-        public void DrawArc(Vector center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
+        public void DrawArc(Vector2D center, float radius, float startAngle, float sweepAngle, IDrawStyle style)
         {
             Operations.Add(new DrawArc(center, radius, startAngle, sweepAngle, (MemDrawStyle)style));
         }
 
-        public void DrawIcon(Vector center, IDrawIcon icon)
+        public void DrawIcon(Vector2D center, IDrawIcon icon)
         {
             Operations.Add(new DrawIcon(center, (MemDrawIcon)icon));
         }
 
-        public void DrawRoundedRectangle(Vector topLeft, Vector bottomRight, IDrawStyle style, float radius)
+        public void DrawRoundedRectangle(Vector2D topLeft, Vector2D bottomRight, IDrawStyle style, float radius)
         {
             Operations.Add(new DrawRoundedRectangle(topLeft, bottomRight, (MemDrawStyle)style, radius));
         }

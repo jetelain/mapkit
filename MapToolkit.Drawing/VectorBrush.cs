@@ -1,4 +1,5 @@
 ﻿using System;
+using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing
 {
@@ -11,7 +12,7 @@ namespace Pmad.Cartography.Drawing
 
         public VectorBrush(IDrawSurface target, float width, float height, Action<IDrawSurface> draw)
         {
-            Icon = target.AllocateIcon(new Vector(width, height), draw);
+            Icon = target.AllocateIcon(new Vector2D(width, height), draw);
             //Width = width;
             //Height = height;
             //Draw = draw;

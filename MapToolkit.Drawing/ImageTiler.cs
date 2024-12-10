@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Pmad.Geometry;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -10,7 +11,7 @@ namespace Pmad.Cartography.Drawing
     /// </summary>
     public static class ImageTiler
     {
-        internal static int MaxZoom(Vector size, int maxTileSize = 800)
+        internal static int MaxZoom(Vector2D size, int maxTileSize = 800)
         {
             var sizeL = Math.Max(size.X, size.Y);
             var zoomLevel = 0;
@@ -49,7 +50,7 @@ namespace Pmad.Cartography.Drawing
 
         public static TilingInfos GenerateTiles(Image fullImage, string targetDirectory, Action<Image, string> save, string ext)
         {
-            var maxZoom = MaxZoom(new Vector(fullImage.Width, fullImage.Height));
+            var maxZoom = MaxZoom(new Vector2D(fullImage.Width, fullImage.Height));
             var tileSize = fullImage.Width / (1 << maxZoom);
 
             var zoomLevel = maxZoom;
@@ -64,7 +65,7 @@ namespace Pmad.Cartography.Drawing
             return new TilingInfos()
             {
                 MaxZoom = maxZoom,
-                TileSize = new Vector(tileSize, tileSize),
+                TileSize = new Vector2D(tileSize, tileSize),
                 MinZoom = 0,
                 TilePattern = "{z}/{x}/{y}." + ext
             };

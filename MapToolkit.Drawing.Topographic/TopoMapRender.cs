@@ -68,7 +68,7 @@ namespace Pmad.Cartography.Drawing.Topographic
 
             if (renderData.Img != null)
             {
-                writer.DrawImage(renderData.Img, Vector.Zero, proj.Size, 0.5);
+                writer.DrawImage(renderData.Img, Vector2D.Zero, proj.Size, 0.5);
             }
 
             if (data.WaterPolygons != null)
@@ -173,20 +173,20 @@ namespace Pmad.Cartography.Drawing.Topographic
             RenderNames(writer, style);
         }
 
-        internal static void DrawRailway(IDrawSurface writer, IDrawStyle railway, IEnumerable<Vector> points)
+        internal static void DrawRailway(IDrawSurface writer, IDrawStyle railway, IEnumerable<Vector2D> points)
         {
             writer.DrawPolyline(points, railway);
-            var x = new PathFollower<double,Vector2D>(points.Select(p => p.Vector2D));
+            var x = new PathFollower<double,Vector2D>(points);
 
             if (x.Move(5))
             {
                 var normal = Vector2D.Normalize(x.Delta);
-                writer.DrawPolyline([new(x.Current + (normal.Rotate90() * 2.5)), new(x.Current + (normal.RotateM90() * 2.5))], railway);
+                writer.DrawPolyline([x.Current + (normal.Rotate90() * 2.5), x.Current + (normal.RotateM90() * 2.5)], railway);
 
                 while (x.Move(75) && !x.IsLast)
                 {
                     normal = Vector2D.Normalize(x.Delta);
-                    writer.DrawPolyline([new (x.Current + (normal.Rotate90() * 2.5)), new(x.Current + (normal.RotateM90() * 2.5))], railway);
+                    writer.DrawPolyline([x.Current + (normal.Rotate90() * 2.5), x.Current + (normal.RotateM90() * 2.5)], railway);
                 }
             }
         }
@@ -223,7 +223,7 @@ namespace Pmad.Cartography.Drawing.Topographic
                 var text = Math.Round(point.Elevation).ToString(CultureInfo.InvariantCulture);
 
                 writer.DrawCircle(projected, 1.5f, plottedCircle);
-                writer.DrawText(projected + new Vector(3, 0), text, plotted);
+                writer.DrawText(projected + new Vector2D(3, 0), text, plotted);
 
             }
         }
@@ -241,12 +241,12 @@ namespace Pmad.Cartography.Drawing.Topographic
                 if (projected.X >= 0 && projected.X <= proj.Size.X)
                 {
                     writer.DrawPolyline(new[] {
-                        new Vector(projected.X, 0),
-                        new Vector(projected.X, proj.Size.Y),
+                        new Vector2D(projected.X, 0),
+                        new Vector2D(projected.X, proj.Size.Y),
                     }, x % 10 == 0 ? style.gl2 : style.gl1);
 
-                    writer.DrawText(new Vector(projected.X, 0), x.ToString(format), style.gltT);
-                    writer.DrawText(new Vector(projected.X, proj.Size.Y), x.ToString(format), style.gltB);
+                    writer.DrawText(new Vector2D(projected.X, 0), x.ToString(format), style.gltT);
+                    writer.DrawText(new Vector2D(projected.X, proj.Size.Y), x.ToString(format), style.gltB);
                 }
             }
             for (int y = 1; y < 100; ++y)
@@ -255,12 +255,12 @@ namespace Pmad.Cartography.Drawing.Topographic
                 if (projected.Y >= 0 && projected.Y <= proj.Size.Y)
                 {
                     writer.DrawPolyline(new[] {
-                        new Vector(0, projected.Y),
-                        new Vector(proj.Size.X, projected.Y),
+                        new Vector2D(0, projected.Y),
+                        new Vector2D(proj.Size.X, projected.Y),
                     }, y % 10 == 0 ? style.gl2 : style.gl1);
 
-                    writer.DrawText(new Vector(0, projected.Y), y.ToString(format), style.gltL);
-                    writer.DrawText(new Vector(proj.Size.X, projected.Y), y.ToString(format), style.gltR);
+                    writer.DrawText(new Vector2D(0, projected.Y), y.ToString(format), style.gltL);
+                    writer.DrawText(new Vector2D(proj.Size.X, projected.Y), y.ToString(format), style.gltR);
                 }
             }
         }
@@ -320,15 +320,15 @@ namespace Pmad.Cartography.Drawing.Topographic
             }
         }
 
-        internal static void BridgeLimit(IDrawSurface writer, Vector begin, Vector inside, IDrawStyle limitLine)
+        internal static void BridgeLimit(IDrawSurface writer, Vector2D begin, Vector2D inside, IDrawStyle limitLine)
         {
-            var delta = System.Numerics.Vector2.Normalize((inside - begin).ToFloat());
+            var delta = Vector2D.Normalize(inside - begin);
             var d8 = delta * 10;
             var d4 = delta * 4.5f;
-            var x1 = System.Numerics.Vector2.Transform(d8, System.Numerics.Matrix3x2.CreateRotation((float)(3 * Math.PI / 4)));
-            var x2 = System.Numerics.Vector2.Transform(d8, System.Numerics.Matrix3x2.CreateRotation((float)(-3 * Math.PI / 4)));
-            writer.DrawPolyline(new[] { begin + new Vector(d4), begin + new Vector(x1 + d4) }, limitLine);
-            writer.DrawPolyline(new[] { begin + new Vector(d4), begin + new Vector(x2 + d4) }, limitLine);
+            var x1 = Matrix2x2<double,Vector2D>.CreateRotation((3 * Math.PI / 4)).Transform(d8);
+            var x2 = Matrix2x2<double, Vector2D>.CreateRotation((-3 * Math.PI / 4)).Transform(d8);
+            writer.DrawPolyline(new[] { begin + d4, begin + x1 + d4 }, limitLine);
+            writer.DrawPolyline(new[] { begin + d4, begin + x2 + d4 }, limitLine);
         }
 
         private void DrawPolygons(IDrawSurface writer, MultiPolygon<double, Vector2D> surface, IDrawStyle styleToUse)
