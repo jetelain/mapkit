@@ -192,15 +192,15 @@ namespace Pmad.Cartography.Drawing.SvgRender
             {
                 case SolidColorBrush solid:
                     return "#" + solid.Color.ToHex();
-                case VectorBrush Vector2D:
-                    return Serialize(Vector2D);
+                case VectorBrush vectorBrush:
+                    return Serialize(vectorBrush);
             }
             return null;
         }
 
-        private string Serialize(VectorBrush Vector2D)
+        private string Serialize(VectorBrush vectorBrush)
         {
-            var icon = (SvgIcon)Vector2D.Icon;
+            var icon = (SvgIcon)vectorBrush.Icon;
             var id = "b" + nextBrushId++;
             writer.WriteStartElement("pattern", SvgXmlns);
             writer.WriteAttributeString("id", id);
