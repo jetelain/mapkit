@@ -36,38 +36,39 @@ namespace Pmad.Drawing
         public static TilingInfos ToSvgTiled(string file, Vector2D size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgressScope? scope = null)
         {
             var maxZoom = ImageTiler.MaxZoom(size);
-            var count = ImageTiler.Count(maxZoom, Math.Max(0, maxZoom - 6));
+
+            var svgScope = scope?.CreateScope("SvgTiled", Math.Min(maxZoom, 6) + 1);
 
             var lod1 = new MemorySurface();
             drawLod1(lod1);
 
-            SvgTileLevel(file, maxZoom, lod1, size, scope, generateWebpFallback);
+            SvgTileLevel(file, maxZoom, lod1, size, svgScope, generateWebpFallback);
 
             if (maxZoom > 0)
             {
-                SvgTileLevel(file, maxZoom - 1, lod1.ToScale(0.5, 0.5), size / 2, scope, generateWebpFallback);
+                SvgTileLevel(file, maxZoom - 1, lod1.ToScale(0.5, 0.5), size / 2, svgScope, generateWebpFallback);
             }
             if (maxZoom > 1)
             {
                 var lod2 = GetLod(drawLod2, lod1);
-                SvgTileLevel(file, maxZoom - 2, lod2.ToScale(0.25, 0.5), size / 4, scope, generateWebpFallback);
+                SvgTileLevel(file, maxZoom - 2, lod2.ToScale(0.25, 0.5), size / 4, svgScope, generateWebpFallback);
 
                 if (maxZoom > 2)
                 {
-                    SvgTileLevel(file, maxZoom - 3, lod2.ToScale(0.125, 0.5), size / 8, scope, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 3, lod2.ToScale(0.125, 0.5), size / 8, svgScope, generateWebpFallback);
                 }
                 if (maxZoom > 3)
                 { 
-                    SvgTileLevel(file, maxZoom - 4, lod2.ToScale(0.0625, 0.25), size / 16, scope, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 4, lod2.ToScale(0.0625, 0.25), size / 16, svgScope, generateWebpFallback);
                 }
                 if (maxZoom > 4)
                 {
                     var lod3 = GetLod(drawLod3, lod2);
-                    SvgTileLevel(file, maxZoom - 5, lod3.ToScale(0.03125, 0.25), size / 32, scope, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 5, lod3.ToScale(0.03125, 0.25), size / 32, svgScope, generateWebpFallback);
 
                     if (maxZoom > 5)
                     {
-                        SvgTileLevel(file, maxZoom - 6, lod3.ToScale(0.015625, 0.25), size / 64, scope, generateWebpFallback);
+                        SvgTileLevel(file, maxZoom - 6, lod3.ToScale(0.015625, 0.25), size / 64, svgScope, generateWebpFallback);
                     }
                 }
             }
