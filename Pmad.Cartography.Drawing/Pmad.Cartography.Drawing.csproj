@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<IsAotCompatible>true</IsAotCompatible>	
+	  
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/jetelain/mapkit</PackageProjectUrl>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<Description>Library for drawing maps with PDF, PNG/WEBP and SVG support.</Description>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Authors>Julien Etelain</Authors>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>$(AssemblyName).Test</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pmad.ProgressTracking" Version="0.1.28" />
+	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+	  <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+	  <ProjectReference Include="..\Pmad.Drawing\Pmad.Drawing.csproj" />
+	  <ProjectReference Include="..\MapToolkit\Pmad.Cartography.csproj" />
+	</ItemGroup>
+</Project>

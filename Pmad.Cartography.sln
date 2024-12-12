@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemUtility", "DemUtility\De
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Test", "MapToolkit.Test\Pmad.Cartography.Test.csproj", "{F797D011-4BE7-435F-9F5F-0E52140B787A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Drawing", "MapToolkit.Drawing\Pmad.Cartography.Drawing.csproj", "{CD89FBC4-5213-4908-9B77-421C73CFFB6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Drawing", "Pmad.Drawing\Pmad.Drawing.csproj", "{CD89FBC4-5213-4908-9B77-421C73CFFB6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Cartography.Drawing.Test", "MapToolkit.Drawing.Test\Pmad.Cartography.Drawing.Test.csproj", "{789FFCD4-375D-4201-BCEA-776B3A8D2EAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pmad.Drawing.Test", "Pmad.Drawing.Test\Pmad.Drawing.Test.csproj", "{789FFCD4-375D-4201-BCEA-776B3A8D2EAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing.Topographic", "MapToolkit.Drawing.Topographic\Pmad.Cartography.Drawing.Topographic.csproj", "{A4A7588A-0141-4D37-A614-4E889006CF1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing", "Pmad.Cartography.Drawing\Pmad.Cartography.Drawing.csproj", "{A4A7588A-0141-4D37-A614-4E889006CF1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{C99F2FD4-2553-47CE-A103-395CE9F148CB}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing.Topographic.Test", "Pmad.Cartography.Drawing.Topographic.Test\Pmad.Cartography.Drawing.Topographic.Test.csproj", "{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pmad.Cartography.Drawing.Test", "Pmad.Cartography.Drawing.Test\Pmad.Cartography.Drawing.Test.csproj", "{DC21E7FB-E6D1-4EF9-8401-D0D4AA784DF7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BBD068A-5F5B-49FE-B391-B762ECDB31C9}"
 EndProject
