@@ -26,13 +26,13 @@
 	<ItemGroup>
 		<PackageReference Include="Pmad.ProgressTracking" Version="0.1.28" />
 		<PackageReference Include="PdfSharpCore" Version="1.3.63" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.3" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 		<PackageReference Include="Pmad.Geometry" Version="0.1.46" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 </Project>
