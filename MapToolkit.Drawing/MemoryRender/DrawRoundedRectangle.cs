@@ -3,7 +3,7 @@
 
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class DrawRoundedRectangle : IDrawOperation
     {

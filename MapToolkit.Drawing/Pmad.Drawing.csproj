@@ -5,35 +5,34 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<IsAotCompatible>true</IsAotCompatible>
-		
+
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/jetelain/mapkit</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Description>Library for drawing maps with PDF, PNG/WEBP and SVG support.</Description>
+		<Description>Library for vector based drawing with PDF, PNG/WEBP and SVG support.</Description>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Authors>Julien Etelain</Authors>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>$(AssemblyName).Test</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
-	
+
 	<ItemGroup>
+		<PackageReference Include="Pmad.ProgressTracking" Version="0.1.28" />
 		<PackageReference Include="PdfSharpCore" Version="1.3.63" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.3" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+		<PackageReference Include="Pmad.Geometry" Version="0.1.46" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MapToolkit\Pmad.Cartography.csproj" />
-	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
-
 </Project>

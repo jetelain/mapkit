@@ -5,7 +5,7 @@ using Pmad.Geometry.Collections;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public interface IDrawSurface
     {

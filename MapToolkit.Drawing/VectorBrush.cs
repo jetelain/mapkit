@@ -1,7 +1,7 @@
 ﻿using System;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public sealed class VectorBrush : IBrush
     {

@@ -1,6 +1,6 @@
 ﻿using SixLabors.Fonts;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class MemDrawTextStyle : IDrawTextStyle
     {

@@ -5,7 +5,7 @@ using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     internal sealed class TranslateDraw : IDrawSurface
     {

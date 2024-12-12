@@ -1,7 +1,6 @@
 ﻿using System.Xml;
-using Pmad.Cartography.Drawing.MemoryRender;
-using Pmad.Cartography.Drawing.PdfRender;
-using Pmad.Cartography.Utils;
+using Pmad.Drawing.MemoryRender;
+using Pmad.Drawing.PdfRender;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using SixLabors.ImageSharp;
@@ -10,8 +9,9 @@ using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Pmad.Geometry;
+using Pmad.ProgressTracking;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public static class Render
     {
@@ -33,42 +33,41 @@ namespace Pmad.Cartography.Drawing
             return stringWriter.ToString();
         }
 
-        public static TilingInfos ToSvgTiled(string file, Vector2D size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgress<double>? progress = null)
+        public static TilingInfos ToSvgTiled(string file, Vector2D size, SvgFallBackFormats generateWebpFallback, Action<IDrawSurface> drawLod1, Action<IDrawSurface>? drawLod2 = null, Action<IDrawSurface>? drawLod3 = null, IProgressScope? scope = null)
         {
             var maxZoom = ImageTiler.MaxZoom(size);
             var count = ImageTiler.Count(maxZoom, Math.Max(0, maxZoom - 6));
-            var rel = new BasicProgress(progress, count, 2);
 
             var lod1 = new MemorySurface();
             drawLod1(lod1);
 
-            SvgTileLevel(file, maxZoom, lod1, size, rel, generateWebpFallback);
+            SvgTileLevel(file, maxZoom, lod1, size, scope, generateWebpFallback);
 
             if (maxZoom > 0)
             {
-                SvgTileLevel(file, maxZoom - 1, lod1.ToScale(0.5, 0.5), size / 2, rel, generateWebpFallback);
+                SvgTileLevel(file, maxZoom - 1, lod1.ToScale(0.5, 0.5), size / 2, scope, generateWebpFallback);
             }
             if (maxZoom > 1)
             {
                 var lod2 = GetLod(drawLod2, lod1);
-                SvgTileLevel(file, maxZoom - 2, lod2.ToScale(0.25, 0.5), size / 4, rel, generateWebpFallback);
+                SvgTileLevel(file, maxZoom - 2, lod2.ToScale(0.25, 0.5), size / 4, scope, generateWebpFallback);
 
                 if (maxZoom > 2)
                 {
-                    SvgTileLevel(file, maxZoom - 3, lod2.ToScale(0.125, 0.5), size / 8, rel, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 3, lod2.ToScale(0.125, 0.5), size / 8, scope, generateWebpFallback);
                 }
                 if (maxZoom > 3)
                 { 
-                    SvgTileLevel(file, maxZoom - 4, lod2.ToScale(0.0625, 0.25), size / 16, rel, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 4, lod2.ToScale(0.0625, 0.25), size / 16, scope, generateWebpFallback);
                 }
                 if (maxZoom > 4)
                 {
                     var lod3 = GetLod(drawLod3, lod2);
-                    SvgTileLevel(file, maxZoom - 5, lod3.ToScale(0.03125, 0.25), size / 32, rel, generateWebpFallback);
+                    SvgTileLevel(file, maxZoom - 5, lod3.ToScale(0.03125, 0.25), size / 32, scope, generateWebpFallback);
 
                     if (maxZoom > 5)
                     {
-                        SvgTileLevel(file, maxZoom - 6, lod3.ToScale(0.015625, 0.25), size / 64, rel, generateWebpFallback);
+                        SvgTileLevel(file, maxZoom - 6, lod3.ToScale(0.015625, 0.25), size / 64, scope, generateWebpFallback);
                     }
                 }
             }
@@ -101,10 +100,11 @@ namespace Pmad.Cartography.Drawing
             TransparentColorMode = WebpTransparentColorMode.Clear 
         };
 
-        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector2D size, BasicProgress rel, SvgFallBackFormats generateWebpFallback)
+        private static void SvgTileLevel(string targetDirectory, int zoomLevel, MemorySurface surface, Vector2D size, IProgressScope? scope, SvgFallBackFormats generateWebpFallback)
         {
             var chunks = 1 << zoomLevel;
             var tileSize = size / chunks;
+            using var progress = scope?.CreateInteger($"Zoom Level {zoomLevel}", chunks * chunks);
 
             Parallel.For(0, chunks, x =>
             {
@@ -135,7 +135,7 @@ namespace Pmad.Cartography.Drawing
                             image.SaveAsPng(Path.Combine(targetDirectory, $"{zoomLevel}/{x}/{y}.png"));
                         }
                     }
-                    rel.AddOne();
+                    progress?.ReportOneDone();
                 }
             });
         }

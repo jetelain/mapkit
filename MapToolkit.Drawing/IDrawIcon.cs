@@ -1,4 +1,4 @@
-﻿namespace Pmad.Cartography.Drawing
+﻿namespace Pmad.Drawing
 {
     public interface IDrawIcon
     {

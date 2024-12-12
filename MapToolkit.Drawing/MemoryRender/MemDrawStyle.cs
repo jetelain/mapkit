@@ -1,4 +1,4 @@
-﻿namespace Pmad.Cartography.Drawing.MemoryRender
+﻿namespace Pmad.Drawing.MemoryRender
 {
     internal class MemDrawStyle : IDrawStyle
     {

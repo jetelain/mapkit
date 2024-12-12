@@ -1,7 +1,7 @@
 ﻿using PdfSharpCore.Drawing;
 using SixLabors.Fonts;
 
-namespace Pmad.Cartography.Drawing.PdfRender
+namespace Pmad.Drawing.PdfRender
 {
     internal class PdfTextStyle : PdfStyle, IDrawTextStyle
     {

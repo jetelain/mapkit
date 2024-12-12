@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public static class LevelOfDetailHelper
     {

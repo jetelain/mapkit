@@ -4,7 +4,7 @@ using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class TranslateStylesSurface : IDrawSurface
     {

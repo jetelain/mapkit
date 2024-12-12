@@ -1,7 +1,7 @@
 ﻿using System;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public sealed class SolidColorBrush : IBrush, IEquatable<SolidColorBrush>
     {

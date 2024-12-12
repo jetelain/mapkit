@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class MemDrawIcon : IDrawIcon
     {

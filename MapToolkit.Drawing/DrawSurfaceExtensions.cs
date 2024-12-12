@@ -1,7 +1,7 @@
 ﻿using Pmad.Geometry;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public static class DrawSurfaceExtensions
     {

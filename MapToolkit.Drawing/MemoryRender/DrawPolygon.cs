@@ -1,7 +1,7 @@
 ﻿using Pmad.Geometry;
 using Pmad.Geometry.Clipper2Lib;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class DrawPolygon : IDrawOperation
     {

@@ -4,7 +4,7 @@ using Pmad.Geometry;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     /// <summary>
     /// Takes a large image to generate tiles for Leaflet or similar

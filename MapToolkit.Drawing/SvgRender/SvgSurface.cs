@@ -9,7 +9,7 @@ using Pmad.Geometry;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
-namespace Pmad.Cartography.Drawing.SvgRender
+namespace Pmad.Drawing.SvgRender
 {
 
     internal sealed class SvgSurface : IDrawSurface, IDisposable

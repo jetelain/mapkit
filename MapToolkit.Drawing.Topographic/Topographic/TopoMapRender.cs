@@ -1,8 +1,7 @@
 ﻿using System.Globalization;
-using System.Numerics;
-using GeoJSON.Text.Geometry;
 using Pmad.Cartography.Drawing.Contours;
 using Pmad.Cartography.Projections;
+using Pmad.Drawing;
 using Pmad.Geometry;
 using Pmad.Geometry.Algorithms;
 using Pmad.Geometry.Collections;

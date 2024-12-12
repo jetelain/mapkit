@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Pmad.Cartography.Drawing;
+﻿using Pmad.Drawing;
 
 namespace Pmad.Cartography.Drawing.Contours
 {

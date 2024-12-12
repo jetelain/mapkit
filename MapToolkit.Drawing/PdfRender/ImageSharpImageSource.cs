@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Pmad.Cartography.Drawing.PdfRender
+namespace Pmad.Drawing.PdfRender
 {
     public class ImageSharpImageSource<TPixel> : ImageSource where TPixel : unmanaged, IPixel<TPixel>
     {

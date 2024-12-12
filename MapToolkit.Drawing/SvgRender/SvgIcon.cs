@@ -1,7 +1,7 @@
 ﻿using System;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.SvgRender
+namespace Pmad.Drawing.SvgRender
 {
     internal class SvgIcon : IDrawIcon
     {

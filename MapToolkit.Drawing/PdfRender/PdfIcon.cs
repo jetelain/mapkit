@@ -1,7 +1,7 @@
 ﻿using System;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.PdfRender
+namespace Pmad.Drawing.PdfRender
 {
     internal class PdfIcon : IDrawIcon
     {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Pmad.Cartography.Drawing;
+using Pmad.Drawing;
 using Pmad.Geometry;
 
 namespace Pmad.Cartography.Drawing.Test

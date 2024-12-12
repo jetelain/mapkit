@@ -1,4 +1,5 @@
-﻿using Pmad.Geometry;
+﻿using Pmad.Drawing;
+using Pmad.Geometry;
 using SixLabors.ImageSharp;
 
 namespace Pmad.Cartography.Drawing.Topographic.Test

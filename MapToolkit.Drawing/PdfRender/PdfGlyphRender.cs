@@ -3,7 +3,7 @@ using System.Numerics;
 using PdfSharpCore.Drawing;
 using SixLabors.Fonts;
 
-namespace Pmad.Cartography.Drawing.PdfRender
+namespace Pmad.Drawing.PdfRender
 {
     /// <summary>
     /// Render SixLabors.Fonts to PdfSharpCore paths

@@ -3,7 +3,7 @@ using System.Linq;
 using PdfSharpCore.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Pmad.Cartography.Drawing.PdfRender
+namespace Pmad.Drawing.PdfRender
 {
     internal class PdfStyle : IDrawStyle
     {

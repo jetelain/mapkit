@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
 
-namespace Pmad.Cartography.Drawing.ImageRender
+namespace Pmad.Drawing.ImageRender
 {
     internal class ImageSurface : IDrawSurface
     {

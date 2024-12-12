@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Pmad.Cartography.Drawing.SvgRender
+namespace Pmad.Drawing.SvgRender
 {
     internal class SvgStyle : IDrawStyle
     {

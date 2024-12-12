@@ -1,6 +1,6 @@
 ﻿using SixLabors.Fonts;
 
-namespace Pmad.Cartography.Drawing.ImageRender
+namespace Pmad.Drawing.ImageRender
 {
     internal class ImageTextStyle : ImageStyle, IDrawTextStyle
     {

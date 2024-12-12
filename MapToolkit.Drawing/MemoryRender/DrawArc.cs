@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.MemoryRender
+namespace Pmad.Drawing.MemoryRender
 {
     internal class DrawArc : IDrawOperation
     {

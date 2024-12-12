@@ -1,5 +1,5 @@
-﻿using Pmad.Cartography.Drawing;
-using Pmad.Cartography.Drawing.PdfRender;
+﻿using Pmad.Drawing;
+using Pmad.Drawing.PdfRender;
 using Pmad.Cartography.Projections;
 using Pmad.Geometry.Collections;
 using Pmad.Geometry;

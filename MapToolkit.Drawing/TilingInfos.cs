@@ -1,6 +1,6 @@
 ﻿using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing
+namespace Pmad.Drawing
 {
     public class TilingInfos
     {
