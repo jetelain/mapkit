@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\MapToolkit.Drawing.Topographic\Pmad.Cartography.Drawing.csproj" />
+	  <ProjectReference Include="..\Pmad.Cartography.Drawing\Pmad.Cartography.Drawing.csproj" />
 	</ItemGroup>
 
   <ItemGroup>

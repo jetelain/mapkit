@@ -27,6 +27,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\MapToolkit.Drawing\Pmad.Drawing.csproj" />
+		<ProjectReference Include="..\Pmad.Drawing\Pmad.Drawing.csproj" />
 	</ItemGroup>
 </Project>
