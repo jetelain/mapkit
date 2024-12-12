@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using Pmad.Drawing;
-using Pmad.Geometry;
+﻿using Pmad.Geometry;
 
-namespace Pmad.Cartography.Drawing.Test
+namespace Pmad.Drawing.Test
 {
     public class LevelOfDetailHelperTest
     {
