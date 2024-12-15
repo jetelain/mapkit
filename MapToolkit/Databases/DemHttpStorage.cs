@@ -12,24 +12,26 @@ namespace Pmad.Cartography.Databases
         private readonly string localCache;
         private readonly HttpClient client;
 
-        public DemHttpStorage (string localCache, HttpClient client)
+        public DemHttpStorage (string? localCache, HttpClient client)
         {
-            this.localCache = localCache;
+            this.localCache = localCache ?? DefaultCacheLocation;
             this.client = client;
         }
 
-        public DemHttpStorage(string localCache, Uri baseAddress) 
+        public DemHttpStorage(string? localCache, Uri baseAddress) 
             : this(localCache, new HttpClient() { BaseAddress = baseAddress })
         {
 
         }
 
         public DemHttpStorage(Uri baseAddress)
-            : this(Path.Combine(Path.GetTempPath(),"dem"), baseAddress)
+            : this(null, baseAddress)
         {
 
         }
 
+        public static string DefaultCacheLocation => Path.Combine(Path.GetTempPath(), "dem");
+        
         public async Task<IDemDataCell> Load(string path)
         {
             var uri = new Uri(client.BaseAddress!, path);
