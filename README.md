@@ -9,7 +9,7 @@ A simple and read-to-use Digital Elevation Model for everyone based on Open Data
 | ------ | ------------- | ------------- | --- | --- |
 | SRTM1  | 1 arc second  | Public Domain | https://cdn.dem.pmad.net/SRTM1/ | NASA |
 | SRTM15+| 15 arc second | Public Domain | https://cdn.dem.pmad.net/SRTM15Plus/ | Tozer, B. , D. T. Sandwell, W. H. F. Smith, C. Olson, J. R. Beale, and P. Wessel |
-| AW3D30 | 1 arc second  | [See terms](https://cdn.dem.pmad.net/README.txt) | https://cdn.dem.pmad.net/SRTM1/ | © JAXA |
+| AW3D30 | 1 arc second  | [See terms](https://cdn.dem.pmad.net/README.txt) | https://cdn.dem.pmad.net/AW3D30/ | ï¿½ JAXA |
 
 ```csharp
 var database = WellKnownDatabases.GetSRTM1();
