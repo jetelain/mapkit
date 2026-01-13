@@ -1,8 +1,9 @@
 name: .NET Linux Publish Release
 
 permissions:
-  id-token: write
   contents: read
+  pages: write
+  id-token: write
 
 on:
   release:
