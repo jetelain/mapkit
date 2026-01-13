@@ -1,5 +1,8 @@
 name: .NET Linux Publish Release
 
+permissions:
+  id-token: write
+
 on:
   release:
     types: [ "published" ]
