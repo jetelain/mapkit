@@ -3,6 +3,8 @@ name: .NET Linux Publish Release
 on:
   release:
     types: [ "published" ]
+  pull_request:
+    branches: [ "**" ]
     
 jobs:
   build:
