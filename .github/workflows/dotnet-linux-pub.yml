@@ -2,6 +2,7 @@ name: .NET Linux Publish Release
 
 permissions:
   id-token: write
+  contents: read
 
 on:
   release:
