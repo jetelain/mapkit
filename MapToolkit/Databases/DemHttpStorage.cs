@@ -91,9 +91,13 @@ namespace Pmad.Cartography.Databases
             {
                 try
                 {
-                    using var input = await client.GetStreamAsync(path, cancellationToken).ConfigureAwait(false);
-                    using var cache = File.Create(tempFile);
-                    await input.CopyToAsync(cache, cancellationToken).ConfigureAwait(false);  
+                    using (var input = await client.GetStreamAsync(path, cancellationToken).ConfigureAwait(false))
+                    {
+                        using var cache = File.Create(tempFile);
+                        await input.CopyToAsync(cache, cancellationToken).ConfigureAwait(false);
+                    }
+                    File.Move(tempFile, cacheFile, true);
+                    return;
                 }
                 catch (HttpRequestException httpException) when (httpException.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
@@ -101,19 +105,16 @@ namespace Pmad.Cartography.Databases
                 }
                 catch (Exception) when (attempt < MaxDownloadAttempts && !cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(Random.Shared.Next(500, 5000), cancellationToken);
+                    await Task.Delay(Random.Shared.Next(500, 5000), cancellationToken).ConfigureAwait(false);
                 }
-                catch (Exception)
+                finally
                 {
                     if (File.Exists(tempFile))
                     {
                         File.Delete(tempFile);
                     }
-                    throw;
                 }
             }
-
-            File.Move(tempFile, cacheFile, true);
         }
 
         public Task<IDemDataCell> Load(string path) => LoadAsync(path, null);

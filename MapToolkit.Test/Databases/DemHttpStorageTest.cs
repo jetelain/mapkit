@@ -1,12 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Xunit;
 using Pmad.Cartography.Databases;
-using Pmad.Cartography.DataCells;
-using System.Linq;
 
 namespace Pmad.Cartography.Test.Databases
 {
@@ -16,11 +14,13 @@ namespace Pmad.Cartography.Test.Databases
         private const string baseAddress = "https://cdn.dem.pmad.net/SRTM1/";
         private const string samplePath = "N00E006.SRTMGL1.hgt.zst";
 
+        private static string CreateUniqueTempDir() => Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
         [Fact]
         public async Task Load_ShouldDownloadAndCacheFile()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -42,7 +42,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task Load_ShouldUseCachedFile_OnSecondCall()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -64,7 +64,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task Load_ShouldDeleteAndRedownload_WhenChecksumMismatch()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_checksum_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -86,7 +86,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task LoadAsync_ShouldNotThrow_WhenChecksumMatches()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_valid_checksum_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -114,7 +114,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task ReadIndex_ShouldDownloadAndDeserializeIndex()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent); 
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -136,7 +136,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task ReadIndex_ShouldUseCachedIndex_WhenFresh()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_index_cache");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -158,7 +158,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task ReadIndex_ShouldRefreshCache_WhenExpired()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_index_expired");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -182,7 +182,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task GetSha256Async_ShouldDownloadFileAndReturnHash()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_sha256_download");
+            var localCache = CreateUniqueTempDir();
             var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -207,7 +207,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task GetSha256Async_ShouldReturnNull_WhenFileNotFound()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_sha256_missing");
+            var localCache = CreateUniqueTempDir();
             var handler = new NotFoundHttpMessageHandler();
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -223,7 +223,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task DownloadFile_ShouldSucceed_AfterTransientFailures()
         {
             // Arrange: fail twice, then succeed on the third attempt
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_success");
+            var localCache = CreateUniqueTempDir();
             var content = new byte[] { 1, 2, 3, 4 };
             var handler = new CountingHttpMessageHandler(failCount: 2, successContent: content);
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
@@ -244,7 +244,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task DownloadFile_ShouldThrow_WhenAllAttemptsExhausted()
         {
             // Arrange: always fail with a transient error
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_exhausted");
+            var localCache = CreateUniqueTempDir();
             var handler = new CountingHttpMessageHandler(failCount: 99, successContent: Array.Empty<byte>());
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -258,7 +258,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task DownloadFile_ShouldNotRetry_On404()
         {
             // Arrange
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_404");
+            var localCache = CreateUniqueTempDir();
             var handler = new NotFoundHttpMessageHandler();
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
             var storage = new DemHttpStorage(localCache, httpClient);
@@ -275,7 +275,7 @@ namespace Pmad.Cartography.Test.Databases
         public async Task DownloadFile_ShouldNotRetry_WhenCancelled()
         {
             // Arrange: fail once, then cancel — should not retry
-            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_cancel");
+            var localCache = CreateUniqueTempDir();
             using var cts = new System.Threading.CancellationTokenSource();
             var handler = new CancellingHttpMessageHandler(cts, failCount: 1, successContent: Array.Empty<byte>());
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
