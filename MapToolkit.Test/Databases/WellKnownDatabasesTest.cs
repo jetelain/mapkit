@@ -3,12 +3,14 @@ using Pmad.Cartography.Databases;
 
 namespace Pmad.Cartography.Test.Databases
 {
+    [Collection("Sequential")]
     public class WellKnownDatabasesTest
     {
         public WellKnownDatabasesTest()
         {
             DemHttpStorage.ClearDefaultCache();
         }
+
         [Fact]
         public async Task AW3D30_ContainsLondon()
         {
