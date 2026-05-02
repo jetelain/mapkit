@@ -100,7 +100,8 @@ namespace Pmad.Cartography.Test.Databases
             await storage.Load(samplePath);
 
             // Compute the real checksum
-            var realHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(cacheFile))).ToLowerInvariant();
+            using var cacheFileStream = File.OpenRead(cacheFile);
+            var realHash = Convert.ToHexString(SHA256.HashData(cacheFileStream)).ToLowerInvariant();
 
             // Act: second load with correct checksum should succeed
             var dataCell = await storage.LoadAsync(samplePath, realHash);
@@ -218,11 +219,147 @@ namespace Pmad.Cartography.Test.Databases
             Assert.Null(hash);
         }
 
+        [Fact]
+        public async Task DownloadFile_ShouldSucceed_AfterTransientFailures()
+        {
+            // Arrange: fail twice, then succeed on the third attempt
+            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_success");
+            var content = new byte[] { 1, 2, 3, 4 };
+            var handler = new CountingHttpMessageHandler(failCount: 2, successContent: content);
+            var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
+            var storage = new DemHttpStorage(localCache, httpClient);
+            var cacheFile = Path.Combine(localCache, "cdn.dem.pmad.net", "SRTM1", "retry_test.bin");
+            if (File.Exists(cacheFile)) File.Delete(cacheFile);
+
+            // Act
+            var hash = await storage.GetSha256Async("retry_test.bin");
+
+            // Assert: succeeded after retries, file exists with correct content
+            Assert.NotNull(hash);
+            Assert.True(File.Exists(cacheFile));
+            Assert.Equal(3, handler.CallCount);
+        }
+
+        [Fact]
+        public async Task DownloadFile_ShouldThrow_WhenAllAttemptsExhausted()
+        {
+            // Arrange: always fail with a transient error
+            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_exhausted");
+            var handler = new CountingHttpMessageHandler(failCount: 99, successContent: Array.Empty<byte>());
+            var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
+            var storage = new DemHttpStorage(localCache, httpClient);
+
+            // Act & Assert: should throw after MaxDownloadAttempts (3) attempts
+            await Assert.ThrowsAsync<HttpRequestException>(() => storage.GetSha256Async("always_failing.bin"));
+            Assert.Equal(3, handler.CallCount);
+        }
+
+        [Fact]
+        public async Task DownloadFile_ShouldNotRetry_On404()
+        {
+            // Arrange
+            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_404");
+            var handler = new NotFoundHttpMessageHandler();
+            var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
+            var storage = new DemHttpStorage(localCache, httpClient);
+
+            // Act
+            var hash = await storage.GetSha256Async("missing.bin");
+
+            // Assert: returns null immediately without retry
+            Assert.Null(hash);
+            Assert.Equal(1, handler.CallCount);
+        }
+
+        [Fact]
+        public async Task DownloadFile_ShouldNotRetry_WhenCancelled()
+        {
+            // Arrange: fail once, then cancel — should not retry
+            var localCache = Path.Combine(Path.GetTempPath(), "dem_test_retry_cancel");
+            using var cts = new System.Threading.CancellationTokenSource();
+            var handler = new CancellingHttpMessageHandler(cts, failCount: 1, successContent: Array.Empty<byte>());
+            var httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
+            var storage = new DemHttpStorage(localCache, httpClient);
+
+            // Act & Assert
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                storage.GetSha256Async("cancel_test.bin", cts.Token));
+            Assert.Equal(1, handler.CallCount);
+        }
+
         private sealed class NotFoundHttpMessageHandler : HttpMessageHandler
         {
+            public int CallCount { get; private set; }
+
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
             {
+                CallCount++;
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.NotFound));
+            }
+        }
+
+        /// <summary>
+        /// Returns an HTTP error for the first <paramref name="failCount"/> calls, then returns success with the given content.
+        /// </summary>
+        private sealed class CountingHttpMessageHandler : HttpMessageHandler
+        {
+            private readonly int failCount;
+            private readonly byte[] successContent;
+
+            public int CallCount { get; private set; }
+
+            public CountingHttpMessageHandler(int failCount, byte[] successContent)
+            {
+                this.failCount = failCount;
+                this.successContent = successContent;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+            {
+                CallCount++;
+                if (CallCount <= failCount)
+                {
+                    return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError));
+                }
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new System.Net.Http.ByteArrayContent(successContent)
+                };
+                return Task.FromResult(response);
+            }
+        }
+
+        /// <summary>
+        /// Cancels the token after <paramref name="failCount"/> failing calls, so the retry path sees a cancelled token.
+        /// </summary>
+        private sealed class CancellingHttpMessageHandler : HttpMessageHandler
+        {
+            private readonly System.Threading.CancellationTokenSource cts;
+            private readonly int failCount;
+            private readonly byte[] successContent;
+
+            public int CallCount { get; private set; }
+
+            public CancellingHttpMessageHandler(System.Threading.CancellationTokenSource cts, int failCount, byte[] successContent)
+            {
+                this.cts = cts;
+                this.failCount = failCount;
+                this.successContent = successContent;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+            {
+                CallCount++;
+                if (CallCount <= failCount)
+                {
+                    cts.Cancel();
+                    return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError));
+                }
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new System.Net.Http.ByteArrayContent(successContent)
+                };
+                return Task.FromResult(response);
             }
         }
     }

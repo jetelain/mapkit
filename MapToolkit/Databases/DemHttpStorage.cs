@@ -15,6 +15,8 @@ namespace Pmad.Cartography.Databases
         /// </summary>
         public static TimeSpan IndexCacheDuration { get; set; } = TimeSpan.FromHours(24);
 
+        const int MaxDownloadAttempts = 3;
+
         private readonly string localCache;
         private readonly HttpClient client;
 
@@ -79,16 +81,39 @@ namespace Pmad.Cartography.Databases
 
         private async Task DownloadFile(string path, string cacheFile, CancellationToken cancellationToken = default)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(cacheFile)!);
-            // XXX: Limit cache size ?
-            // XXX: Cache invalidation ?
-            using (var input = await client.GetStreamAsync(path, cancellationToken).ConfigureAwait(false))
+            var cacheDirectory = Path.GetDirectoryName(cacheFile)!;
+
+            Directory.CreateDirectory(cacheDirectory);
+
+            var tempFile = Path.Combine(cacheDirectory, Path.GetRandomFileName());
+
+            for (int attempt = 1; attempt <= MaxDownloadAttempts; attempt++)
             {
-                using (var cache = File.Create(cacheFile))
+                try
                 {
-                    await input.CopyToAsync(cache, cancellationToken).ConfigureAwait(false);
+                    using var input = await client.GetStreamAsync(path, cancellationToken).ConfigureAwait(false);
+                    using var cache = File.Create(tempFile);
+                    await input.CopyToAsync(cache, cancellationToken).ConfigureAwait(false);  
+                }
+                catch (HttpRequestException httpException) when (httpException.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    throw;
+                }
+                catch (Exception) when (attempt < MaxDownloadAttempts && !cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(Random.Shared.Next(500, 5000), cancellationToken);
+                }
+                catch (Exception)
+                {
+                    if (File.Exists(tempFile))
+                    {
+                        File.Delete(tempFile);
+                    }
+                    throw;
                 }
             }
+
+            File.Move(tempFile, cacheFile, true);
         }
 
         public Task<IDemDataCell> Load(string path) => LoadAsync(path, null);
@@ -115,7 +140,7 @@ namespace Pmad.Cartography.Databases
             {
                 await DownloadFile(path, cacheFile, cancellationToken).ConfigureAwait(false);
             }
-            catch(HttpRequestException)
+            catch(HttpRequestException httpException) when (httpException.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 // If the file doesn't exist on the server, we won't be able to get its SHA-256.
                 return null;
