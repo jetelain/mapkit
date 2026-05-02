@@ -197,7 +197,8 @@ namespace Pmad.Cartography.Test.Databases
             // Assert
             Assert.NotNull(hash);
             Assert.Equal(64, hash.Length); // SHA-256 hex is 64 chars
-            var expectedHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(cacheFile))).ToLowerInvariant();
+            using var cacheFileStream = File.OpenRead(cacheFile);
+            var expectedHash = Convert.ToHexString(SHA256.HashData(cacheFileStream)).ToLowerInvariant();
             Assert.Equal(expectedHash, hash);
         }
 

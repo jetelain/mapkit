@@ -78,7 +78,7 @@ namespace Pmad.Cartography.Databases
             var fullPath = Path.Combine(basePath, path);
             if (File.Exists(fullPath))
             {
-                return await Sha256Helper.ComputeHexAsync(fullPath).ConfigureAwait(false);
+                return await Sha256Helper.ComputeHexAsync(fullPath, cancellationToken).ConfigureAwait(false);
             }
             return null;
         }

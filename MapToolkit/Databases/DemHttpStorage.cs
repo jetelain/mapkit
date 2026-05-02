@@ -120,7 +120,7 @@ namespace Pmad.Cartography.Databases
                 // If the file doesn't exist on the server, we won't be able to get its SHA-256.
                 return null;
             }
-            return await Sha256Helper.ComputeHexAsync(cacheFile).ConfigureAwait(false);
+            return await Sha256Helper.ComputeHexAsync(cacheFile, cancellationToken).ConfigureAwait(false);
         }
     }
 }

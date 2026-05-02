@@ -19,7 +19,7 @@ namespace Pmad.Cartography.Databases
 
         public static async Task<bool> VerifyAsync(string filePath, string expectedHex, CancellationToken cancellationToken = default)
         {
-            return string.Equals(await ComputeHexAsync(filePath, cancellationToken), expectedHex, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(await ComputeHexAsync(filePath, cancellationToken).ConfigureAwait(false), expectedHex, StringComparison.OrdinalIgnoreCase);
         }
 
         private static string BytesToHex(byte[] bytes)

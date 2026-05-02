@@ -26,7 +26,7 @@ namespace DemUtility
             var repackMaxCpuOption = new Option<int>("--max-cpu", "-m") { Description = "Number of CPU Cores that can be used for process.", DefaultValueFactory = _ => -1 };
             var repackKeepOption = new Option<bool>("--keep", "-k") { Description = "Keep existing files." };
 
-            var repackCommand = new Command("repack", "Create a copy of a DEM database with specified compresssion.");
+            var repackCommand = new Command("repack", "Create a copy of a DEM database with specified compression.");
             repackCommand.Options.Add(repackSourceOption);
             repackCommand.Options.Add(repackTargetOption);
             repackCommand.Options.Add(repackCompressionOption);
