@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Repack STRM": {
+    "Repack SRTM": {
       "commandName": "Project",
       "commandLineArgs": "repack -k -s E:\\Carto\\SRTMv3 -t c:\\temp\\SRTMv3 -m 10"
     },
@@ -8,13 +8,57 @@
       "commandName": "Project",
       "commandLineArgs": "repack -k -s E:\\Carto\\AW3D30 -t c:\\temp\\AW3D30 -m 10"
     },
-    "Index STRM": {
-      "commandName": "Project",
-      "commandLineArgs": "index -p C:\\temp\\SRTMv3"
-    },
+
     "Index AW3D30": {
       "commandName": "Project",
-      "commandLineArgs": "index -p C:\\temp\\AW3D30"
+      "commandLineArgs": "index -p D:\\dem\\AW3D30"
+    },
+    "Index SRTM15Plus": {
+      "commandName": "Project",
+      "commandLineArgs": "index -p D:\\dem\\SRTM15Plus"
+    },
+    "Index SRTM1": {
+      "commandName": "Project",
+      "commandLineArgs": "index -p D:\\dem\\SRTM1"
+    },
+
+    "Update Index AW3D30": {
+      "commandName": "Project",
+      "commandLineArgs": "update-index -p D:\\dem\\AW3D30"
+    },
+    "Update Index SRTM15Plus": {
+      "commandName": "Project",
+      "commandLineArgs": "update-index -p D:\\dem\\SRTM15Plus"
+    },
+    "Update Index SRTM1": {
+      "commandName": "Project",
+      "commandLineArgs": "update-index -p D:\\dem\\SRTM1"
+    },
+
+    "Check AW3D30": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -p D:\\dem\\AW3D30"
+    },
+    "Check SRTM15Plus": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -p D:\\dem\\SRTM15Plus"
+    },
+    "Check SRTM1": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -p D:\\dem\\SRTM1"
+    },
+
+    "Check CDN AW3D30": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -u https://cdn.dem.pmad.net/AW3D30/ -n 100"
+    },
+    "Check CDN SRTM15Plus": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -u https://cdn.dem.pmad.net/SRTM15Plus/ -n 100"
+    },
+    "Check CDN SRTM1": {
+      "commandName": "Project",
+      "commandLineArgs": "check -v -u https://cdn.dem.pmad.net/SRTM1/ -n 100"
     }
   }
 }

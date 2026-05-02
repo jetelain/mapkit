@@ -22,9 +22,13 @@ namespace Pmad.Cartography.Test
         public void GetExtension_FromCompression()
         {
             Assert.Equal(".zst", CompressionHelper.GetExtension(Compression.ZSTD));
-            Assert.Equal(".gz", CompressionHelper.GetExtension(Compression.GZib));
+            Assert.Equal(".gz", CompressionHelper.GetExtension(Compression.GZip));
             Assert.Equal(".bt", CompressionHelper.GetExtension(Compression.Brotli));
             Assert.Equal(string.Empty, CompressionHelper.GetExtension(Compression.None));
+
+#pragma warning disable CS0618 // Le type ou le membre est obsolète
+            Assert.Equal(".gz", CompressionHelper.GetExtension(Compression.GZib));
+#pragma warning restore CS0618 // Le type ou le membre est obsolète
         }
 
         [Fact]
@@ -40,7 +44,7 @@ namespace Pmad.Cartography.Test
         [Fact]
         public void ReadSeekable_ReadsCompressedFile_Compressed()
         {
-            var filename = WriteCompressedFile(Compression.GZib);
+            var filename = WriteCompressedFile(Compression.GZip);
             var result = CompressionHelper.ReadSeekable(filename, stream =>
             {
                 using (var reader = new StreamReader(stream))
@@ -68,9 +72,9 @@ namespace Pmad.Cartography.Test
         }
 
         [Fact]
-        public void Read_ReadsCompressedFile_GZib()
+        public void Read_ReadsCompressedFile_GZip()
         {
-            var filename = WriteCompressedFile(Compression.GZib);
+            var filename = WriteCompressedFile(Compression.GZip);
             var result = CompressionHelper.Read(filename, stream =>
             {
                 using (var reader = new StreamReader(stream))
@@ -130,7 +134,7 @@ namespace Pmad.Cartography.Test
         [Fact]
         public void GetSize_ReturnsCorrectSize_GZip()
         {
-            var filename = WriteCompressedFile(Compression.GZib);
+            var filename = WriteCompressedFile(Compression.GZip);
             var size = CompressionHelper.GetSize(filename);
             Assert.Equal(12, size); // "test content" length
             File.Delete(filename);

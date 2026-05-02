@@ -40,7 +40,7 @@ namespace Pmad.Cartography.Test.Databases
             var cache = new MemoryCache(new MemoryCacheOptions());
             var dataCell = new Mock<IDemDataCell>();
             dataCell.Setup(d => d.SizeInBytes).Returns(100);
-            storage.Setup(s => s.Load(It.IsAny<string>())).ReturnsAsync(dataCell.Object);
+            storage.Setup(s => s.LoadAsync(It.IsAny<string>(), null, default)).ReturnsAsync(dataCell.Object);
 
             var entry = new DemDatabaseEntry("test", metadata.Object);
             var result = await entry.Load(storage.Object, cache);

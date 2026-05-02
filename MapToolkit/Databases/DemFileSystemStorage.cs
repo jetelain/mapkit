@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Pmad.Cartography.DataCells;
 
@@ -27,19 +27,28 @@ namespace Pmad.Cartography.Databases
                     return (await JsonSerializer.DeserializeAsync<DemDatabaseIndex>(input, DemDatabaseIndexContext.Default.DemDatabaseIndex).ConfigureAwait(false))!;
                 }
             }
-            return BuildIndex();
+            return await BuildIndexAsync().ConfigureAwait(false);
         }
 
+        [Obsolete]
         public DemDatabaseIndex BuildIndex()
         {
+            return BuildIndexAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task<DemDatabaseIndex> BuildIndexAsync(IProgress<double>? progress = null, CancellationToken cancellationToken = default)
+        {   
             var entries = new List<DemDatabaseFileInfos>();
             var files = Directory.GetFiles(basePath, "*.*", SearchOption.AllDirectories);
+            var done = 0;
             foreach (var file in files)
             {
                 if (DemDataCell.IsDemDataCellFile(file))
                 {
-                    entries.Add(new DemDatabaseFileInfos(GetRelative(file), DemDataCell.LoadMetadata(file)));
+                    entries.Add(new DemDatabaseFileInfos(GetRelative(file), DemDataCell.LoadMetadata(file), await Sha256Helper.ComputeHexAsync(file, cancellationToken).ConfigureAwait(false)));
                 }
+                done++;
+                progress?.Report((double)done / files.Length);
             }
             return new DemDatabaseIndex(entries);
         }
@@ -51,7 +60,27 @@ namespace Pmad.Cartography.Databases
 
         public Task<IDemDataCell> Load(string path)
         {
-            return Task.FromResult(DemDataCell.Load(Path.Combine(basePath, path)));
+            return LoadAsync(path, null);
+        }
+
+        public async Task<IDemDataCell> LoadAsync(string path, string? expectedSha256, CancellationToken cancellationToken = default)
+        {
+            var fullPath = Path.Combine(basePath, path);
+            if (expectedSha256 != null && !await Sha256Helper.VerifyAsync(fullPath, expectedSha256, cancellationToken).ConfigureAwait(false))
+            {
+                throw new InvalidDataException($"SHA-256 checksum mismatch for '{path}'.");
+            }
+            return DemDataCell.Load(fullPath);
+        }
+
+        public async Task<string?> GetSha256Async(string path, CancellationToken cancellationToken = default)
+        {
+            var fullPath = Path.Combine(basePath, path);
+            if (File.Exists(fullPath))
+            {
+                return await Sha256Helper.ComputeHexAsync(fullPath, cancellationToken).ConfigureAwait(false);
+            }
+            return null;
         }
     }
 }

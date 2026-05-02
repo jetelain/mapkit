@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Data;
 using System.Net.Http;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Pmad.Cartography.Databases
 {
     public static class WellKnownDatabases
     {
-        private const string DefaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0";
+        private const string DefaultUserAgent = "Mozilla/5.0 (Pmad-Cartography; Default)";
 
         internal static HttpClient CreateClient(string baseAddress)
         {

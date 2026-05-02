@@ -7,15 +7,18 @@ namespace Pmad.Cartography.Databases
 {
     internal class DemDatabaseEntry
     {
-        internal DemDatabaseEntry(string path, IDemDataCellMetadata metadata)
+        internal DemDatabaseEntry(string path, IDemDataCellMetadata metadata, string? sha256 = null)
         {
             Path = path;
             Metadata = metadata;
+            Sha256 = sha256;
         }
 
         public string Path { get; }
 
         public IDemDataCellMetadata Metadata { get; }
+
+        public string? Sha256 { get; }
 
         public bool Contains(Coordinates coordinates)
         {
@@ -38,7 +41,7 @@ namespace Pmad.Cartography.Databases
             if (!cache.TryGetValue(this, out IDemDataCell? result) || result == null)
             {
                 using var entry = cache.CreateEntry(this);
-                result = await storage.Load(Path).ConfigureAwait(false);
+                result = await storage.LoadAsync(Path, Sha256).ConfigureAwait(false);
                 entry.Value = result;
                 entry.Size = result.SizeInBytes;
             }

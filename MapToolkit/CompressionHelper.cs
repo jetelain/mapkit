@@ -22,7 +22,7 @@ namespace Pmad.Cartography
             {
                 case Compression.ZSTD:
                     return ExtensionZStd;
-                case Compression.GZib:
+                case Compression.GZip:
                     return ExtensionGZip;
                 case Compression.Brotli:
                     return ExtensionBrotli;
@@ -191,7 +191,7 @@ namespace Pmad.Cartography
                             write(compressed);
                         }
                         break;
-                    case Compression.GZib:
+                    case Compression.GZip:
                         using (var compressed = new GZipStream(stream, CompressionMode.Compress))
                         {
                             write(compressed);

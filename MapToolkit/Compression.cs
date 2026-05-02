@@ -1,10 +1,14 @@
-﻿namespace Pmad.Cartography
+﻿using System;
+
+namespace Pmad.Cartography
 {
     public enum Compression
     {
-        None,
-        ZSTD,
-        GZib,
-        Brotli
+        None = 0,
+        ZSTD = 1,
+        GZip = 2,
+        [Obsolete("Use GZip instead.")]
+        GZib = 2,
+        Brotli = 3
     }
 }

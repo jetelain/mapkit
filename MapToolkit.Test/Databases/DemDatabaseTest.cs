@@ -39,7 +39,7 @@ namespace Pmad.Cartography.Test.Databases
             var entry = new DemDatabaseFileInfos("path", new DemDataCellMetadata(DemRasterType.PixelIsPoint, new Coordinates(0, 0), new Coordinates(1, 1), 100, 100));
             var dataCell = new Mock<IDemDataCell>().Object;
             mockStorage.Setup(s => s.ReadIndex()).ReturnsAsync(new DemDatabaseIndex(new List<DemDatabaseFileInfos> { entry }));
-            mockStorage.Setup(s => s.Load(It.IsAny<string>())).ReturnsAsync(dataCell);
+            mockStorage.Setup(s => s.LoadAsync(It.IsAny<string>(), It.IsAny<string?>(), default)).ReturnsAsync(dataCell);
 
             // Act
             var result = await demDatabase.GetDataCellsAsync(start, end);
@@ -60,7 +60,7 @@ namespace Pmad.Cartography.Test.Databases
             var entry = new DemDatabaseFileInfos("path", new DemDataCellMetadata(DemRasterType.PixelIsPoint, new Coordinates(0, 0), new Coordinates(1, 1), 100, 100));
             var dataCell = new DemDataCellPixelIsPoint<float>(new Coordinates(0, 0), new Coordinates(1, 1), new float[100, 100]);
             mockStorage.Setup(s => s.ReadIndex()).ReturnsAsync(new DemDatabaseIndex(new List<DemDatabaseFileInfos> { entry }));
-            mockStorage.Setup(s => s.Load(It.IsAny<string>())).ReturnsAsync(dataCell);
+            mockStorage.Setup(s => s.LoadAsync(It.IsAny<string>(), It.IsAny<string?>(), default)).ReturnsAsync(dataCell);
 
             // Act
             var result = await demDatabase.CreateView<float>(start, end);
@@ -119,7 +119,7 @@ namespace Pmad.Cartography.Test.Databases
             var entry = new DemDatabaseFileInfos("path", new DemDataCellMetadata(DemRasterType.PixelIsPoint, new Coordinates(0, 0), new Coordinates(1, 1), 100, 100));
             var dataCell = new Mock<IDemDataCell>().Object;
             mockStorage.Setup(s => s.ReadIndex()).ReturnsAsync(new DemDatabaseIndex(new List<DemDatabaseFileInfos> { entry }));
-            mockStorage.Setup(s => s.Load(It.IsAny<string>())).ReturnsAsync(dataCell);
+            mockStorage.Setup(s => s.LoadAsync(It.IsAny<string>(), It.IsAny<string?>(), default)).ReturnsAsync(dataCell);
 
             // Act
             var result = demDatabase.GetElevation(coordinates, interpolation);
@@ -140,7 +140,7 @@ namespace Pmad.Cartography.Test.Databases
             var entry = new DemDatabaseFileInfos("path", new DemDataCellMetadata(DemRasterType.PixelIsPoint, new Coordinates(0, 0), new Coordinates(1, 1), 100, 100));
             var dataCell = new DemDataCellPixelIsPoint<float>(new Coordinates(0, 0), new Coordinates(1, 1), new float[100, 100]);
             mockStorage.Setup(s => s.ReadIndex()).ReturnsAsync(new DemDatabaseIndex(new List<DemDatabaseFileInfos> { entry }));
-            mockStorage.Setup(s => s.Load(It.IsAny<string>())).ReturnsAsync(dataCell);
+            mockStorage.Setup(s => s.LoadAsync(It.IsAny<string>(), It.IsAny<string?>(), default)).ReturnsAsync(dataCell);
 
             // Act
             var result = await demDatabase.GetElevationAsync(coordinates, interpolation);

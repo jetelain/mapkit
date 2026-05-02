@@ -49,8 +49,10 @@ namespace Pmad.Cartography.DataCells
 
         public Coordinates End { get; }
 
+        [JsonPropertyName("PointsPerCellLat")] // Legacy name, kept for backward compatibility
         public int PointsLat { get; }
 
+        [JsonPropertyName("PointsPerCellLon")] // Legacy name, kept for backward compatibility
         public int PointsLon { get; }
     }
 }
