@@ -15,6 +15,6 @@ namespace Pmad.Cartography.Databases
             => Load(path);
 
         Task<string?> GetSha256Async(string path, CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
+            => Task.FromResult<string?>(null);
     }
 }
