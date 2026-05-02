@@ -5,6 +5,10 @@ namespace Pmad.Cartography.Test.Databases
 {
     public class WellKnownDatabasesTest
     {
+        public WellKnownDatabasesTest()
+        {
+            DemHttpStorage.ClearDefaultCache();
+        }
         [Fact]
         public async Task AW3D30_ContainsLondon()
         {

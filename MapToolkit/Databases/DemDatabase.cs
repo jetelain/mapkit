@@ -51,7 +51,7 @@ namespace Pmad.Cartography.Databases
                 entry.UnLoad(cache);
             }
             entries.Clear();
-            entries.AddRange((await storage.ReadIndex().ConfigureAwait(false)).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata)));
+            entries.AddRange((await storage.ReadIndex().ConfigureAwait(false)).Cells.Select(i => new DemDatabaseEntry(i.Path, i.Metadata, i.Sha256)));
         }
 
         private async Task EnsureIndexIsLoadedAsync()
