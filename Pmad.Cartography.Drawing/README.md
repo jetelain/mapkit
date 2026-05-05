@@ -32,25 +32,25 @@ Render.ToSvg("contours.svg", new Vector2D(1024, 1024), surface =>
 
 ```csharp
 // Populate map data (roads, forests, water, buildings, etc.)
-var data = new TopoMapRenderData
-{
-    Data = myTopoMapData,   // implements ITopoMapData
-    Img  = hillshadeImage   // optional pre-computed hillshade
-};
+// myTopoMapData implements ITopoMapData
+using var scope = new NoProgress();
+var data = TopoMapRenderData.Create(myTopoMapData, scope);
 
-var proj = new NoProjectionArea(origin, new Vector2D(width, height), scale);
+var proj = new NoProjectionArea(min, max, new Vector2D(width, height));
 
 Render.ToSvgTiled("map.svg", proj.Size, SvgFallBackFormats.Webp,
-    lod1: surface => new TopoMapRender(data, proj).Render(surface),
-    lod2: surface => new TopoMapRender(data, proj).RenderLod2(surface),
-    lod3: surface => new TopoMapRender(data, proj).RenderLod3(surface));
+    drawLod1: surface => new TopoMapRender(data, proj).Render(surface),
+    drawLod2: surface => new TopoMapRender(data, proj).RenderLod2(surface),
+    drawLod3: surface => new TopoMapRender(data, proj).RenderLod3(surface));
 ```
 
 ### Export as PDF
 
 ```csharp
-var pdfRender = new TopoMapPdfRender(data, proj);
-pdfRender.Render("map.pdf");
+// myTopoMapData implements ITopoMapData
+System.IO.Directory.CreateDirectory("output-dir");
+using var scope = new NoProgress();
+var pdfFiles = TopoMapPdfRender.RenderPDF("output-dir", "map", myTopoMapData, scope);
 ```
 
 ## Map data model

@@ -39,7 +39,7 @@ Render.ToPng("output.png", new Vector2D(800, 600), surface =>
 ### Render to PDF
 
 ```csharp
-Render.ToPdf("output.pdf", PaperSize.A4Landscape, surface =>
+Render.ToPdf("output.pdf", new Vector2D(800, 600), surface =>
 {
     // same drawing calls
 });
