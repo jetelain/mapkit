@@ -3,6 +3,7 @@
 using Pmad.Cartography;
 using Pmad.Cartography.Contours;
 using Pmad.Cartography.Databases;
+using Pmad.Cartography.DataCells;
 using Pmad.Cartography.Drawing.Contours;
 using Pmad.Cartography.Drawing.Topographic;
 using Pmad.Cartography.Hillshading;
@@ -156,6 +157,10 @@ Render.ToSvgTiled("topo/map.svg", proj.Size, SvgFallBackFormats.Webp,
 Console.WriteLine("Topographic tiled SVG written: topo/map.svg");
 
 // PDF export
+// Note: TopoMapPdfRender is designed for metric units, but the demo data is in degrees, so rescale to have something useful
+topoData = new DemoTopoMapData(new DemDataCellPixelIsPoint<float>(new Coordinates(0,0), new Coordinates(10240, 10240), area.ToDataCell().Data));
+
+System.IO.Directory.CreateDirectory("topo-pdf");
 var pdfFiles = TopoMapPdfRender.RenderPDF("topo-pdf", "demo", topoData, scope);
 Console.WriteLine($"PDF files written: {pdfFiles.Count}");
 
