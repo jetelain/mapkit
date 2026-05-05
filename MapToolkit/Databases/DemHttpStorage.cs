@@ -102,7 +102,7 @@ namespace Pmad.Cartography.Databases
         /// <summary>
         /// Loads a DEM tile from the cache, downloading it first if necessary.
         /// </summary>
-        /// <param name="path">Server-relative path of the tile (e.g. <c>srtm1/N51W001.ddc.zst</c>).</param>
+        /// <param name="path">Path of the tile relative to the configured dataset root (e.g. <c>N00E006.SRTMGL1.hgt.zst</c>).</param>
         /// <param name="expectedSha256">
         /// Optional expected SHA-256 hex digest. When provided the cached file is verified after
         /// download; a mismatch causes the file to be deleted and an

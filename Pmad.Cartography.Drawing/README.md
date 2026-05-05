@@ -48,6 +48,7 @@ Render.ToSvgTiled("map.svg", proj.Size, SvgFallBackFormats.Webp,
 
 ```csharp
 // myTopoMapData implements ITopoMapData
+System.IO.Directory.CreateDirectory("output-dir");
 using var scope = new NoProgress();
 var pdfFiles = TopoMapPdfRender.RenderPDF("output-dir", "map", myTopoMapData, scope);
 ```
