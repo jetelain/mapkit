@@ -1,20 +1,7 @@
-﻿using System;
-using System.Net.Http;
-
-namespace Pmad.Cartography.Databases
+﻿namespace Pmad.Cartography.Databases
 {
     public static class WellKnownDatabases
     {
-        private const string DefaultUserAgent = "Mozilla/5.0 (Pmad-Cartography; Default)";
-
-        internal static HttpClient CreateClient(string baseAddress)
-        {
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-            // OVH CDN Requires a user agent
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(DefaultUserAgent);
-            return httpClient;
-        }
-
         /// <summary>
         /// Get the AW3D 30 data hosted on cdn.dem.pmad.net:
         /// Japan Aerospace Exploration Agency (2021). ALOS World 3D 30 meter DEM. V3.2, Jan 2021.
@@ -29,7 +16,7 @@ namespace Pmad.Cartography.Databases
         /// </remarks>
         public static DemHttpStorage GetAW3D30Storage(string? localCache = null)
         {
-            return new DemHttpStorage(localCache, CreateClient("https://cdn.dem.pmad.net/AW3D30/"));
+            return new DemHttpStorage(localCache, HttpClientHelper.CreateClient("https://cdn.dem.pmad.net/AW3D30/"));
         }
 
         /// <summary>
@@ -43,7 +30,7 @@ namespace Pmad.Cartography.Databases
         /// </remarks>
         public static DemHttpStorage GetSRTM1Storage(string? localCache = null)
         {
-            return new DemHttpStorage(localCache, CreateClient("https://cdn.dem.pmad.net/SRTM1/"));
+            return new DemHttpStorage(localCache, HttpClientHelper.CreateClient("https://cdn.dem.pmad.net/SRTM1/"));
         }
 
         /// <summary>
@@ -58,7 +45,7 @@ namespace Pmad.Cartography.Databases
         /// </remarks>
         public static DemHttpStorage GetSRTM15PlusStorage(string? localCache = null)
         {
-            return new DemHttpStorage(localCache, CreateClient("https://cdn.dem.pmad.net/SRTM15Plus/"));
+            return new DemHttpStorage(localCache, HttpClientHelper.CreateClient("https://cdn.dem.pmad.net/SRTM15Plus/"));
         }
 
         /// <summary>

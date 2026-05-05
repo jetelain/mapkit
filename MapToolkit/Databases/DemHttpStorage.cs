@@ -8,10 +8,20 @@ using Pmad.Cartography.DataCells;
 
 namespace Pmad.Cartography.Databases
 {
+    /// <summary>
+    /// An <see cref="IDemStorage"/> implementation that downloads DEM tiles on demand from an HTTP
+    /// server and caches them locally on disk.
+    /// </summary>
+    /// <remarks>
+    /// Downloaded tiles are stored under <see cref="DefaultCacheLocation"/> (or a custom path supplied
+    /// to the constructor) and reused on subsequent requests, so network access only occurs when a
+    /// tile is not yet present in the cache.
+    /// </remarks>
     public class DemHttpStorage : IDemStorage
     {
         /// <summary>
-        /// How long a cached index.json is considered fresh before being re-downloaded.
+        /// Gets or sets how long a cached <c>index.json</c> is considered fresh before being
+        /// re-downloaded. Defaults to 24 hours.
         /// </summary>
         public static TimeSpan IndexCacheDuration { get; set; } = TimeSpan.FromHours(24);
 
@@ -20,26 +30,60 @@ namespace Pmad.Cartography.Databases
         private readonly string localCache;
         private readonly HttpClient client;
 
+        /// <summary>
+        /// Initialises a new instance of <see cref="DemHttpStorage"/> with an already-configured
+        /// <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="localCache">
+        /// Directory used to cache downloaded tiles. Pass <see langword="null"/> to use
+        /// <see cref="DefaultCacheLocation"/>.
+        /// </param>
+        /// <param name="client">
+        /// An <see cref="HttpClient"/> whose <see cref="HttpClient.BaseAddress"/> points to the DEM
+        /// server root.
+        /// </param>
         public DemHttpStorage(string? localCache, HttpClient client)
         {
             this.localCache = localCache ?? DefaultCacheLocation;
             this.client = client;
         }
 
+        /// <summary>
+        /// Initialises a new instance of <see cref="DemHttpStorage"/> that creates its own
+        /// <see cref="HttpClient"/> for the given base address.
+        /// </summary>
+        /// <param name="localCache">
+        /// Directory used to cache downloaded tiles. Pass <see langword="null"/> to use
+        /// <see cref="DefaultCacheLocation"/>.
+        /// </param>
+        /// <param name="baseAddress">Base URI of the DEM HTTP server.</param>
         public DemHttpStorage(string? localCache, Uri baseAddress)
-            : this(localCache, new HttpClient() { BaseAddress = baseAddress })
+            : this(localCache, HttpClientHelper.CreateClient(baseAddress))
         {
 
         }
 
+        /// <summary>
+        /// Initialises a new instance of <see cref="DemHttpStorage"/> using
+        /// <see cref="DefaultCacheLocation"/> as the local cache directory.
+        /// </summary>
+        /// <param name="baseAddress">Base URI of the DEM HTTP server.</param>
         public DemHttpStorage(Uri baseAddress)
             : this(null, baseAddress)
         {
 
         }
 
+        /// <summary>
+        /// Gets the default directory used to cache downloaded tiles when no explicit path is
+        /// provided. Resolves to a <c>dem</c> sub-directory inside the system temporary folder.
+        /// </summary>
         public static string DefaultCacheLocation => Path.Combine(Path.GetTempPath(), "dem");
 
+        /// <summary>
+        /// Deletes all files in <see cref="DefaultCacheLocation"/>, freeing disk space occupied by
+        /// previously downloaded tiles. Has no effect when the directory does not exist.
+        /// </summary>
         public static void ClearDefaultCache()
         {
             var cacheDir = DefaultCacheLocation;
@@ -55,6 +99,21 @@ namespace Pmad.Cartography.Databases
             return Path.Combine(localCache, uri.DnsSafeHost, uri.AbsolutePath.Substring(1).Replace('/', Path.DirectorySeparatorChar));
         }
 
+        /// <summary>
+        /// Loads a DEM tile from the cache, downloading it first if necessary.
+        /// </summary>
+        /// <param name="path">Server-relative path of the tile (e.g. <c>srtm1/N51W001.ddc.zst</c>).</param>
+        /// <param name="expectedSha256">
+        /// Optional expected SHA-256 hex digest. When provided the cached file is verified after
+        /// download; a mismatch causes the file to be deleted and an
+        /// <see cref="InvalidDataException"/> to be thrown.
+        /// </param>
+        /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+        /// <returns>The loaded <see cref="IDemDataCell"/>.</returns>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when <paramref name="expectedSha256"/> is set and the downloaded file does not
+        /// match the expected digest.
+        /// </exception>
         public async Task<IDemDataCell> LoadAsync(string path, string? expectedSha256 = null, CancellationToken cancellationToken = default)
         {
             var cacheFile = GetCacheFile(path);
@@ -117,8 +176,14 @@ namespace Pmad.Cartography.Databases
             }
         }
 
+        /// <inheritdoc cref="LoadAsync(string, string?, CancellationToken)"/>
         public Task<IDemDataCell> Load(string path) => LoadAsync(path, null);
 
+        /// <summary>
+        /// Downloads (if required) and deserialises the server's <c>index.json</c> file.
+        /// The cached copy is reused as long as it is younger than <see cref="IndexCacheDuration"/>.
+        /// </summary>
+        /// <returns>The deserialized <see cref="DemDatabaseIndex"/>.</returns>
         public async Task<DemDatabaseIndex> ReadIndex()
         {
             var cacheFile = GetCacheFile("index.json");
@@ -134,6 +199,16 @@ namespace Pmad.Cartography.Databases
             }
         }
 
+        /// <summary>
+        /// Downloads the file at <paramref name="path"/> and returns its SHA-256 hex digest, or
+        /// <see langword="null"/> if the file does not exist on the server.
+        /// </summary>
+        /// <param name="path">Server-relative path of the file to hash.</param>
+        /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A lowercase hex string representing the SHA-256 digest, or <see langword="null"/> when
+        /// the server returns HTTP 404.
+        /// </returns>
         public async Task<string?> GetSha256Async(string path, CancellationToken cancellationToken = default)
         {
             var cacheFile = GetCacheFile(path);
